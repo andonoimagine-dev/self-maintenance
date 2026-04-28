@@ -13,7 +13,7 @@
   .form-group { margin-bottom: 15px; }
   label { display: block; font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 6px; }
   label .req { color: #e53e3e; }
-  input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+  input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.2s; font-family: inherit; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49,130,206,0.1); }
   textarea { resize: vertical; min-height: 80px; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -42,7 +42,7 @@
     <div class="row">
       <div class="form-group">
         <label>Tanggal <span class="req">*</span></label>
-        <input type="date" name="tanggal" required>
+        <input type="date" name="tanggal" id="tanggalInput" required>
       </div>
       <div class="form-group">
         <label>Shift <span class="req">*</span></label>
@@ -124,9 +124,8 @@
 
     <div class="form-group">
       <label>Foto Temuan</label>
-      <input type="file" name="foto" id="
       <input type="file" name="foto" id="fotoInput" accept="image/*" capture="environment">
-      <img id="fotoPreview" class="file-preview">
+      <img id="fotoPreview" class="file-preview" alt="Preview">
     </div>
 
     <div class="loading" id="loadingBox">⏳ Mengirim data, mohon tunggu...</div>
@@ -135,99 +134,126 @@
 </div>
 
 <script>
-  // GANTI dengan Web App URL dari Apps Script
-  const API_URL = 'PASTE_WEB_APP_URL_DISINI';
+// ============================================
+// GANTI URL di bawah dengan Web App URL Anda
+// ============================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbw0tRqYachz1sx6-02IoUsLJbAfh-RqMR_SeTxZblhOZIJFyQdIAIEU2zSt9BFIhzpK/exec';
 
+// Pastikan DOM sudah siap baru jalanin script
+document.addEventListener('DOMContentLoaded', function() {
+  
   // Set tanggal default = hari ini
-  document.querySelector('input[name="tanggal"]').valueAsDate = new Date();
+  const tanggalInput = document.getElementById('tanggalInput');
+  if (tanggalInput) {
+    tanggalInput.valueAsDate = new Date();
+  }
 
-  // Preview foto
-  const fotoInput = document.getElementById('fotoInput');
-  const fotoPreview = document.getElementById('fotoPreview');
+  // Variable foto
   let fotoBase64 = '';
 
-  fotoInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+  // Preview & compress foto
+  const fotoInput = document.getElementById('fotoInput');
+  const fotoPreview = document.getElementById('fotoPreview');
+  
+  if (fotoInput) {
+    fotoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    // Compress foto sebelum upload
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const maxWidth = 1024;
-        const scale = maxWidth / img.width;
-        canvas.width = maxWidth;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-        fotoPreview.src = fotoBase64;
-        fotoPreview.style.display = 'block';
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxWidth = 1024;
+          const scale = Math.min(maxWidth / img.width, 1);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          if (fotoPreview) {
+            fotoPreview.src = fotoBase64;
+            fotoPreview.style.display = 'block';
+          }
+        };
+        img.src = event.target.result;
       };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
+      reader.readAsDataURL(file);
+    });
+  }
 
   // Submit form
-  document.getElementById('formTemuan').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const btn = document.getElementById('submitBtn');
-    const loading = document.getElementById('loadingBox');
-    const alertBox = document.getElementById('alertBox');
-    
-    btn.disabled = true;
-    loading.style.display = 'block';
-    alertBox.style.display = 'none';
-
-    const formData = new FormData(e.target);
-    const data = {
-      tanggal: formData.get('tanggal'),
-      shift: formData.get('shift'),
-      area: formData.get('area'),
-      mesin: formData.get('mesin').toUpperCase(),
-      part: formData.get('part'),
-      kategori: formData.get('kategori'),
-      deskripsi: formData.get('deskripsi'),
-      severity: formData.get('severity'),
-      frequency: formData.get('frequency'),
-      pic: formData.get('pic'),
-      foto: fotoBase64
-    };
-
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-      });
+  const form = document.getElementById('formTemuan');
+  if (form) {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
       
-      const result = await response.json();
+      const btn = document.getElementById('submitBtn');
+      const loading = document.getElementById('loadingBox');
+      const alertBox = document.getElementById('alertBox');
       
-      if (result.status === 'success') {
-        alertBox.className = 'alert alert-success';
-        alertBox.innerHTML = `✅ <b>Berhasil!</b> ID: <b>${result.id}</b> | Priority: <span class="badge ${result.priority.toLowerCase()}">${result.priority}</span>`;
+      btn.disabled = true;
+      loading.style.display = 'block';
+      alertBox.style.display = 'none';
+
+      const formData = new FormData(e.target);
+      const data = {
+        tanggal: formData.get('tanggal'),
+        shift: formData.get('shift'),
+        area: formData.get('area'),
+        mesin: (formData.get('mesin') || '').toUpperCase(),
+        part: formData.get('part'),
+        kategori: formData.get('kategori'),
+        deskripsi: formData.get('deskripsi'),
+        severity: formData.get('severity'),
+        frequency: formData.get('frequency'),
+        pic: formData.get('pic'),
+        foto: fotoBase64
+      };
+
+      console.log('Sending data:', data);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(data),
+          redirect: 'follow'
+        });
+        
+        const resultText = await response.text();
+        console.log('Raw response:', resultText);
+        
+        const result = JSON.parse(resultText);
+        
+        if (result.status === 'success') {
+          alertBox.className = 'alert alert-success';
+          alertBox.innerHTML = '✅ <b>Berhasil!</b> ID: <b>' + result.id + '</b> | Priority: <span class="badge ' + result.priority.toLowerCase() + '">' + result.priority + '</span>';
+          alertBox.style.display = 'block';
+          e.target.reset();
+          if (fotoPreview) fotoPreview.style.display = 'none';
+          fotoBase64 = '';
+          if (tanggalInput) tanggalInput.valueAsDate = new Date();
+          window.scrollTo({top: 0, behavior: 'smooth'});
+        } else {
+          throw new Error(result.message || 'Unknown error');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alertBox.className = 'alert alert-error';
+        alertBox.innerHTML = '❌ <b>Gagal!</b> ' + err.message;
         alertBox.style.display = 'block';
-        e.target.reset();
-        fotoPreview.style.display = 'none';
-        fotoBase64 = '';
-        document.querySelector('input[name="tanggal"]').valueAsDate = new Date();
-        window.scrollTo({top: 0, behavior: 'smooth'});
-      } else {
-        throw new Error(result.message);
+      } finally {
+        btn.disabled = false;
+        loading.style.display = 'none';
       }
-    } catch (err) {
-      alertBox.className = 'alert alert-error';
-      alertBox.innerHTML = `❌ <b>Gagal!</b> ${err.message}`;
-      alertBox.style.display = 'block';
-    } finally {
-      btn.disabled = false;
-      loading.style.display = 'none';
-    }
-  });
+    });
+  }
+  
+});
 </script>
 </body>
 </html>
