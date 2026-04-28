@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Temuan Self-Maintenance</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; padding: 15px; }
+  .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  h1 { color: #1a365d; font-size: 22px; margin-bottom: 5px; }
+  .subtitle { color: #718096; font-size: 13px; margin-bottom: 20px; }
+  .form-group { margin-bottom: 15px; }
+  label { display: block; font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 6px; }
+  label .req { color: #e53e3e; }
+  input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49,130,206,0.1); }
+  textarea { resize: vertical; min-height: 80px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn { width: 100%; padding: 14px; background: #3182ce; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+  .btn:hover { background: #2c5282; }
+  .btn:disabled { background: #a0aec0; cursor: not-allowed; }
+  .file-preview { margin-top: 8px; max-width: 100%; max-height: 200px; border-radius: 8px; display: none; }
+  .alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; font-size: 14px; }
+  .alert-success { background: #c6f6d5; color: #22543d; border-left: 4px solid #38a169; }
+  .alert-error { background: #fed7d7; color: #742a2a; border-left: 4px solid #e53e3e; }
+  .loading { display: none; text-align: center; padding: 10px; color: #3182ce; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+  .p1 { background: #fed7d7; color: #822727; }
+  .p2 { background: #feebc8; color: #7b341e; }
+  .p3 { background: #c6f6d5; color: #22543d; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔧 Form Temuan Self-Maintenance</h1>
+  <p class="subtitle">Area Melting & Molding | Isi dengan lengkap</p>
+
+  <div id="alertBox" class="alert"></div>
+
+  <form id="formTemuan">
+    <div class="row">
+      <div class="form-group">
+        <label>Tanggal <span class="req">*</span></label>
+        <input type="date" name="tanggal" required>
+      </div>
+      <div class="form-group">
+        <label>Shift <span class="req">*</span></label>
+        <select name="shift" required>
+          <option value="">-- Pilih --</option>
+          <option value="1">Shift 1</option>
+          <option value="2">Shift 2</option>
+          <option value="3">Shift 3</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Area <span class="req">*</span></label>
+      <select name="area" required>
+        <option value="">-- Pilih Area --</option>
+        <option value="Melting">Melting</option>
+        <option value="Molding">Molding</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Mesin/Equipment <span class="req">*</span></label>
+        <input type="text" name="mesin" placeholder="cth: IF-01, MM-02" required>
+      </div>
+      <div class="form-group">
+        <label>Part/Komponen <span class="req">*</span></label>
+        <input type="text" name="part" placeholder="cth: V-belt, Hydraulic" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Kategori Abnormal <span class="req">*</span></label>
+      <select name="kategori" required>
+        <option value="">-- Pilih Kategori --</option>
+        <option value="Kotor">Kotor / Debu</option>
+        <option value="Kendor">Kendor / Loose</option>
+        <option value="Bocor">Bocor (Oli/Air/Udara)</option>
+        <option value="Aus">Aus / Wear</option>
+        <option value="Retak">Retak / Crack</option>
+        <option value="Getaran">Getaran Abnormal</option>
+        <option value="Suara">Suara Abnormal</option>
+        <option value="Panas">Overheat</option>
+        <option value="Lainnya">Lainnya</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Deskripsi Temuan <span class="req">*</span></label>
+      <textarea name="deskripsi" placeholder="Jelaskan detail temuan..." required></textarea>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Severity <span class="req">*</span></label>
+        <select name="severity" required>
+          <option value="">-- Pilih --</option>
+          <option value="Tinggi">Tinggi (Stop line)</option>
+          <option value="Sedang">Sedang (Berpotensi)</option>
+          <option value="Rendah">Rendah (Minor)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Frequency <span class="req">*</span></label>
+        <select name="frequency" required>
+          <option value="">-- Pilih --</option>
+          <option value="Tinggi">Sering</option>
+          <option value="Sedang">Kadang</option>
+          <option value="Rendah">Jarang</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>PIC / Penemu <span class="req">*</span></label>
+      <input type="text" name="pic" placeholder="Nama lengkap" required>
+    </div>
+
+    <div class="form-group">
+      <label>Foto Temuan</label>
+      <input type="file" name="foto" id="
+      <input type="file" name="foto" id="fotoInput" accept="image/*" capture="environment">
+      <img id="fotoPreview" class="file-preview">
+    </div>
+
+    <div class="loading" id="loadingBox">⏳ Mengirim data, mohon tunggu...</div>
+    <button type="submit" class="btn" id="submitBtn">📤 Kirim Temuan</button>
+  </form>
+</div>
+
+<script>
+  // GANTI dengan Web App URL dari Apps Script
+  const API_URL = 'PASTE_WEB_APP_URL_DISINI';
+
+  // Set tanggal default = hari ini
+  document.querySelector('input[name="tanggal"]').valueAsDate = new Date();
+
+  // Preview foto
+  const fotoInput = document.getElementById('fotoInput');
+  const fotoPreview = document.getElementById('fotoPreview');
+  let fotoBase64 = '';
+
+  fotoInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Compress foto sebelum upload
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const maxWidth = 1024;
+        const scale = maxWidth / img.width;
+        canvas.width = maxWidth;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        fotoPreview.src = fotoBase64;
+        fotoPreview.style.display = 'block';
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Submit form
+  document.getElementById('formTemuan').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loadingBox');
+    const alertBox = document.getElementById('alertBox');
+    
+    btn.disabled = true;
+    loading.style.display = 'block';
+    alertBox.style.display = 'none';
+
+    const formData = new FormData(e.target);
+    const data = {
+      tanggal: formData.get('tanggal'),
+      shift: formData.get('shift'),
+      area: formData.get('area'),
+      mesin: formData.get('mesin').toUpperCase(),
+      part: formData.get('part'),
+      kategori: formData.get('kategori'),
+      deskripsi: formData.get('deskripsi'),
+      severity: formData.get('severity'),
+      frequency: formData.get('frequency'),
+      pic: formData.get('pic'),
+      foto: fotoBase64
+    };
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+      });
+      
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        alertBox.className = 'alert alert-success';
+        alertBox.innerHTML = `✅ <b>Berhasil!</b> ID: <b>${result.id}</b> | Priority: <span class="badge ${result.priority.toLowerCase()}">${result.priority}</span>`;
+        alertBox.style.display = 'block';
+        e.target.reset();
+        fotoPreview.style.display = 'none';
+        fotoBase64 = '';
+        document.querySelector('input[name="tanggal"]').valueAsDate = new Date();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (err) {
+      alertBox.className = 'alert alert-error';
+      alertBox.innerHTML = `❌ <b>Gagal!</b> ${err.message}`;
+      alertBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      loading.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>
