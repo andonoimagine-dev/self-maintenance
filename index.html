@@ -13,7 +13,7 @@
   .form-group { margin-bottom: 15px; }
   label { display: block; font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 6px; }
   label .req { color: #e53e3e; }
-  input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.2s; font-family: inherit; }
+  input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49,130,206,0.1); }
   textarea { resize: vertical; min-height: 80px; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -25,10 +25,6 @@
   .alert-success { background: #c6f6d5; color: #22543d; border-left: 4px solid #38a169; }
   .alert-error { background: #fed7d7; color: #742a2a; border-left: 4px solid #e53e3e; }
   .loading { display: none; text-align: center; padding: 10px; color: #3182ce; }
-  .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-  .p1 { background: #fed7d7; color: #822727; }
-  .p2 { background: #feebc8; color: #7b341e; }
-  .p3 { background: #c6f6d5; color: #22543d; }
 </style>
 </head>
 <body>
@@ -134,24 +130,15 @@
 </div>
 
 <script>
-// ============================================
-// GANTI URL di bawah dengan Web App URL Anda
-// ============================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbyvsklrzYZdDpbF7KkrqXqtJoAqxrRZLgFC5GJpC-vBeDTXl57Ef9UOnXhTiafe-0dn/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbw0tRqYachz1sx6-02IoUsLJbAfh-RqMR_SeTxZblhOZIJFyQdIAIEU2zSt9BFIhzpK/exec';
 
-// Pastikan DOM sudah siap baru jalanin script
 document.addEventListener('DOMContentLoaded', function() {
   
-  // Set tanggal default = hari ini
   const tanggalInput = document.getElementById('tanggalInput');
-  if (tanggalInput) {
-    tanggalInput.valueAsDate = new Date();
-  }
+  if (tanggalInput) tanggalInput.valueAsDate = new Date();
 
-  // Variable foto
   let fotoBase64 = '';
 
-  // Preview & compress foto
   const fotoInput = document.getElementById('fotoInput');
   const fotoPreview = document.getElementById('fotoPreview');
   
@@ -183,10 +170,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Submit form
   const form = document.getElementById('formTemuan');
   if (form) {
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
       
       const btn = document.getElementById('submitBtn');
@@ -214,42 +200,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
       console.log('Sending data:', data);
 
-      try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify(data),
-          redirect: 'follow'
-        });
-        
-        const resultText = await response.text();
-        console.log('Raw response:', resultText);
-        
-        const result = JSON.parse(resultText);
-        
-        if (result.status === 'success') {
-          alertBox.className = 'alert alert-success';
-          alertBox.innerHTML = '✅ <b>Berhasil!</b> ID: <b>' + result.id + '</b> | Priority: <span class="badge ' + result.priority.toLowerCase() + '">' + result.priority + '</span>';
-          alertBox.style.display = 'block';
-          e.target.reset();
-          if (fotoPreview) fotoPreview.style.display = 'none';
-          fotoBase64 = '';
-          if (tanggalInput) tanggalInput.valueAsDate = new Date();
-          window.scrollTo({top: 0, behavior: 'smooth'});
-        } else {
-          throw new Error(result.message || 'Unknown error');
-        }
-      } catch (err) {
+      // PAKAI NO-CORS MODE untuk bypass CORS issue
+      fetch(API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(function() {
+        console.log('Request sent successfully');
+        alertBox.className = 'alert alert-success';
+        alertBox.innerHTML = '✅ <b>Data terkirim!</b> Silakan cek spreadsheet untuk konfirmasi.';
+        alertBox.style.display = 'block';
+        e.target.reset();
+        if (fotoPreview) fotoPreview.style.display = 'none';
+        fotoBase64 = '';
+        if (tanggalInput) tanggalInput.valueAsDate = new Date();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      })
+      .catch(function(err) {
         console.error('Error:', err);
         alertBox.className = 'alert alert-error';
         alertBox.innerHTML = '❌ <b>Gagal!</b> ' + err.message;
         alertBox.style.display = 'block';
-      } finally {
+      })
+      .finally(function() {
         btn.disabled = false;
         loading.style.display = 'none';
-      }
+      });
     });
   }
   
