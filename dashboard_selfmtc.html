@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self MTC Dashboard — PT AT Indonesia</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#EFECEA;--surf:#FFF;--surf2:#F6F4F0;--surf3:#EDEBE6;
+  --bord:#DDD9D0;--bord2:#C8C3B8;
+  --txt:#17160E;--txt2:#5E5C52;--txt3:#9E9B91;
+  --navy:#0F1E30;
+  --acc:#1755A8;--acc2:#EAF0FB;
+  --red:#B52E2E;--red2:#FDECEA;
+  --amb:#9A5A0C;--amb2:#FDF3E2;
+  --grn:#276040;--grn2:#E8F5EE;
+  --hl:#6D28D9;--hl2:#F0EBFF;--hl3:#C4B5FD;
+  --SW:140px;--NH:52px;
+  --r:8px;--rlg:12px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font-size:13px;line-height:1.5;min-height:100vh}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--NH);background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nv-brand{display:flex;align-items:center;gap:10px}
+.nv-icon{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:14px}
+.nv-name{color:#fff;font-size:13px;font-weight:600}
+.nv-sub{color:rgba(255,255,255,.35);font-size:10px;font-family:'DM Mono',monospace}
+.nv-right{display:flex;align-items:center;gap:8px}
+.nv-ts{color:rgba(255,255,255,.3);font-size:10px;font-family:'DM Mono',monospace}
+.nv-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:600;font-family:inherit;padding:5px 13px;border-radius:6px;cursor:pointer}
+.nv-btn:hover{background:rgba(255,255,255,.2)}
+
+/* HL BAR */
+.hl-bar{position:fixed;top:var(--NH);left:var(--SW);right:0;z-index:200;background:var(--hl2);border-bottom:2px solid var(--hl3);padding:7px 20px;display:none;align-items:center;justify-content:space-between}
+.hl-bar.on{display:flex}
+.hl-l{display:flex;align-items:center;gap:8px}
+.hl-dot{width:9px;height:9px;border-radius:2px;background:var(--hl);flex-shrink:0}
+.hl-name{font-size:12px;font-weight:700;color:var(--hl)}
+.hl-n{font-size:11px;color:#7C5DC4}
+.hl-x{font-size:11px;padding:4px 11px;border-radius:5px;border:1px solid var(--hl3);background:#fff;color:var(--hl);cursor:pointer;font-family:inherit;font-weight:600}
+
+/* SLICER */
+.slicer{position:fixed;top:var(--NH);left:0;bottom:0;width:var(--SW);background:var(--surf);border-right:1px solid var(--bord);overflow-y:auto;z-index:100;padding:12px 8px}
+.sl-sec{margin-bottom:14px}
+.sl-ttl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:0 4px;margin-bottom:5px}
+.sl-btn{display:block;width:100%;text-align:left;font-size:11px;font-family:inherit;padding:5px 8px;border-radius:5px;border:none;background:transparent;color:var(--txt2);cursor:pointer;transition:.12s;margin-bottom:1px}
+.sl-btn:hover{background:var(--surf2);color:var(--txt)}
+.sl-btn.on{background:var(--navy);color:#fff;font-weight:600}
+.sl-div{height:1px;background:var(--bord);margin:8px 0}
+
+/* MAIN */
+.main{margin-left:var(--SW);margin-top:var(--NH);padding:14px 18px 80px}
+.main.hl-on{margin-top:calc(var(--NH) + 34px)}
+
+/* SECTION */
+.sec{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--bord)}
+
+/* SUMMARY */
+.gstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.gs{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:10px 14px;position:relative;overflow:hidden}
+.gs::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.gs.tot::after{background:var(--navy)}.gs.opn::after{background:var(--red)}
+.gs.tmp::after{background:var(--amb)}.gs.cls::after{background:var(--grn)}
+.gs-n{font-size:26px;font-weight:700;line-height:1;margin-bottom:2px}
+.gs.tot .gs-n{color:var(--navy)}.gs.opn .gs-n{color:var(--red)}
+.gs.tmp .gs-n{color:var(--amb)}.gs.cls .gs-n{color:var(--grn)}
+.gs-l{font-size:10px;font-weight:500;color:var(--txt2)}
+.gs-s{font-size:9px;color:var(--txt3);font-family:'DM Mono',monospace;margin-top:1px}
+
+/* AREA MATRIX — 2 kolom */
+.area-matrix{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.area-row{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rlg);overflow:hidden;transition:.15s}
+.area-row.dim{opacity:.3}.area-row.hl{border-color:var(--hl3);box-shadow:0 0 0 2px var(--hl2)}
+
+/* Area row: header + chart dalam 1 grid container agar kolom sejajar */
+.ar-wrap{display:grid;grid-template-columns:110px 1fr 1fr 1fr}
+.ar-left{grid-column:1;grid-row:1/3;padding:10px 12px;border-right:1px solid var(--bord);display:flex;flex-direction:column;justify-content:center;gap:4px}
+.ar-name{font-size:13px;font-weight:700}
+.ar-hl-badge{font-size:9px;font-weight:700;color:var(--hl);background:var(--hl2);padding:1px 6px;border-radius:99px;display:none;margin-top:2px}
+.ar-hl-badge.on{display:inline-block}
+.prog{height:3px;background:var(--surf3);border-radius:3px;display:flex;overflow:hidden;margin-top:6px}
+.pg{background:var(--grn);height:100%}.pa{background:#C97F1A;height:100%}.pr{background:var(--red);height:100%}
+
+/* stats row (grid cols 2-4) */
+.ar-stats{grid-column:2/5;grid-row:1;display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--bord)}
+.ar-stat{text-align:center;padding:8px 4px;border-right:1px solid var(--bord)}
+.ar-stat:last-child{border-right:none}
+.ar-stat-n{font-size:15px;font-weight:700;line-height:1;margin-bottom:1px}
+.ar-stat-n.r{color:var(--red)}.ar-stat-n.g{color:var(--grn)}.ar-stat-n.a{color:var(--amb)}.ar-stat-n.d{color:var(--txt3)}
+.ar-stat-l{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--txt3)}
+
+/* charts row (grid cols 2-4) */
+.ar-charts{grid-column:2/5;grid-row:2;display:grid;grid-template-columns:1fr 1fr 1fr}
+
+/* donut col */
+.ar-donut{padding:10px 10px;border-right:1px solid var(--bord);display:flex;align-items:center;gap:10px}
+.ar-donut-canvas{width:64px!important;height:64px!important;flex-shrink:0}
+.ar-dleg{display:flex;flex-direction:column;gap:2px}
+.dl-r{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:9px}
+.dl-left{display:flex;align-items:center;gap:3px;color:var(--txt2)}
+.dl-sq{width:6px;height:6px;border-radius:1px;flex-shrink:0}
+.dl-n{font-size:9px;font-weight:600;font-family:'DM Mono',monospace;color:var(--txt)}
+
+/* pareto cols */
+.ar-par{padding:8px 10px;border-right:1px solid var(--bord)}
+.ar-par:last-child{border-right:none}
+.ap-ttl{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);margin-bottom:5px;display:flex;align-items:center;justify-content:space-between}
+.ap-leg{display:flex;gap:5px}
+.ap-li{display:flex;align-items:center;gap:2px;font-size:8px;color:var(--txt3)}
+.ap-sq{width:5px;height:5px;border-radius:1px;flex-shrink:0}
+.p-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;cursor:pointer}
+.p-row:hover .p-lbl{color:var(--acc)}
+.p-lbl{font-size:10px;color:var(--txt2);width:64px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.p-lbl.on{color:var(--hl);font-weight:700}.p-lbl.dim{opacity:.3}
+.p-track{flex:1;height:12px;background:var(--surf2);border-radius:2px;overflow:hidden;display:flex;cursor:pointer}
+.p-track.on{box-shadow:0 0 0 2px var(--hl)}.p-track.dim{opacity:.25}
+.p-cls{background:var(--grn);height:100%}.p-tmp{background:#C97F1A;height:100%}.p-opn{background:#8BBDE0;height:100%}
+.p-ct{font-size:9px;font-family:'DM Mono',monospace;color:var(--txt3);width:24px;text-align:right;flex-shrink:0}
+
+/* kategori rows */
+.kat-row{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--surf3)}
+.kat-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.kat-nm{font-size:10px;font-weight:600;color:var(--txt);flex-shrink:0;max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kat-chips{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.kc{display:flex;align-items:center;gap:2px;border-radius:3px;padding:1px 5px;white-space:nowrap}
+.kc-n{font-size:9px;font-weight:700;font-family:'DM Mono',monospace}
+.kc-l{font-size:8px;font-weight:500}
+.kc-tot{background:var(--surf2)}.kc-tot .kc-n{color:var(--txt)}.kc-tot .kc-l{color:var(--txt3)}
+.kc-opn{background:var(--red2)}.kc-opn .kc-n{color:var(--red)}.kc-opn .kc-l{color:var(--red)}
+.kc-tmp{background:var(--amb2)}.kc-tmp .kc-n{color:var(--amb)}.kc-tmp .kc-l{color:var(--amb)}
+.kc-cls{background:var(--grn2)}.kc-cls .kc-n{color:var(--grn)}.kc-cls .kc-l{color:var(--grn)}
+
+/* ANALISIS PANEL */
+.gpanel{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rlg);overflow:hidden;margin-bottom:14px}
+.gpanel.on{border-color:var(--hl3)}
+.gp-tabs{display:flex;border-bottom:1px solid var(--bord);background:var(--surf2)}
+.gp-tab{font-size:11px;font-weight:500;padding:8px 14px;cursor:pointer;color:var(--txt3);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:.15s}
+.gp-tab:hover{color:var(--txt)}.gp-tab.on{color:var(--acc);border-bottom-color:var(--acc);background:var(--surf)}
+.gp-body{padding:12px 16px}
+.gp-pane{display:none}.gp-pane.on{display:block}
+.gp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:6px}
+.kcard{border:1px solid var(--bord);border-radius:var(--r);padding:8px 10px;cursor:pointer;background:var(--surf);transition:.15s}
+.kcard:hover{background:var(--surf2)}.kcard.on{border-color:var(--hl);background:var(--hl2)}.kcard.dim{opacity:.25;pointer-events:none}
+.kcard-name{font-size:11px;font-weight:600;margin-bottom:5px}.kcard.on .kcard-name{color:var(--hl)}
+.kpills{display:flex;gap:3px;flex-wrap:wrap}
+.kp{font-size:9px;font-weight:600;padding:2px 6px;border-radius:99px}
+.kp-n{background:var(--surf2);color:var(--txt2)}.kp-g{background:var(--grn2);color:var(--grn)}
+.kp-r{background:var(--red2);color:var(--red)}.kp-a{background:var(--amb2);color:var(--amb)}
+.gp-leg{display:flex;gap:12px;margin-bottom:8px}
+.gp-li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--txt3)}
+.gp-sq{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.gp-br{display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer}
+.gp-br:hover .gp-lbl{color:var(--acc)}
+.gp-lbl{font-size:11px;color:var(--txt2);width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.gp-lbl.on{color:var(--hl);font-weight:700}.gp-lbl.dim{opacity:.3}
+.gp-trk{flex:1;height:16px;background:var(--surf2);border-radius:3px;overflow:hidden;display:flex;cursor:pointer}
+.gp-trk.on{box-shadow:0 0 0 2px var(--hl)}.gp-trk.dim{opacity:.22}
+.gp-cls{background:var(--grn);height:100%}.gp-tmp{background:#C97F1A;height:100%}.gp-opn{background:#8BBDE0;height:100%}
+.gp-ct{font-size:10px;font-family:'DM Mono',monospace;color:var(--txt2);width:28px;text-align:right;flex-shrink:0}
+
+/* TABLE */
+.tbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.tb{font-size:11px;font-weight:500;padding:5px 11px;border-radius:6px;border:1px solid var(--bord);background:var(--surf);color:var(--txt2);cursor:pointer;font-family:inherit;transition:.12s}
+.tb:hover{background:var(--surf2)}.tb.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ta{font-size:11px;padding:5px 9px;border-radius:6px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit;margin-left:auto}
+.twrap{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rlg);overflow:hidden}
+table.tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+table.tbl thead th{background:var(--surf2);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);padding:8px 10px;text-align:left;border-bottom:1px solid var(--bord);white-space:nowrap}
+table.tbl tbody tr{border-bottom:1px solid var(--bord);cursor:pointer;transition:background .1s}
+table.tbl tbody tr:last-child{border-bottom:none}
+table.tbl tbody tr:hover{background:var(--surf2)}
+table.tbl tbody tr.hl-r{background:var(--hl2)}
+table.tbl tbody tr.hl-r:hover{background:#EBE0FF}
+table.tbl tbody tr.hl-d{opacity:.25}
+table.tbl tbody td{padding:8px 10px;font-size:11px;vertical-align:middle}
+.td-mono{font-family:'DM Mono',monospace;font-size:10px;color:var(--txt3)}
+.td-m{color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block}
+.pb-A{background:var(--red2);color:var(--red)}.pb-B{background:var(--amb2);color:var(--amb)}.pb-C{background:var(--grn2);color:var(--grn)}
+.sb{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;display:inline-block;white-space:nowrap;pointer-events:none}
+.sb-O{background:var(--red2);color:var(--red)}.sb-T{background:var(--amb2);color:var(--amb)}.sb-C{background:var(--grn2);color:var(--grn)}
+.isel{font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit;width:100%}
+.fbtn{font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--bord2);background:var(--surf);color:var(--acc);cursor:pointer;font-family:inherit}
+.fbtn:hover{background:var(--acc2)}.fbtn.nf{color:var(--txt3);cursor:default;border-color:var(--bord)}
+.emp td{text-align:center;padding:28px;color:var(--txt3)}
+
+/* SAVE BAR */
+.sbar{display:none;position:fixed;bottom:0;left:var(--SW);right:0;background:var(--navy);padding:10px 20px;align-items:center;justify-content:space-between;z-index:80}
+.sbar.on{display:flex}
+.sbar-msg{color:rgba(255,255,255,.65);font-size:12px}
+.sbar-acts{display:flex;gap:7px}
+.sb-d{font-size:11px;padding:6px 14px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit}
+.sb-c{font-size:11px;font-weight:700;padding:6px 18px;border-radius:6px;background:#fff;border:none;color:var(--navy);cursor:pointer;font-family:inherit}
+
+/* MODAL */
+.mbg{display:none;position:fixed;inset:0;background:rgba(8,14,22,.65);z-index:400;align-items:center;justify-content:center;padding:24px}
+.mbg.on{display:flex}
+.modal{background:var(--surf);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:mIn .18s cubic-bezier(.34,1.26,.64,1)}
+@keyframes mIn{from{transform:scale(.94) translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.mhd{padding:14px 18px 10px;border-bottom:1px solid var(--bord);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.mid{font-size:10px;font-family:'DM Mono',monospace;color:var(--txt3);margin-bottom:2px}
+.mttl{font-size:15px;font-weight:700}
+.mx{width:28px;height:28px;border-radius:6px;background:var(--surf2);border:none;cursor:pointer;color:var(--txt2);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mfoto{padding:12px 18px;border-bottom:1px solid var(--bord)}
+.mfoto img{width:100%;max-height:280px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);display:block}
+.nfb{background:var(--surf2);border:1.5px dashed var(--bord2);border-radius:8px;height:100px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:12px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 18px 18px}
+.mi label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:2px}
+.mi span{font-size:12px}.mi.full{grid-column:span 2}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nv-brand">
+    <div class="nv-icon">⚙</div>
+    <div><div class="nv-name">Self MTC Dashboard</div><div class="nv-sub">PT AT Indonesia · ACE Line</div></div>
+  </div>
+  <div class="nv-right">
+    <span class="nv-ts" id="navTs">—</span>
+    <button class="nv-btn" onclick="syncData()">↻ Sync Data</button>
+  </div>
+</nav>
+
+<div class="hl-bar" id="hlBar">
+  <div class="hl-l"><div class="hl-dot"></div><span class="hl-name" id="hlName">—</span><span class="hl-n" id="hlN">—</span></div>
+  <button class="hl-x" onclick="clearHL()">✕ Reset highlight</button>
+</div>
+
+<div class="slicer">
+  <div class="sl-sec"><div class="sl-ttl">Tahun</div><div id="slY"></div></div>
+  <div class="sl-div"></div>
+  <div class="sl-sec"><div class="sl-ttl">Bulan</div><div id="slM"></div></div>
+  <div class="sl-div"></div>
+  <div class="sl-sec"><div class="sl-ttl">Minggu</div><div id="slW"></div></div>
+</div>
+
+<div class="main" id="main">
+  <div class="sec">Ringkasan <span id="secPer" style="color:var(--txt);font-weight:600;font-size:11px;text-transform:none;letter-spacing:0;margin-left:4px"></span></div>
+  <div class="gstrip">
+    <div class="gs tot"><div class="gs-n" id="gTot">0</div><div class="gs-l">Total Temuan</div><div class="gs-s" id="gArea">—</div></div>
+    <div class="gs opn"><div class="gs-n" id="gOpn">0</div><div class="gs-l">Open</div><div class="gs-s">Belum ditangani</div></div>
+    <div class="gs tmp"><div class="gs-n" id="gTmp">0</div><div class="gs-l">Temporary</div><div class="gs-s">Perbaikan sementara</div></div>
+    <div class="gs cls"><div class="gs-n" id="gCls">0</div><div class="gs-l">Selesai / Close</div><div class="gs-s" id="gPct">0% completion</div></div>
+  </div>
+
+  <div class="sec">Breakdown per Area</div>
+  <div class="area-matrix" id="areaMatrix"></div>
+
+  <div class="sec">Analisis Temuan — Klik untuk Highlight</div>
+  <div class="gpanel" id="gpanel">
+    <div class="gp-tabs">
+      <button class="gp-tab on" onclick="gpSwitch(this,'kat')">Kategori Temuan</button>
+      <button class="gp-tab" onclick="gpSwitch(this,'mesin')">Pareto Mesin</button>
+      <button class="gp-tab" onclick="gpSwitch(this,'part')">Pareto Part</button>
+      <button class="gp-tab" onclick="gpSwitch(this,'area')">Per Area</button>
+    </div>
+    <div class="gp-body">
+      <div class="gp-pane on" id="gp-kat"><div style="font-size:11px;color:var(--txt3);margin-bottom:10px">Klik kategori untuk highlight semua grafik dan tabel</div><div class="gp-grid" id="gpKat"></div></div>
+      <div class="gp-pane" id="gp-mesin"><div class="gp-leg"><span class="gp-li"><span class="gp-sq" style="background:var(--grn)"></span>Selesai</span><span class="gp-li"><span class="gp-sq" style="background:#C97F1A"></span>Temporary</span><span class="gp-li"><span class="gp-sq" style="background:#8BBDE0"></span>Open</span></div><div id="gpMesin"></div></div>
+      <div class="gp-pane" id="gp-part"><div class="gp-leg"><span class="gp-li"><span class="gp-sq" style="background:var(--grn)"></span>Selesai</span><span class="gp-li"><span class="gp-sq" style="background:#C97F1A"></span>Temporary</span><span class="gp-li"><span class="gp-sq" style="background:#8BBDE0"></span>Open</span></div><div id="gpPart"></div></div>
+      <div class="gp-pane" id="gp-area"><div class="gp-leg"><span class="gp-li"><span class="gp-sq" style="background:var(--grn)"></span>Selesai</span><span class="gp-li"><span class="gp-sq" style="background:#C97F1A"></span>Temporary</span><span class="gp-li"><span class="gp-sq" style="background:#8BBDE0"></span>Open</span></div><div id="gpArea"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">Daftar Temuan — Follow Up &amp; Update Status</div>
+  <div class="tbar">
+    <button class="tb on" onclick="setF(this,'all')">Semua</button>
+    <button class="tb" onclick="setF(this,'A')">Prioritas A</button>
+    <button class="tb" onclick="setF(this,'B')">Prioritas B</button>
+    <button class="tb" onclick="setF(this,'C')">Prioritas C</button>
+    <button class="tb" onclick="setF(this,'Open')">Open</button>
+    <button class="tb" onclick="setF(this,'Temporary')">Temporary</button>
+    <button class="tb" onclick="setF(this,'Close')">Close</button>
+    <select class="ta" id="aFlt" onchange="renderTable()">
+      <option value="">Semua Area</option>
+      <option>Ace-1</option><option>Ace-2</option><option>Melting</option><option>Die Making</option>
+    </select>
+  </div>
+  <div class="twrap">
+    <table class="tbl">
+      <thead><tr>
+        <th style="width:80px">ID</th><th style="width:88px">Tanggal</th>
+        <th style="width:64px">Area</th><th style="width:88px">Mesin</th>
+        <th style="width:82px">Part</th><th style="width:92px">Kategori</th>
+        <th>Deskripsi</th><th style="width:48px">Prior.</th>
+        <th style="width:126px">Dept PIC</th><th style="width:140px">Status</th>
+        <th style="width:54px">Foto</th>
+      </tr></thead>
+      <tbody id="tBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sbar" id="saveBar">
+  <span class="sbar-msg" id="saveMsg"></span>
+  <div class="sbar-acts">
+    <button class="sb-d" onclick="discardAll()">Batalkan</button>
+    <button class="sb-c" onclick="commitAll()">Simpan ke Spreadsheet</button>
+  </div>
+</div>
+
+<div class="mbg" id="mbg" onclick="closeMBg(event)">
+  <div class="modal">
+    <div class="mhd"><div><div class="mid" id="mId"></div><div class="mttl" id="mTtl"></div></div><button class="mx" onclick="closeM()">✕</button></div>
+    <div class="mfoto" id="mFoto"></div>
+    <div class="mgrid" id="mGrid"></div>
+  </div>
+</div>
+
+<script>
+/* ═══ CONFIG ═══ */
+const APPS_URL = 'https://script.google.com/macros/s/AKfycbx2fNrDD7-GZM3wDw8WWi6w8EEg9emQYWSRQdHZrBSHIXn_Ni6efkSY-iPyrHU7Bovb/exec';
+const AREAS    = ['Ace-1','Ace-2','Melting','Die Making'];
+const DEPT     = ['','Produksi','Maintenance','Kaizen/PE','Lainnya'];
+const STAT     = ['Open','Temporary','Close'];
+const DCOLS    = ['#276040','#C97F1A','#B52E2E'];
+
+/* ═══ DATA ═══ */
+let DATA = [
+  {id:'SMC-0001',tanggal:'2026-04-28',shift:'HSP',area:'Ace-1',mesin:'EC-01',part:'Cover Rantai',kategori:'Kendor',deskripsi:'Cover rantai bergeser, baut longgar perlu dicek',severity:'Sedang',frequency:'Sedang',priority:'B',pic:'Andono',dept:'Maintenance',status:'Open',foto:''},
+  {id:'SMC-0002',tanggal:'2026-04-28',shift:'HSP',area:'Ace-1',mesin:'SAND APRON',part:'Cover Utara',kategori:'Lainnya',deskripsi:'Cover bending sisi utara tidak presisi saat operasi',severity:'Sedang',frequency:'Sedang',priority:'B',pic:'Sonang',dept:'',status:'Open',foto:''},
+  {id:'SMC-0003',tanggal:'2026-04-28',shift:'NSP',area:'Ace-1',mesin:'REL BELAKANG',part:'Deck Rel',kategori:'Bocor Pasir',deskripsi:'Pasir numpuk menghalangi gerak conveyor',severity:'Tinggi',frequency:'Tinggi',priority:'A',pic:'Sutopo',dept:'Produksi',status:'Open',foto:'https://picsum.photos/seed/s3/800/500'},
+  {id:'SMC-0004',tanggal:'2026-04-21',shift:'HSS',area:'Ace-1',mesin:'CC-02',part:'V-Belt',kategori:'Aus',deskripsi:'V-belt conveyor aus di bagian tepi perlu ganti',severity:'Tinggi',frequency:'Sedang',priority:'A',pic:'Budi',dept:'Maintenance',status:'Temporary',foto:'https://picsum.photos/seed/s4/800/500'},
+  {id:'SMC-0005',tanggal:'2026-04-29',shift:'HSM',area:'Ace-2',mesin:'FM-01',part:'Bearing Housing',kategori:'Getaran',deskripsi:'Getaran abnormal bearing motor utama saat cold start',severity:'Tinggi',frequency:'Tinggi',priority:'A',pic:'Rahmat',dept:'Maintenance',status:'Open',foto:'https://picsum.photos/seed/s5/800/500'},
+  {id:'SMC-0006',tanggal:'2026-04-29',shift:'HSM',area:'Ace-2',mesin:'FM-01',part:'Packing Seal',kategori:'Bocor Oli',deskripsi:'Kebocoran oli hydraulik pada packing seal',severity:'Tinggi',frequency:'Sedang',priority:'A',pic:'Hendra',dept:'',status:'Open',foto:''},
+  {id:'SMC-0007',tanggal:'2026-04-22',shift:'NSP',area:'Ace-2',mesin:'CC-03',part:'Roda Gigi',kategori:'Aus',deskripsi:'Roda gigi conveyor aus, suara kasar saat transmisi',severity:'Sedang',frequency:'Tinggi',priority:'A',pic:'Dimas',dept:'Maintenance',status:'Temporary',foto:'https://picsum.photos/seed/s7/800/500'},
+  {id:'SMC-0008',tanggal:'2026-04-15',shift:'NSP',area:'Ace-2',mesin:'HYD-02',part:'Selang Hidrolik',kategori:'Bocor Oli',deskripsi:'Selang hidrolik rembes pada sambungan fitting',severity:'Tinggi',frequency:'Tinggi',priority:'A',pic:'Anton',dept:'Maintenance',status:'Close',foto:'https://picsum.photos/seed/s8/800/500'},
+  {id:'SMC-0009',tanggal:'2026-04-27',shift:'HSP',area:'Melting',mesin:'IF-01',part:'Elektroda',kategori:'Retak',deskripsi:'Elektroda tungku induksi retak di bagian tengah',severity:'Tinggi',frequency:'Rendah',priority:'A',pic:'Joko',dept:'Kaizen/PE',status:'Open',foto:'https://picsum.photos/seed/s9/800/500'},
+  {id:'SMC-0010',tanggal:'2026-04-20',shift:'HSP',area:'Melting',mesin:'IF-01',part:'Lining Tungku',kategori:'Aus',deskripsi:'Lining di bawah batas minimum SOP perlu reline',severity:'Tinggi',frequency:'Sedang',priority:'A',pic:'Agus',dept:'Maintenance',status:'Temporary',foto:'https://picsum.photos/seed/s10/800/500'},
+  {id:'SMC-0011',tanggal:'2026-03-25',shift:'NSM',area:'Melting',mesin:'IF-02',part:'Kabel Daya',kategori:'Panas',deskripsi:'Kabel daya overheat melebihi suhu normal beban penuh',severity:'Tinggi',frequency:'Sedang',priority:'A',pic:'Wahyu',dept:'Maintenance',status:'Close',foto:'https://picsum.photos/seed/s11/800/500'},
+  {id:'SMC-0012',tanggal:'2026-03-18',shift:'NSM',area:'Melting',mesin:'LM-03',part:'Pompa Sirkulasi',kategori:'Bocor Pasir',deskripsi:'Bocor pasir pada gasket pompa sirkulasi pendingin',severity:'Sedang',frequency:'Rendah',priority:'B',pic:'Rian',dept:'Produksi',status:'Close',foto:''},
+  {id:'SMC-0013',tanggal:'2026-03-10',shift:'HSP',area:'Die Making',mesin:'GRINDER-01',part:'Batu Gerinda',kategori:'Aus',deskripsi:'Batu gerinda aus hampir habis, diameter di batas min',severity:'Rendah',frequency:'Rendah',priority:'C',pic:'Fajar',dept:'Produksi',status:'Close',foto:'https://picsum.photos/seed/s13/800/500'},
+  {id:'SMC-0014',tanggal:'2026-04-26',shift:'HSP',area:'Die Making',mesin:'MILLING-02',part:'Chuck Clamping',kategori:'Kendor',deskripsi:'Chuck clamping longgar saat milling benda besar',severity:'Sedang',frequency:'Sedang',priority:'B',pic:'Galih',dept:'',status:'Open',foto:'https://picsum.photos/seed/s14/800/500'},
+  {id:'SMC-0015',tanggal:'2026-04-26',shift:'HSS',area:'Die Making',mesin:'GRINDER-01',part:'Bearing Spindle',kategori:'Suara',deskripsi:'Suara bising bearing spindle putaran tinggi',severity:'Sedang',frequency:'Tinggi',priority:'A',pic:'Rizal',dept:'Maintenance',status:'Open',foto:''},
+  {id:'SMC-0016',tanggal:'2026-04-25',shift:'NSP',area:'Ace-1',mesin:'EC-01',part:'Sprocket',kategori:'Aus',deskripsi:'Sprocket chain aus gigi tipis hampir putus',severity:'Tinggi',frequency:'Sedang',priority:'A',pic:'Eko',dept:'Maintenance',status:'Open',foto:''},
+  {id:'SMC-0017',tanggal:'2026-04-25',shift:'NSP',area:'Ace-2',mesin:'CC-03',part:'Selang Angin',kategori:'Bocor Pasir',deskripsi:'Bocor pasir sambungan selang angin distribusi',severity:'Sedang',frequency:'Tinggi',priority:'A',pic:'Firman',dept:'Produksi',status:'Open',foto:''},
+  {id:'SMC-0018',tanggal:'2026-02-14',shift:'HSP',area:'Melting',mesin:'IF-02',part:'Gasket Tutup',kategori:'Retak',deskripsi:'Gasket tutup tungku retak bocor udara panas',severity:'Tinggi',frequency:'Sedang',priority:'A',pic:'Guntur',dept:'Maintenance',status:'Close',foto:''},
+];
+
+let pending={}, activeFlt='all', activeHL=null;
+let slY='all', slM='all', slW='all';
+let donutCharts={};
+
+/* ═══ UTILS ═══ */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escQ(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function gS(r){return pending[r.id]?.status ?? r.status}
+function gD(r){return pending[r.id]?.dept   ?? r.dept}
+function fmtDate(s){const d=new Date(s);return d.getDate()+' '+d.toLocaleString('id-ID',{month:'short'})+' '+String(d.getFullYear()).slice(-2)}
+function yearOf(s){return String(new Date(s).getFullYear())}
+function monthOf(s){const d=new Date(s);return d.toLocaleString('id-ID',{month:'short',year:'numeric'})}
+function weekOf(s){
+  const d=new Date(s), yr=d.getFullYear(), mo=d.getMonth();
+  const first=new Date(yr,mo,1);
+  const dow=first.getDay(); // 0=Sun
+  const offset = dow===0?1:(dow===1?0:-(dow-1));
+  const firstMon=new Date(yr,mo,1+offset);
+  const diff=Math.floor((d-firstMon)/(86400000));
+  const wn=diff<0?1:Math.floor(diff/7)+1;
+  return 'W'+wn+' '+d.toLocaleString('id-ID',{month:'short'})+' '+yr;
+}
+
+/* ═══ SLICED / VIS DATA ═══ */
+function slicedData(){
+  return DATA.filter(r=>{
+    if(slY!=='all'&&yearOf(r.tanggal)!==slY) return false;
+    if(slM!=='all'&&monthOf(r.tanggal)!==slM) return false;
+    if(slW!=='all'&&weekOf(r.tanggal)!==slW) return false;
+    return true;
+  });
+}
+function visData(){
+  const sd=slicedData();
+  if(!activeHL) return sd;
+  return sd.filter(r=>r[activeHL.f]===activeHL.v);
+}
+function grpBy(arr,key){
+  const m={};
+  arr.forEach(r=>{
+    const k=r[key]||'—';
+    if(!m[k]) m[k]={t:0,cls:0,tmp:0,opn:0};
+    m[k].t++;
+    const s=gS(r);
+    if(s==='Close')m[k].cls++;else if(s==='Temporary')m[k].tmp++;else m[k].opn++;
+  });
+  return Object.entries(m).sort((a,b)=>b[1].t-a[1].t);
+}
+
+/* ═══ INIT ═══ */
+window.addEventListener('DOMContentLoaded',function(){
+  setTs(); buildSlicer(); renderAll();
+});
+
+function setTs(){
+  const d=new Date();
+  document.getElementById('navTs').textContent=
+    d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+' '+
+    d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ═══ SLICER ═══ */
+function buildSlicer(){
+  const years=[...new Set(DATA.map(r=>yearOf(r.tanggal)))].sort().reverse();
+  const yc=document.getElementById('slY');
+  yc.innerHTML='<button class="sl-btn on" onclick="setSl(this,\'year\',\'all\')">Semua</button>';
+  years.forEach(y=>{yc.innerHTML+='<button class="sl-btn" onclick="setSl(this,\'year\',\''+y+'\')">'+y+'</button>'});
+
+  const months=[...new Set(DATA.map(r=>monthOf(r.tanggal)))].sort((a,b)=>new Date('01 '+b)-new Date('01 '+a));
+  const mc=document.getElementById('slM');
+  mc.innerHTML='<button class="sl-btn on" onclick="setSl(this,\'month\',\'all\')">Semua</button>';
+  months.forEach(m=>{mc.innerHTML+='<button class="sl-btn" onclick="setSl(this,\'month\',\''+m+'\')">'+m+'</button>'});
+
+  /* weeks — sorted descending, no DATA mutation */
+  const weeksSorted=[...new Set([...DATA].sort((a,b)=>new Date(b.tanggal)-new Date(a.tanggal)).map(r=>weekOf(r.tanggal)))];
+  const wc=document.getElementById('slW');
+  wc.innerHTML='<button class="sl-btn on" onclick="setSl(this,\'week\',\'all\')">Semua</button>';
+  weeksSorted.forEach(w=>{wc.innerHTML+='<button class="sl-btn" onclick="setSl(this,\'week\',\''+w+'\')">'+w+'</button>'});
+}
+
+function setSl(btn,type,val){
+  if(type==='year') slY=val;
+  else if(type==='month') slM=val;
+  else slW=val;
+  btn.closest('[id]').querySelectorAll('.sl-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  let p=[];
+  if(slY!=='all')p.push(slY);
+  if(slM!=='all')p.push(slM);
+  if(slW!=='all')p.push(slW);
+  document.getElementById('secPer').textContent=p.length?'— '+p.join(', '):'— Semua Periode';
+  renderAll();
+}
+
+/* ═══ RENDER ALL ═══ */
+function renderAll(){
+  renderSummary();
+  renderAreaMatrix();
+  renderGlobalPareto();
+  renderTable();
+}
+
+/* ═══ SUMMARY ═══ */
+function renderSummary(){
+  const r=visData();
+  const tot=r.length,
+        opn=r.filter(x=>gS(x)==='Open').length,
+        tmp=r.filter(x=>gS(x)==='Temporary').length,
+        cls=r.filter(x=>gS(x)==='Close').length,
+        areas=new Set(r.map(x=>x.area)).size,
+        pct=tot?Math.round(cls/tot*100):0;
+  document.getElementById('gTot').textContent=tot;
+  document.getElementById('gOpn').textContent=opn;
+  document.getElementById('gTmp').textContent=tmp;
+  document.getElementById('gCls').textContent=cls;
+  document.getElementById('gArea').textContent=areas+' area aktif';
+  document.getElementById('gPct').textContent=pct+'% completion';
+}
+
+/* ═══ AREA MATRIX ═══ */
+function renderAreaMatrix(){
+  Object.values(donutCharts).forEach(c=>c.destroy());
+  donutCharts={};
+  const mat=document.getElementById('areaMatrix');
+  mat.innerHTML='';
+  const sd=slicedData(), fd=visData();
+
+  AREAS.forEach(function(area){
+    const arows=sd.filter(r=>r.area===area);
+    if(!arows.length) return;
+    const frows=fd.filter(r=>r.area===area);
+    const tot=arows.length,
+          opn=arows.filter(r=>gS(r)==='Open').length,
+          tmp=arows.filter(r=>gS(r)==='Temporary').length,
+          cls=arows.filter(r=>gS(r)==='Close').length,
+          remain=opn+tmp;
+    const pgG=tot?Math.round(cls/tot*100):0,
+          pgA=tot?Math.round(tmp/tot*100):0,
+          pgR=tot?Math.round(opn/tot*100):0;
+    const isHlDim=activeHL&&frows.length===0;
+    const isHlAct=activeHL&&frows.length>0;
+
+    /* group by key for pareto */
+    function grpArea(key){
+      const m={};
+      arows.forEach(r=>{
+        const k=r[key]||'—';
+        if(!m[k]) m[k]={t:0,d:0,a:0,o:0};
+        m[k].t++;
+        if(gS(r)==='Close') m[k].d++;
+        else if(gS(r)==='Temporary') m[k].a++;
+        else m[k].o++;
+      });
+      return Object.entries(m).sort((a,b)=>b[1].t-a[1].t);
+    }
+    const mArr=grpArea('mesin'), mMax=mArr[0]?.[1].t||1;
+    const pArr=grpArea('part'),  pMax=pArr[0]?.[1].t||1;
+    const kArr=grpArea('kategori');
+
+    /* pareto bar html */
+    function pBarHtml(name,v,max,field){
+      const pC=Math.round(v.d/max*100), pA=Math.round(v.a/max*100), pO=Math.round(v.o/max*100);
+      const isOn=activeHL&&activeHL.f===field&&activeHL.v===name;
+      const isDim=activeHL&&!isOn;
+      return '<div class="p-row" onclick="toggleHL(\''+field+'\',\''+escQ(name)+'\')">' +
+        '<div class="p-lbl'+(isOn?' on':'')+(isDim?' dim':'')+'" title="'+esc(name)+'">'+esc(name)+'</div>' +
+        '<div class="p-track'+(isOn?' on':'')+(isDim?' dim':'')+'">' +
+          '<div class="p-cls" style="width:'+pC+'%"></div>' +
+          '<div class="p-tmp" style="width:'+pA+'%"></div>' +
+          '<div class="p-opn" style="width:'+pO+'%"></div>' +
+        '</div>' +
+        '<div class="p-ct">'+v.t+'/'+v.d+'</div>' +
+      '</div>';
+    }
+
+    /* kategori row html */
+    const katHtml=kArr.map(function(e){
+      const n=e[0],v=e[1];
+      return '<div class="kat-row">' +
+        '<div class="kat-nm" title="'+esc(n)+'">'+esc(n)+'</div>' +
+        '<div class="kat-chips">' +
+          '<span class="kc kc-tot"><span class="kc-n">'+v.t+'</span><span class="kc-l">temuan</span></span>' +
+          (v.o?'<span class="kc kc-opn"><span class="kc-n">'+v.o+'</span><span class="kc-l">open</span></span>':'') +
+          (v.a?'<span class="kc kc-tmp"><span class="kc-n">'+v.a+'</span><span class="kc-l">temp</span></span>':'') +
+          (v.d?'<span class="kc kc-cls"><span class="kc-n">'+v.d+'</span><span class="kc-l">selesai</span></span>':'') +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    const cid='donut_'+area.replace(/[^a-zA-Z0-9]/g,'_');
+    const hlBadge=isHlAct?'<div class="ar-hl-badge on">'+frows.length+' match</div>':'<div class="ar-hl-badge"></div>';
+    const parLeg='<div class="ap-leg"><span class="ap-li"><span class="ap-sq" style="background:var(--grn)"></span>✓</span><span class="ap-li"><span class="ap-sq" style="background:#C97F1A"></span>T</span><span class="ap-li"><span class="ap-sq" style="background:#8BBDE0"></span>O</span></div>';
+
+    const row=document.createElement('div');
+    row.className='area-row'+(isHlDim?' dim':isHlAct?' hl':'');
+    row.innerHTML=
+      '<div class="ar-wrap">' +
+        /* LEFT — spans 2 rows */
+        '<div class="ar-left">' +
+          '<div class="ar-name">'+area+'</div>' +
+          hlBadge +
+          '<div class="prog"><div class="pg" style="width:'+pgG+'%"></div><div class="pa" style="width:'+pgA+'%"></div><div class="pr" style="width:'+pgR+'%"></div></div>' +
+        '</div>' +
+        /* STATS ROW */
+        '<div class="ar-stats">' +
+          '<div class="ar-stat"><div class="ar-stat-n d">'+tot+'</div><div class="ar-stat-l">Total</div></div>' +
+          '<div class="ar-stat"><div class="ar-stat-n r">'+opn+'</div><div class="ar-stat-l">Open</div></div>' +
+          '<div class="ar-stat"><div class="ar-stat-n a">'+tmp+'</div><div class="ar-stat-l">Temporary</div></div>' +
+          '<div class="ar-stat"><div class="ar-stat-n g">'+cls+'</div><div class="ar-stat-l">Selesai</div></div>' +
+          '<div class="ar-stat"><div class="ar-stat-n a">'+remain+'</div><div class="ar-stat-l">Remain</div></div>' +
+        '</div>' +
+        /* CHARTS ROW */
+        '<div class="ar-charts">' +
+          /* donut */
+          '<div class="ar-donut">' +
+            '<div style="position:relative;width:64px;height:64px;flex-shrink:0">' +
+              '<canvas id="'+cid+'" class="ar-donut-canvas"></canvas>' +
+              '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">' +
+                '<div style="font-size:15px;font-weight:700;color:var(--txt)">'+tot+'</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="ar-dleg">' +
+              '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:var(--grn)"></span>Selesai</div><span class="dl-n">'+cls+'</span></div>' +
+              '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:#C97F1A"></span>Temp.</div><span class="dl-n">'+tmp+'</span></div>' +
+              '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:var(--red)"></span>Open</div><span class="dl-n">'+opn+'</span></div>' +
+            '</div>' +
+          '</div>' +
+          /* mesin */
+          '<div class="ar-par"><div class="ap-ttl">Pareto Mesin'+parLeg+'</div>'+mArr.map(e=>pBarHtml(e[0],e[1],mMax,'mesin')).join('')+'</div>' +
+          /* part */
+          '<div class="ar-par"><div class="ap-ttl">Pareto Part'+parLeg+'</div>'+pArr.map(e=>pBarHtml(e[0],e[1],pMax,'part')).join('')+'</div>' +
+          /* kategori */
+          '<div class="ar-par"><div class="ap-ttl">Kategori Temuan</div>'+katHtml+'</div>' +
+        '</div>' +
+      '</div>';
+    mat.appendChild(row);
+
+    requestAnimationFrame(function(){
+      const el=document.getElementById(cid);
+      if(!el) return;
+      donutCharts[cid]=new Chart(el,{
+        type:'doughnut',
+        data:{labels:['Selesai','Temporary','Open'],datasets:[{data:[cls,tmp,opn],backgroundColor:DCOLS,borderWidth:0,hoverOffset:3}]},
+        options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+c.raw}}},cutout:'65%',animation:{duration:400}}
+      });
+    });
+  });
+}
+
+/* ═══ GLOBAL PARETO ═══ */
+function gpSwitch(btn,id){
+  document.querySelectorAll('.gp-tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.gp-pane').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('gp-'+id).classList.add('on');
+}
+
+function gpBar(name,v,maxT,field){
+  const pC=Math.round(v.cls/maxT*100),pT=Math.round(v.tmp/maxT*100),pO=Math.round(v.opn/maxT*100);
+  const isOn=activeHL&&activeHL.f===field&&activeHL.v===name;
+  const isDim=activeHL&&!isOn;
+  return '<div class="gp-br" onclick="toggleHL(\''+field+'\',\''+escQ(name)+'\')">' +
+    '<div class="gp-lbl'+(isOn?' on':'')+(isDim?' dim':'')+'" title="'+esc(name)+'">'+esc(name)+'</div>' +
+    '<div class="gp-trk'+(isOn?' on':'')+(isDim?' dim':'')+'">' +
+      '<div class="gp-cls" style="width:'+pC+'%"></div>' +
+      '<div class="gp-tmp" style="width:'+pT+'%"></div>' +
+      '<div class="gp-opn" style="width:'+pO+'%"></div>' +
+    '</div>' +
+    '<div class="gp-ct">'+v.t+'</div>' +
+  '</div>';
+}
+
+function renderGlobalPareto(){
+  const fd=visData(), sd=slicedData();
+  document.getElementById('gpanel').classList.toggle('on',!!activeHL);
+
+  /* kategori cards */
+  const kats=[...new Set(sd.map(r=>r.kategori))].sort();
+  document.getElementById('gpKat').innerHTML=kats.map(function(name){
+    const rows=fd.filter(r=>r.kategori===name);
+    const t=rows.length,
+          c=rows.filter(r=>gS(r)==='Close').length,
+          o=rows.filter(r=>gS(r)==='Open').length,
+          a=rows.filter(r=>gS(r)==='Temporary').length;
+    const isOn=activeHL&&activeHL.f==='kategori'&&activeHL.v===name;
+    const isDim=activeHL&&!isOn;
+    return '<div class="kcard'+(isOn?' on':'')+(isDim?' dim':'')+'" onclick="toggleHL(\'kategori\',\''+escQ(name)+'\')">' +
+      '<div class="kcard-name">'+esc(name)+'</div>' +
+      '<div class="kpills">' +
+        '<span class="kp kp-n">'+t+' temuan</span>' +
+        (o?'<span class="kp kp-r">'+o+' open</span>':'') +
+        (a?'<span class="kp kp-a">'+a+' temp</span>':'') +
+        (c?'<span class="kp kp-g">'+c+' selesai</span>':'') +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  const md=grpBy(fd,'mesin'), mm=md[0]?.[1].t||1;
+  document.getElementById('gpMesin').innerHTML=md.map(e=>gpBar(e[0],e[1],mm,'mesin')).join('');
+
+  const pd=grpBy(fd,'part'), pm=pd[0]?.[1].t||1;
+  document.getElementById('gpPart').innerHTML=pd.map(e=>gpBar(e[0],e[1],pm,'part')).join('');
+
+  const ad=grpBy(fd,'area'), am=ad[0]?.[1].t||1;
+  document.getElementById('gpArea').innerHTML=ad.map(e=>gpBar(e[0],e[1],am,'area')).join('');
+}
+
+/* ═══ HIGHLIGHT ═══ */
+function toggleHL(field,value){
+  if(activeHL&&activeHL.f===field&&activeHL.v===value){clearHL();return}
+  activeHL={f:field,v:value};
+  const n=visData().length;
+  document.getElementById('hlBar').classList.add('on');
+  document.getElementById('hlName').textContent=value;
+  document.getElementById('hlN').textContent='— '+n+' temuan';
+  document.getElementById('main').classList.add('hl-on');
+  renderAll();
+}
+function clearHL(){
+  activeHL=null;
+  document.getElementById('hlBar').classList.remove('on');
+  document.getElementById('main').classList.remove('hl-on');
+  renderAll();
+}
+
+/* ═══ TABLE ═══ */
+function setF(btn,f){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); activeFlt=f; renderTable();
+}
+function renderTable(){
+  const aF=document.getElementById('aFlt').value;
+  const priO={A:0,B:1,C:2}, stO={Open:0,Temporary:1,Close:2};
+  let rows=[...slicedData()].sort((a,b)=>{const p=priO[a.priority]-priO[b.priority];return p||stO[gS(a)]-stO[gS(b)]});
+  if(aF) rows=rows.filter(r=>r.area===aF);
+  if(['A','B','C'].includes(activeFlt)) rows=rows.filter(r=>r.priority===activeFlt);
+  else if(['Open','Temporary','Close'].includes(activeFlt)) rows=rows.filter(r=>gS(r)===activeFlt);
+  const tb=document.getElementById('tBody');
+  if(!rows.length){tb.innerHTML='<tr class="emp"><td colspan="11">Tidak ada temuan sesuai filter</td></tr>';return}
+  tb.innerHTML=rows.map(function(r){
+    const st=gS(r),dept=gD(r);
+    const sc=st==='Close'?'sb-C':st==='Temporary'?'sb-T':'sb-O';
+    const hasFoto=r.foto&&r.foto.length>5;
+    const isMatch=activeHL&&r[activeHL.f]===activeHL.v;
+    const isDim=activeHL&&!isMatch;
+    const dOpts=DEPT.map(d=>'<option value="'+d+'"'+(dept===d?' selected':'')+'>'+(d||'-- Pilih --')+'</option>').join('');
+    const sOpts=STAT.map(s=>'<option value="'+s+'"'+(st===s?' selected':'')+'>'+s+'</option>').join('');
+    return '<tr class="'+(isMatch?'hl-r':isDim?'hl-d':'')+'" onclick="openM(\''+r.id+'\')">' +
+      '<td class="td-mono">'+r.id+'</td>' +
+      '<td class="td-m">'+fmtDate(r.tanggal)+'</td>' +
+      '<td>'+r.area+'</td>' +
+      '<td class="td-m" title="'+esc(r.mesin)+'">'+esc(r.mesin)+'</td>' +
+      '<td class="td-m" title="'+esc(r.part)+'">'+esc(r.part)+'</td>' +
+      '<td class="td-m">'+r.kategori+'</td>' +
+      '<td class="td-m" title="'+esc(r.deskripsi)+'">'+esc(r.deskripsi)+'</td>' +
+      '<td><span class="pb pb-'+r.priority+'">'+r.priority+'</span></td>' +
+      '<td onclick="event.stopPropagation()"><select class="isel" onchange="setPend(\''+r.id+'\',\'dept\',this.value)">'+dOpts+'</select></td>' +
+      '<td onclick="event.stopPropagation()"><select class="isel" onchange="setPend(\''+r.id+'\',\'status\',this.value)">'+sOpts+'</select></td>' +
+      '<td onclick="event.stopPropagation()"><button class="fbtn'+(hasFoto?'':' nf')+'" onclick="'+(hasFoto?'openM(\''+r.id+'\')':'')+'">'+( hasFoto?'Lihat':'—')+'</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+/* ═══ PENDING ═══ */
+function setPend(id,field,val){
+  if(!pending[id]) pending[id]={};
+  pending[id][field]=val;
+  updateSaveBar(); renderSummary(); renderGlobalPareto(); renderAreaMatrix();
+}
+function updateSaveBar(){
+  const n=Object.keys(pending).length, bar=document.getElementById('saveBar');
+  if(n){bar.classList.add('on');document.getElementById('saveMsg').textContent=n+' baris belum tersimpan'}
+  else bar.classList.remove('on');
+}
+function discardAll(){pending={};updateSaveBar();renderAll()}
+function commitAll(){
+  const changes=Object.entries(pending).map(e=>Object.assign({id:e[0]},e[1]));
+  DATA=DATA.map(r=>pending[r.id]?Object.assign({},r,pending[r.id]):r);
+  fetch(APPS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateStatus',changes})}).catch(()=>{});
+  pending={}; updateSaveBar(); setTs(); renderAll();
+}
+
+/* ═══ MODAL ═══ */
+function openM(id){
+  const r=DATA.find(x=>x.id===id); if(!r) return;
+  document.getElementById('mId').textContent=r.id+' · '+fmtDate(r.tanggal)+' · Shift '+r.shift;
+  document.getElementById('mTtl').textContent=r.mesin+' — '+r.part;
+  const hasFoto=r.foto&&r.foto.length>5;
+  document.getElementById('mFoto').innerHTML=hasFoto
+    ?'<img src="'+r.foto+'" alt="Foto '+r.id+'" onerror="this.parentNode.innerHTML=\'<div class=nfb>Foto tidak dapat dimuat</div>\'">'
+    :'<div class="nfb">Belum ada foto untuk temuan ini</div>';
+  const st=gS(r),dept=gD(r),sc=st==='Close'?'sb-C':st==='Temporary'?'sb-T':'sb-O';
+  document.getElementById('mGrid').innerHTML=
+    '<div class="mi"><label>Area</label><span>'+r.area+'</span></div>'+
+    '<div class="mi"><label>Mesin</label><span>'+r.mesin+'</span></div>'+
+    '<div class="mi"><label>Part</label><span>'+r.part+'</span></div>'+
+    '<div class="mi"><label>Kategori</label><span>'+r.kategori+'</span></div>'+
+    '<div class="mi"><label>Severity</label><span>'+r.severity+'</span></div>'+
+    '<div class="mi"><label>Frequency</label><span>'+r.frequency+'</span></div>'+
+    '<div class="mi"><label>Prioritas</label><span class="pb pb-'+r.priority+'">'+r.priority+'</span></div>'+
+    '<div class="mi"><label>Status</label><span class="sb '+sc+'">'+st+'</span></div>'+
+    '<div class="mi"><label>Penemu (PIC)</label><span>'+r.pic+'</span></div>'+
+    '<div class="mi"><label>Dept Pengerjaan</label><span>'+(dept||'—')+'</span></div>'+
+    '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>';
+  document.getElementById('mbg').classList.add('on');
+}
+function closeM(){document.getElementById('mbg').classList.remove('on')}
+function closeMBg(e){if(e.target===document.getElementById('mbg'))closeM()}
+
+/* ═══ SYNC ═══ */
+function syncData(){
+  document.getElementById('navTs').textContent='Memuat...';
+  fetch(APPS_URL+'?action=getData')
+    .then(r=>r.json())
+    .then(function(res){if(res.data&&Array.isArray(res.data)){DATA=res.data;pending={};buildSlicer();renderAll();setTs()}})
+    .catch(function(){document.getElementById('navTs').textContent='Sync gagal'});
+}
+</script>
+</body>
+</html>
