@@ -720,19 +720,52 @@ function updateSaveBar(){
 function discardAll(){pending={};updateSaveBar();renderAll()}
 function commitAll(){
   const changes=Object.entries(pending).map(e=>Object.assign({id:e[0]},e[1]));
-  DATA=DATA.map(r=>pending[r.id]?Object.assign({},r,pending[r.id]):r);
-  fetch(APPS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateStatus',changes})}).catch(()=>{});
-  pending={}; updateSaveBar(); setTs(); renderAll();
+  const btn=document.querySelector('.sb-c');
+  btn.disabled=true; btn.textContent='Menyimpan...';
+
+  fetch(APPS_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'updateStatus',changes})
+  })
+  .then(function(r){return r.json()})
+  .then(function(res){
+    if(res.status==='ok'){
+      /* Terapkan ke DATA lokal */
+      DATA=DATA.map(r=>pending[r.id]?Object.assign({},r,pending[r.id]):r);
+      pending={}; updateSaveBar(); setTs(); renderAll();
+      btn.textContent='Simpan ke Spreadsheet';
+      btn.disabled=false;
+    } else {
+      throw new Error(res.message||'Gagal menyimpan');
+    }
+  })
+  .catch(function(err){
+    alert('Gagal menyimpan: '+err.message+'\nPastikan Apps Script sudah di-deploy ulang dengan kode terbaru.');
+    btn.textContent='Simpan ke Spreadsheet';
+    btn.disabled=false;
+  });
 }
 
 /* ═══ MODAL ═══ */
+/* Konversi Google Drive /view URL → thumbnail yang bisa diembed di <img> */
+function driveThumbnail(url){
+  if(!url) return '';
+  /* Format: https://drive.google.com/file/d/FILE_ID/view */
+  var m=url.match(/\/file\/d\/([^/]+)/);
+  if(m) return 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w800';
+  /* Sudah format lain, kembalikan apa adanya */
+  return url;
+}
+
 function openM(id){
   const r=DATA.find(x=>x.id===id); if(!r) return;
   document.getElementById('mId').textContent=r.id+' · '+fmtDate(r.tanggal)+' · Shift '+r.shift;
   document.getElementById('mTtl').textContent=r.mesin+' — '+r.part;
   const hasFoto=r.foto&&r.foto.length>5;
+  const fotoSrc=hasFoto?driveThumbnail(r.foto):'';
   document.getElementById('mFoto').innerHTML=hasFoto
-    ?'<img src="'+r.foto+'" alt="Foto '+r.id+'" onerror="this.parentNode.innerHTML=\'<div class=nfb>Foto tidak dapat dimuat</div>\'">'
+    ?'<img src="'+fotoSrc+'" alt="Foto '+r.id+'" onerror="this.parentNode.innerHTML=\'<div class=nfb>Foto tidak dapat dimuat — <a href=\\\''+r.foto+'\\\' target=\\\'_blank\\\' style=\\\'color:var(--acc)\\\'>Buka di Drive</a></div>\'">'
     :'<div class="nfb">Belum ada foto untuk temuan ini</div>';
   const st=gS(r),dept=gD(r),sc=st==='Close'?'sb-C':st==='Temporary'?'sb-T':'sb-O';
   document.getElementById('mGrid').innerHTML=
@@ -746,7 +779,8 @@ function openM(id){
     '<div class="mi"><label>Status</label><span class="sb '+sc+'">'+st+'</span></div>'+
     '<div class="mi"><label>Penemu (PIC)</label><span>'+r.pic+'</span></div>'+
     '<div class="mi"><label>Dept Pengerjaan</label><span>'+(dept||'—')+'</span></div>'+
-    '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>';
+    '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>'+
+    (hasFoto?'<div class="mi full"><label>Foto</label><a href="'+r.foto+'" target="_blank" style="color:var(--acc);font-size:12px">Buka foto di Google Drive ↗</a></div>':'');
   document.getElementById('mbg').classList.add('on');
 }
 function closeM(){document.getElementById('mbg').classList.remove('on')}
