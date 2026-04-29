@@ -197,7 +197,126 @@ table.tbl tbody td{padding:8px 10px;font-size:11px;vertical-align:middle}
 .sb-d{font-size:11px;padding:6px 14px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit}
 .sb-c{font-size:11px;font-weight:700;padding:6px 18px;border-radius:6px;background:#fff;border:none;color:var(--navy);cursor:pointer;font-family:inherit}
 
-/* MODAL */
+/* ══ AUTO SYNC INDICATOR ══ */
+.sync-ring{display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);margin-right:4px;transition:background .3s}
+.sync-ring.active{background:#4ADE80;box-shadow:0 0 6px #4ADE80}
+.sync-ring.error{background:#F87171}
+
+/* ══ MOBILE RESPONSIVE ══ */
+
+/* Slicer jadi drawer dari bawah di mobile */
+@media(max-width:768px){
+  :root{--SW:0px;--NH:52px}
+
+  /* Nav mobile */
+  .nv-sub{display:none}
+  .nv-ts{display:none}
+
+  /* Slicer jadi bottom drawer */
+  .slicer{
+    position:fixed;top:auto;left:0;right:0;bottom:0;width:100%;
+    height:auto;max-height:60vh;
+    border-right:none;border-top:1px solid var(--bord);
+    border-radius:16px 16px 0 0;
+    transform:translateY(100%);
+    transition:transform .3s cubic-bezier(.32,1,.24,1);
+    z-index:250;
+    padding:16px 16px 32px;
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;
+  }
+  .slicer.open{transform:translateY(0)}
+  .sl-sec{margin-bottom:0;padding:0 8px}
+  .sl-div{display:none}
+
+  /* Slicer overlay */
+  .slicer-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:240;
+  }
+  .slicer-overlay.on{display:block}
+
+  /* Main content — full width */
+  .main{margin-left:0;padding:12px 12px 100px}
+  .main.hl-on{margin-top:calc(var(--NH) + 34px)}
+  .hl-bar{left:0}
+
+  /* Summary strip — 2x2 grid */
+  .gstrip{grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+  .gs-n{font-size:22px}
+
+  /* Area matrix — 1 kolom */
+  .area-matrix{grid-template-columns:1fr}
+
+  /* Area row: stack vertically */
+  .ar-wrap{grid-template-columns:1fr}
+  .ar-left{grid-column:1;grid-row:auto;border-right:none;border-bottom:1px solid var(--bord);padding:10px 12px;flex-direction:row;align-items:center;gap:12px}
+  .ar-name{font-size:14px}
+  .prog{flex:1;margin-top:0}
+
+  /* Stats: scrollable horizontal strip */
+  .ar-stats{
+    grid-column:1;grid-row:auto;
+    grid-template-columns:repeat(5,minmax(56px,1fr));
+    overflow-x:auto;
+    border-bottom:1px solid var(--bord);
+    scrollbar-width:none;
+  }
+  .ar-stats::-webkit-scrollbar{display:none}
+
+  /* Charts: stack vertically */
+  .ar-charts{
+    grid-column:1;grid-row:auto;
+    grid-template-columns:1fr;
+  }
+  .ar-donut{
+    border-right:none;border-bottom:1px solid var(--bord);
+    flex-direction:row;padding:10px 12px;gap:14px;
+  }
+  .ar-dleg{flex-direction:row;gap:10px;flex-wrap:wrap}
+  .ar-par{border-right:none;border-bottom:1px solid var(--bord)}
+  .ar-par:last-child{border-bottom:none}
+
+  /* Analisis panel */
+  .gpanel{overflow-x:auto}
+  .gp-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+
+  /* Table: horizontal scroll */
+  .twrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.tbl{min-width:700px}
+
+  /* Save bar full width */
+  .sbar{left:0;padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .sbar-msg{font-size:11px;width:100%}
+  .sb-d,.sb-c{flex:1;text-align:center}
+
+  /* Filter bar wrap */
+  .tbar{gap:5px}
+  .tb{font-size:10px;padding:4px 9px}
+
+  /* Floating filter button */
+  .filter-fab{
+    position:fixed;bottom:80px;right:16px;z-index:150;
+    width:48px;height:48px;border-radius:50%;
+    background:var(--navy);color:#fff;border:none;
+    font-size:18px;cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,.25);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .filter-fab-desktop{display:none}
+}
+
+/* Tablet: 768–1024 */
+@media(min-width:769px) and (max-width:1024px){
+  :root{--SW:120px}
+  .area-matrix{grid-template-columns:1fr}
+  .ar-charts{grid-template-columns:100px 1fr 1fr 1fr}
+}
+
+/* Desktop: hide mobile-only elements */
+@media(min-width:769px){
+  .filter-fab{display:none}
+  .slicer-overlay{display:none!important}
+}
+
 .mbg{display:none;position:fixed;inset:0;background:rgba(8,14,22,.65);z-index:400;align-items:center;justify-content:center;padding:24px}
 .mbg.on{display:flex}
 .modal{background:var(--surf);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:mIn .18s cubic-bezier(.34,1.26,.64,1)}
@@ -222,10 +341,17 @@ table.tbl tbody td{padding:8px 10px;font-size:11px;vertical-align:middle}
     <div><div class="nv-name">Self MTC Dashboard</div><div class="nv-sub">PT AT Indonesia · ACE Line</div></div>
   </div>
   <div class="nv-right">
+    <span class="sync-ring" id="syncRing"></span>
     <span class="nv-ts" id="navTs">—</span>
-    <button class="nv-btn" onclick="syncData()">↻ Sync Data</button>
+    <button class="nv-btn" id="syncBtn" onclick="syncData()">↻ Sync</button>
   </div>
 </nav>
+
+<!-- Overlay slicer drawer (mobile) -->
+<div class="slicer-overlay" id="slicerOverlay" onclick="toggleSlicer()"></div>
+
+<!-- FAB filter (mobile only) -->
+<button class="filter-fab" onclick="toggleSlicer()" title="Filter periode">⚙</button>
 
 <div class="hl-bar" id="hlBar">
   <div class="hl-l"><div class="hl-dot"></div><span class="hl-name" id="hlName">—</span><span class="hl-n" id="hlN">—</span></div>
@@ -392,9 +518,45 @@ function grpBy(arr,key){
   return Object.entries(m).sort((a,b)=>b[1].t-a[1].t);
 }
 
-/* ═══ INIT ═══ */
+/* ═══ SLICER TOGGLE (mobile drawer) ═══ */
+function toggleSlicer(){
+  const sl=document.querySelector('.slicer');
+  const ov=document.getElementById('slicerOverlay');
+  const isOpen=sl.classList.contains('open');
+  sl.classList.toggle('open',!isOpen);
+  ov.classList.toggle('on',!isOpen);
+}
+
+/* ═══ AUTO SYNC ═══ */
+let autoSyncInterval=null;
+let autoSyncSeconds=300; /* default 5 menit */
+let autoSyncCountdown=autoSyncSeconds;
+
+function startAutoSync(intervalSec){
+  autoSyncSeconds=intervalSec||300;
+  autoSyncCountdown=autoSyncSeconds;
+  if(autoSyncInterval) clearInterval(autoSyncInterval);
+  autoSyncInterval=setInterval(function(){
+    autoSyncCountdown--;
+    /* Update ring warna setiap tick */
+    const ring=document.getElementById('syncRing');
+    if(autoSyncCountdown<=10) ring.style.background='#FBBF24'; /* kuning mendekati sync */
+    if(autoSyncCountdown<=0){
+      autoSyncCountdown=autoSyncSeconds;
+      ring.style.background='#4ADE80';
+      syncData(true); /* true = auto, jangan tampil loading text */
+      setTimeout(()=>{ring.style.background='rgba(255,255,255,.3)'},1000);
+    }
+  },1000);
+}
+
+
 window.addEventListener('DOMContentLoaded',function(){
   setTs(); buildSlicer(); renderAll();
+  /* Auto sync setiap 5 menit */
+  startAutoSync(300);
+  /* Langsung sync dari spreadsheet saat buka */
+  syncData();
 });
 
 function setTs(){
@@ -792,25 +954,29 @@ function closeM(){document.getElementById('mbg').classList.remove('on')}
 function closeMBg(e){if(e.target===document.getElementById('mbg'))closeM()}
 
 /* ═══ SYNC ═══ */
-function syncData(){
-  const btn=document.querySelector('.nv-btn');
-  btn.textContent='⏳ Memuat...';
-  btn.disabled=true;
+function syncData(isAuto){
+  const btn=document.getElementById('syncBtn');
+  const ring=document.getElementById('syncRing');
+  if(!isAuto){btn.textContent='⏳';btn.disabled=true}
+  ring.classList.add('active');
   fetch(APPS_URL+'?action=getData')
     .then(r=>r.json())
     .then(function(res){
       if(res.data&&Array.isArray(res.data)){
-        DATA=res.data; pending={};
+        DATA=res.data; if(!isAuto) pending={};
         buildSlicer(); renderAll(); setTs();
-        btn.textContent='↻ Sync Data'; btn.disabled=false;
-      } else {
-        throw new Error('Response tidak valid dari Apps Script');
-      }
+        ring.classList.remove('active');
+        ring.classList.remove('error');
+      } else { throw new Error('invalid') }
     })
     .catch(function(err){
-      document.getElementById('navTs').textContent='Sync gagal';
-      btn.textContent='↻ Sync Data'; btn.disabled=false;
-      console.error('Sync error:', err.message);
+      ring.classList.remove('active');
+      ring.classList.add('error');
+      if(!isAuto) document.getElementById('navTs').textContent='Sync gagal';
+      console.error('Sync error:',err.message);
+    })
+    .finally(function(){
+      if(!isAuto){btn.textContent='↻ Sync';btn.disabled=false}
     });
 }
 </script>
