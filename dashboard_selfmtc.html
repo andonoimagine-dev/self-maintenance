@@ -723,27 +723,32 @@ function commitAll(){
   const btn=document.querySelector('.sb-c');
   btn.disabled=true; btn.textContent='Menyimpan...';
 
-  fetch(APPS_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'updateStatus',changes})
+  /* Apps Script dari GitHub Pages kena CORS block pada POST+read-response.
+     Solusi: kirim dengan no-cors (fire-and-forget), lalu tunggu sebentar
+     dan sync ulang untuk konfirmasi data sudah masuk. */
+  fetch(APPS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify({action:'updateStatus', changes:changes})
   })
-  .then(function(r){return r.json()})
-  .then(function(res){
-    if(res.status==='ok'){
-      /* Terapkan ke DATA lokal */
-      DATA=DATA.map(r=>pending[r.id]?Object.assign({},r,pending[r.id]):r);
-      pending={}; updateSaveBar(); setTs(); renderAll();
+  .then(function(){
+    /* Terapkan ke DATA lokal dulu */
+    DATA=DATA.map(r=>pending[r.id]?Object.assign({},r,pending[r.id]):r);
+    pending={}; updateSaveBar(); renderAll();
+    btn.textContent='Tersimpan ✓';
+
+    /* Auto sync setelah 2 detik untuk konfirmasi dari spreadsheet */
+    setTimeout(function(){
       btn.textContent='Simpan ke Spreadsheet';
       btn.disabled=false;
-    } else {
-      throw new Error(res.message||'Gagal menyimpan');
-    }
+      syncData();
+    }, 2000);
   })
   .catch(function(err){
-    alert('Gagal menyimpan: '+err.message+'\nPastikan Apps Script sudah di-deploy ulang dengan kode terbaru.');
     btn.textContent='Simpan ke Spreadsheet';
     btn.disabled=false;
+    alert('Gagal: '+err.message);
   });
 }
 
@@ -788,11 +793,25 @@ function closeMBg(e){if(e.target===document.getElementById('mbg'))closeM()}
 
 /* ═══ SYNC ═══ */
 function syncData(){
-  document.getElementById('navTs').textContent='Memuat...';
+  const btn=document.querySelector('.nv-btn');
+  btn.textContent='⏳ Memuat...';
+  btn.disabled=true;
   fetch(APPS_URL+'?action=getData')
     .then(r=>r.json())
-    .then(function(res){if(res.data&&Array.isArray(res.data)){DATA=res.data;pending={};buildSlicer();renderAll();setTs()}})
-    .catch(function(){document.getElementById('navTs').textContent='Sync gagal'});
+    .then(function(res){
+      if(res.data&&Array.isArray(res.data)){
+        DATA=res.data; pending={};
+        buildSlicer(); renderAll(); setTs();
+        btn.textContent='↻ Sync Data'; btn.disabled=false;
+      } else {
+        throw new Error('Response tidak valid dari Apps Script');
+      }
+    })
+    .catch(function(err){
+      document.getElementById('navTs').textContent='Sync gagal';
+      btn.textContent='↻ Sync Data'; btn.disabled=false;
+      console.error('Sync error:', err.message);
+    });
 }
 </script>
 </body>
