@@ -572,7 +572,7 @@ function shareToWA(){
     const dept = gD(r)||'—';
     return '• *'+r.id+'* | '+r.mesin+' | '+r.kategori+'\n'
          + '  _'+r.deskripsi.slice(0,60)+(r.deskripsi.length>60?'...':'')+'_\n'
-         + '  Prior: *'+r.priority+'* | PIC: '+r.pic+' | Dept: '+dept;
+         + '  Prior: *'+r.priority+'* | Penemu: '+r.pic+' | PIC Dept: '+(dept||'—');
   }
 
   let msg = '';
