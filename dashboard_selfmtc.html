@@ -521,7 +521,7 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
                 <span class="after-btn-icon">🖼️</span>Galeri
               </button>
             </div>
-            <img id="afterPreviewImg" class="after-preview" alt="Preview foto after">
+            <img id="afterPreviewImg" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);margin-top:8px">
             <div id="afterInfo" style="font-size:10px;color:var(--txt3);margin-top:4px;font-family:'DM Mono',monospace"></div>
             <button class="after-remove" id="afterRemoveBtn" style="display:none" onclick="clearAfterPhoto()">✕ Hapus foto</button>
           </div>
@@ -1125,9 +1125,9 @@ function openM(id){
   const hasFoto=r.foto&&r.foto.length>5;
   const fotoSrc=hasFoto?driveThumbnail(r.foto):'';
   document.getElementById('mFotoBefore').innerHTML=hasFoto
-    ?'<img src="'+fotoSrc+'" alt="Before '+r.id+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord)" onerror="this.src=\'\'">'+
-      '<div style="margin-top:6px"><a href="'+r.foto+'" target="_blank" style="color:var(--acc);font-size:11px">Buka di Google Drive ↗</a></div>'
-    :'<div class="nfb"><span class="nfb-icon">📷</span><span>Belum ada foto temuan</span></div>';
+    ?('<img src="'+fotoSrc+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);display:block" onerror="this.style.display=\'none\'">'+
+      '<div style="margin-top:6px"><a href="'+r.foto+'" target="_blank" style="color:var(--acc);font-size:11px">Buka di Google Drive ↗</a></div>')
+    :'<div style="background:var(--surf2);border:1.5px dashed var(--bord2);border-radius:8px;height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt3);font-size:13px;gap:8px"><span style="font-size:28px">📷</span><span>Belum ada foto temuan</span></div>';
 
   /* ── AFTER foto — tampilkan jika sudah ada di kolom foto_after ── */
   const hasAfter = r.foto_after && r.foto_after.length > 5;
@@ -1139,16 +1139,19 @@ function openM(id){
       '<div><a href="'+r.foto_after+'" target="_blank" style="color:var(--grn);font-size:11px">Buka di Google Drive ↗</a></div>'
     : '';
 
-  /* Reset upload area */
+  /* Reset upload area & edit btn */
   document.getElementById('afterCamera').value='';
   document.getElementById('afterGaleri').value='';
-  document.getElementById('afterPreviewImg').className='after-preview';
-  document.getElementById('afterPreviewImg').src='';
+  const prevImg=document.getElementById('afterPreviewImg');
+  prevImg.src=''; prevImg.style.display='none';
   document.getElementById('afterInfo').textContent='';
   document.getElementById('afterRemoveBtn').style.display='none';
   document.getElementById('afterPIC').value = afterPICVal;
   document.getElementById('saveAfterBtn').disabled=false;
   document.getElementById('saveAfterBtn').textContent='💾 Simpan ke Spreadsheet';
+  /* Hapus editBtn lama jika ada */
+  const oldBtn=document.getElementById('afterEditBtn');
+  if(oldBtn) oldBtn.remove();
 
   /* ── Info grid ── */
   const st=gS(r),dept=gD(r),sc=st==='Close'?'sb-C':st==='Temporary'?'sb-T':'sb-O';
@@ -1163,12 +1166,45 @@ function openM(id){
     '<div class="mi"><label>Status</label><span class="sb '+sc+'">'+st+'</span></div>'+
     '<div class="mi"><label>Penemu (PIC)</label><span>'+r.pic+'</span></div>'+
     '<div class="mi"><label>Dept Pengerjaan</label><span>'+(dept||'—')+'</span></div>'+
+    '<div class="mi full"><label>PIC Perbaikan</label><span id="picPerbaikanDisplay">'+(afterPICVal||'—')+'</span></div>'+
     '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>';
+
+  /* Tampilkan mode upload atau mode view tergantung ada/tidaknya foto after */
+  setAfterMode(hasAfter);
 
   document.getElementById('mbg').classList.add('on');
 }
 
-/* ── After photo handling ── */
+/* ── Toggle after section: view mode vs edit mode ── */
+function setAfterMode(hasAfterPhoto){
+  const uploadArea = document.getElementById('afterUploadArea');
+  const saveBtn    = document.getElementById('saveAfterBtn');
+  const oldBtn     = document.getElementById('afterEditBtn');
+  if(oldBtn) oldBtn.remove();
+
+  if(hasAfterPhoto){
+    /* View mode: sembunyikan upload area & tombol simpan */
+    uploadArea.style.display='none';
+    saveBtn.style.display='none';
+    /* Buat tombol Edit */
+    const btn=document.createElement('button');
+    btn.id='afterEditBtn';
+    btn.textContent='✏️ Edit foto / PIC perbaikan';
+    btn.style.cssText='width:100%;font-size:12px;font-weight:600;padding:7px;border-radius:7px;border:1px solid var(--bord2);background:var(--surf2);color:var(--txt2);cursor:pointer;font-family:inherit;margin-top:8px';
+    btn.onclick=function(){
+      uploadArea.style.display='block';
+      saveBtn.style.display='block';
+      btn.style.display='none';
+    };
+    document.getElementById('mFotoAfter').appendChild(btn);
+  } else {
+    /* Upload mode: tampilkan upload area & tombol simpan */
+    uploadArea.style.display='block';
+    saveBtn.style.display='block';
+  }
+}
+
+
 function setupAfterPhoto(){
   function processFile(file){
     if(!file) return;
@@ -1182,7 +1218,8 @@ function setupAfterPhoto(){
         canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
         afterPhotoBase64=canvas.toDataURL('image/jpeg',0.6);
         const prev=document.getElementById('afterPreviewImg');
-        prev.src=afterPhotoBase64; prev.className='after-preview show';
+        prev.src=afterPhotoBase64;
+        prev.style.display='block';
         const sizeKB=Math.round(afterPhotoBase64.length*0.75/1024);
         document.getElementById('afterInfo').textContent=canvas.width+'×'+canvas.height+'px · ~'+sizeKB+' KB';
         document.getElementById('afterRemoveBtn').style.display='block';
@@ -1200,7 +1237,8 @@ function clearAfterPhoto(){
   document.getElementById('afterCamera').value='';
   document.getElementById('afterGaleri').value='';
   const prev=document.getElementById('afterPreviewImg');
-  prev.src=''; prev.className='after-preview';
+  prev.src='';
+  prev.style.display='none';
   document.getElementById('afterInfo').textContent='';
   document.getElementById('afterRemoveBtn').style.display='none';
 }
@@ -1229,17 +1267,20 @@ function saveAfterPhoto(){
     /* Update DATA lokal */
     DATA=DATA.map(function(r){
       if(r.id===currentModalId){
-        return Object.assign({},r,{
-          pic_perbaikan: picPerbaikan||r.pic_perbaikan,
-        });
+        return Object.assign({},r,{pic_perbaikan:picPerbaikan||r.pic_perbaikan});
       }
       return r;
     });
+    /* Update tampilan PIC di info grid */
+    const picDisp=document.getElementById('picPerbaikanDisplay');
+    if(picDisp) picDisp.textContent=picPerbaikan||'—';
     btn.textContent='✓ Tersimpan!';
     setTimeout(function(){
       btn.disabled=false;
       btn.textContent='💾 Simpan ke Spreadsheet';
-    },2000);
+      /* Switch ke view mode jika ada foto yang diupload */
+      if(afterPhotoBase64) setAfterMode(true);
+    },1500);
   })
   .catch(function(err){
     btn.disabled=false;
