@@ -336,18 +336,49 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 
 .mbg{display:none;position:fixed;inset:0;background:rgba(8,14,22,.65);z-index:400;align-items:center;justify-content:center;padding:24px}
 .mbg.on{display:flex}
-.modal{background:var(--surf);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:mIn .18s cubic-bezier(.34,1.26,.64,1)}
+.modal{background:var(--surf);border-radius:16px;width:100%;max-width:780px;max-height:90vh;overflow-y:auto;animation:mIn .18s cubic-bezier(.34,1.26,.64,1)}
 @keyframes mIn{from{transform:scale(.94) translateY(8px);opacity:0}to{transform:none;opacity:1}}
 .mhd{padding:14px 18px 10px;border-bottom:1px solid var(--bord);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.mid{font-size:10px;font-family:'DM Mono',monospace;color:var(--txt3);margin-bottom:2px}
-.mttl{font-size:15px;font-weight:700}
-.mx{width:28px;height:28px;border-radius:6px;background:var(--surf2);border:none;cursor:pointer;color:var(--txt2);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.mfoto{padding:12px 18px;border-bottom:1px solid var(--bord)}
-.mfoto img{width:100%;max-height:280px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);display:block}
-.nfb{background:var(--surf2);border:1.5px dashed var(--bord2);border-radius:8px;height:100px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:12px}
+.mid{font-size:11px;font-family:'DM Mono',monospace;color:var(--txt3);margin-bottom:2px}
+.mttl{font-size:16px;font-weight:700}
+.mx{width:30px;height:30px;border-radius:6px;background:var(--surf2);border:none;cursor:pointer;color:var(--txt2);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* Foto 2 kolom */
+.mfoto-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--bord)}
+.mfoto-col{padding:12px 16px}
+.mfoto-col:first-child{border-right:1px solid var(--bord)}
+.mfoto-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.mfoto-lbl .flbl-tag{font-size:9px;padding:2px 7px;border-radius:99px;font-weight:600}
+.tag-before{background:var(--surf2);color:var(--txt3)}
+.tag-after{background:var(--grn2);color:var(--grn)}
+.mfoto-col img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);display:block}
+.nfb{background:var(--surf2);border:1.5px dashed var(--bord2);border-radius:8px;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt3);font-size:12px;gap:6px}
+.nfb-icon{font-size:22px}
+
+/* After upload area */
+.after-upload{display:none}
+.after-upload.show{display:block}
+.after-input-row{display:none}
+.after-input-row.show{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.after-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.after-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px;border:1.5px solid var(--bord);border-radius:var(--r);background:var(--surf2);cursor:pointer;font-family:inherit;color:var(--txt2);transition:.15s;font-size:12px;font-weight:500}
+.after-btn:hover{border-color:var(--acc);color:var(--acc)}
+.after-btn-icon{font-size:20px}
+.after-preview{width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);display:none;margin-top:8px}
+.after-preview.show{display:block}
+.after-remove{font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-family:inherit;margin-top:4px;padding:0}
+.pic-input{width:100%;font-size:13px;padding:7px 10px;border-radius:7px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit}
+.pic-input:focus{outline:none;border-color:var(--acc)}
+.save-after-btn{width:100%;font-size:13px;font-weight:600;padding:9px;border-radius:7px;background:var(--grn);color:#fff;border:none;cursor:pointer;font-family:inherit;margin-top:8px;transition:.15s}
+.save-after-btn:hover{background:#1e5233}
+.save-after-btn:disabled{background:var(--surf3);color:var(--txt3);cursor:not-allowed}
+
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 18px 18px}
-.mi label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:2px}
-.mi span{font-size:12px}.mi.full{grid-column:span 2}
+.mi label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:3px}
+.mi span{font-size:13px}.mi.full{grid-column:span 2}
+
+/* hidden file inputs */
+#afterCamera,#afterGaleri{display:none}
 </style>
 </head>
 <body>
@@ -460,8 +491,50 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 
 <div class="mbg" id="mbg" onclick="closeMBg(event)">
   <div class="modal">
-    <div class="mhd"><div><div class="mid" id="mId"></div><div class="mttl" id="mTtl"></div></div><button class="mx" onclick="closeM()">✕</button></div>
-    <div class="mfoto" id="mFoto"></div>
+    <div class="mhd">
+      <div><div class="mid" id="mId"></div><div class="mttl" id="mTtl"></div></div>
+      <button class="mx" onclick="closeM()">✕</button>
+    </div>
+
+    <!-- Foto 2 kolom: Before | After -->
+    <div class="mfoto-row">
+      <!-- BEFORE -->
+      <div class="mfoto-col">
+        <div class="mfoto-lbl">Foto Temuan <span class="flbl-tag tag-before">BEFORE</span></div>
+        <div id="mFotoBefore"></div>
+      </div>
+      <!-- AFTER -->
+      <div class="mfoto-col">
+        <div class="mfoto-lbl">Foto Perbaikan <span class="flbl-tag tag-after">AFTER</span></div>
+        <div id="mFotoAfter">
+          <!-- Preview after jika sudah ada -->
+          <div id="afterPreviewWrap"></div>
+          <!-- Upload buttons -->
+          <div id="afterUploadArea">
+            <input type="file" id="afterCamera" accept="image/*" capture="environment">
+            <input type="file" id="afterGaleri"  accept="image/*">
+            <div class="after-btns">
+              <button class="after-btn" onclick="document.getElementById('afterCamera').click()">
+                <span class="after-btn-icon">📷</span>Kamera
+              </button>
+              <button class="after-btn" onclick="document.getElementById('afterGaleri').click()">
+                <span class="after-btn-icon">🖼️</span>Galeri
+              </button>
+            </div>
+            <img id="afterPreviewImg" class="after-preview" alt="Preview foto after">
+            <div id="afterInfo" style="font-size:10px;color:var(--txt3);margin-top:4px;font-family:'DM Mono',monospace"></div>
+            <button class="after-remove" id="afterRemoveBtn" style="display:none" onclick="clearAfterPhoto()">✕ Hapus foto</button>
+          </div>
+          <!-- Input PIC perbaikan -->
+          <div style="margin-top:10px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">PIC yang memperbaiki</div>
+            <input type="text" class="pic-input" id="afterPIC" placeholder="Nama yang memperbaiki...">
+          </div>
+          <button class="save-after-btn" id="saveAfterBtn" onclick="saveAfterPhoto()">💾 Simpan ke Spreadsheet</button>
+        </div>
+      </div>
+    </div>
+
     <div class="mgrid" id="mGrid"></div>
   </div>
 </div>
@@ -644,7 +717,7 @@ function startAutoSync(intervalSec){
 
 window.addEventListener('DOMContentLoaded',function(){
   setTs();
-  /* Tampilkan loading state, langsung fetch data asli */
+  setupAfterPhoto();
   document.getElementById('tBody').innerHTML=
     '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--txt3)">'+
     '<div style="font-size:22px;margin-bottom:8px">⏳</div>'+
@@ -1037,15 +1110,47 @@ function driveThumbnail(url){
   return url;
 }
 
+let currentModalId = null;
+let afterPhotoBase64 = '';
+
 function openM(id){
   const r=DATA.find(x=>x.id===id); if(!r) return;
+  currentModalId = id;
+  afterPhotoBase64 = '';
+
   document.getElementById('mId').textContent=r.id+' · '+fmtDate(r.tanggal)+' · Shift '+r.shift;
   document.getElementById('mTtl').textContent=r.mesin+' — '+r.part;
+
+  /* ── BEFORE foto ── */
   const hasFoto=r.foto&&r.foto.length>5;
   const fotoSrc=hasFoto?driveThumbnail(r.foto):'';
-  document.getElementById('mFoto').innerHTML=hasFoto
-    ?'<img src="'+fotoSrc+'" alt="Foto '+r.id+'" onerror="this.parentNode.innerHTML=\'<div class=nfb>Foto tidak dapat dimuat — <a href=\\\''+r.foto+'\\\' target=\\\'_blank\\\' style=\\\'color:var(--acc)\\\'>Buka di Drive</a></div>\'">'
-    :'<div class="nfb">Belum ada foto untuk temuan ini</div>';
+  document.getElementById('mFotoBefore').innerHTML=hasFoto
+    ?'<img src="'+fotoSrc+'" alt="Before '+r.id+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord)" onerror="this.src=\'\'">'+
+      '<div style="margin-top:6px"><a href="'+r.foto+'" target="_blank" style="color:var(--acc);font-size:11px">Buka di Google Drive ↗</a></div>'
+    :'<div class="nfb"><span class="nfb-icon">📷</span><span>Belum ada foto temuan</span></div>';
+
+  /* ── AFTER foto — tampilkan jika sudah ada di kolom foto_after ── */
+  const hasAfter = r.foto_after && r.foto_after.length > 5;
+  const afterSrc = hasAfter ? driveThumbnail(r.foto_after) : '';
+  const afterPICVal = r.pic_perbaikan || '';
+
+  document.getElementById('afterPreviewWrap').innerHTML = hasAfter
+    ? '<img src="'+afterSrc+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);margin-bottom:6px">'+
+      '<div><a href="'+r.foto_after+'" target="_blank" style="color:var(--grn);font-size:11px">Buka di Google Drive ↗</a></div>'
+    : '';
+
+  /* Reset upload area */
+  document.getElementById('afterCamera').value='';
+  document.getElementById('afterGaleri').value='';
+  document.getElementById('afterPreviewImg').className='after-preview';
+  document.getElementById('afterPreviewImg').src='';
+  document.getElementById('afterInfo').textContent='';
+  document.getElementById('afterRemoveBtn').style.display='none';
+  document.getElementById('afterPIC').value = afterPICVal;
+  document.getElementById('saveAfterBtn').disabled=false;
+  document.getElementById('saveAfterBtn').textContent='💾 Simpan ke Spreadsheet';
+
+  /* ── Info grid ── */
   const st=gS(r),dept=gD(r),sc=st==='Close'?'sb-C':st==='Temporary'?'sb-T':'sb-O';
   document.getElementById('mGrid').innerHTML=
     '<div class="mi"><label>Area</label><span>'+r.area+'</span></div>'+
@@ -1058,11 +1163,96 @@ function openM(id){
     '<div class="mi"><label>Status</label><span class="sb '+sc+'">'+st+'</span></div>'+
     '<div class="mi"><label>Penemu (PIC)</label><span>'+r.pic+'</span></div>'+
     '<div class="mi"><label>Dept Pengerjaan</label><span>'+(dept||'—')+'</span></div>'+
-    '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>'+
-    (hasFoto?'<div class="mi full"><label>Foto</label><a href="'+r.foto+'" target="_blank" style="color:var(--acc);font-size:12px">Buka foto di Google Drive ↗</a></div>':'');
+    '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>';
+
   document.getElementById('mbg').classList.add('on');
 }
-function closeM(){document.getElementById('mbg').classList.remove('on')}
+
+/* ── After photo handling ── */
+function setupAfterPhoto(){
+  function processFile(file){
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const img=new Image();
+      img.onload=function(){
+        const canvas=document.createElement('canvas');
+        const maxW=800, scale=Math.min(maxW/img.width,1);
+        canvas.width=img.width*scale; canvas.height=img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        afterPhotoBase64=canvas.toDataURL('image/jpeg',0.6);
+        const prev=document.getElementById('afterPreviewImg');
+        prev.src=afterPhotoBase64; prev.className='after-preview show';
+        const sizeKB=Math.round(afterPhotoBase64.length*0.75/1024);
+        document.getElementById('afterInfo').textContent=canvas.width+'×'+canvas.height+'px · ~'+sizeKB+' KB';
+        document.getElementById('afterRemoveBtn').style.display='block';
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  document.getElementById('afterCamera').addEventListener('change',function(e){processFile(e.target.files[0])});
+  document.getElementById('afterGaleri').addEventListener('change',function(e){processFile(e.target.files[0])});
+}
+
+function clearAfterPhoto(){
+  afterPhotoBase64='';
+  document.getElementById('afterCamera').value='';
+  document.getElementById('afterGaleri').value='';
+  const prev=document.getElementById('afterPreviewImg');
+  prev.src=''; prev.className='after-preview';
+  document.getElementById('afterInfo').textContent='';
+  document.getElementById('afterRemoveBtn').style.display='none';
+}
+
+function saveAfterPhoto(){
+  const picPerbaikan=document.getElementById('afterPIC').value.trim();
+  const btn=document.getElementById('saveAfterBtn');
+  if(!afterPhotoBase64 && !picPerbaikan){
+    alert('Upload foto perbaikan atau isi nama PIC yang memperbaiki terlebih dahulu.');
+    return;
+  }
+  btn.disabled=true; btn.textContent='Menyimpan...';
+
+  fetch(APPS_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({
+      action:'saveAfter',
+      id: currentModalId,
+      foto_after: afterPhotoBase64,
+      pic_perbaikan: picPerbaikan
+    })
+  })
+  .then(function(){
+    /* Update DATA lokal */
+    DATA=DATA.map(function(r){
+      if(r.id===currentModalId){
+        return Object.assign({},r,{
+          pic_perbaikan: picPerbaikan||r.pic_perbaikan,
+        });
+      }
+      return r;
+    });
+    btn.textContent='✓ Tersimpan!';
+    setTimeout(function(){
+      btn.disabled=false;
+      btn.textContent='💾 Simpan ke Spreadsheet';
+    },2000);
+  })
+  .catch(function(err){
+    btn.disabled=false;
+    btn.textContent='💾 Simpan ke Spreadsheet';
+    alert('Gagal: '+err.message);
+  });
+}
+
+function closeM(){
+  document.getElementById('mbg').classList.remove('on');
+  afterPhotoBase64='';
+  currentModalId=null;
+}
 function closeMBg(e){if(e.target===document.getElementById('mbg'))closeM()}
 
 /* ═══ SYNC ═══ */
