@@ -6,6 +6,7 @@
 <title>Self MTC Dashboard — PT AT Indonesia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -170,27 +171,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .gp-tabs{display:flex;border-bottom:1px solid var(--bord);background:var(--surf2)}
 .gp-tab{font-size:13px;font-weight:500;padding:10px 18px;cursor:pointer;color:var(--txt3);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:.15s}
 .gp-tab:hover{color:var(--txt)}.gp-tab.on{color:var(--acc);border-bottom-color:var(--acc);background:var(--surf)}
-.gp-body{padding:14px 18px}
+.gp-body{padding:12px 16px}
 .gp-pane{display:none}.gp-pane.on{display:block}
-.gp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
-.kcard{border:1px solid var(--bord);border-radius:var(--r);padding:10px 14px;cursor:pointer;background:var(--surf);transition:.15s}
-.kcard:hover{background:var(--surf2)}.kcard.on{border-color:var(--hl);background:var(--hl2)}.kcard.dim{opacity:.25;pointer-events:none}
-.kcard-name{font-size:13px;font-weight:600;margin-bottom:6px}.kcard.on .kcard-name{color:var(--hl)}
-.kpills{display:flex;gap:4px;flex-wrap:wrap}
-.kp{font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px}
-.kp-n{background:var(--surf2);color:var(--txt2)}.kp-g{background:var(--grn2);color:var(--grn)}
-.kp-r{background:var(--red2);color:var(--red)}.kp-a{background:var(--amb2);color:var(--amb)}
-.gp-leg{display:flex;gap:14px;margin-bottom:10px}
-.gp-li{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt3)}
-.gp-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-.gp-br{display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer}
+.gp-leg{display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.gp-li{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--txt3)}
+.gp-sq{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.gp-br{display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer}
 .gp-br:hover .gp-lbl{color:var(--acc)}
-.gp-lbl{font-size:13px;color:var(--txt2);width:140px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.gp-lbl{font-size:12px;color:var(--txt2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
 .gp-lbl.on{color:var(--hl);font-weight:700}.gp-lbl.dim{opacity:.3}
-.gp-trk{flex:1;height:20px;background:var(--surf2);border-radius:4px;overflow:hidden;display:flex;cursor:pointer}
+.gp-trk{flex:1;height:18px;background:var(--surf2);border-radius:3px;overflow:hidden;display:flex;cursor:pointer}
 .gp-trk.on{box-shadow:0 0 0 2px var(--hl)}.gp-trk.dim{opacity:.22}
 .gp-cls{background:var(--grn);height:100%}.gp-tmp{background:#C97F1A;height:100%}.gp-opn{background:#8BBDE0;height:100%}
-.gp-ct{font-size:12px;font-family:'DM Mono',monospace;color:var(--txt2);width:32px;text-align:right;flex-shrink:0}
+.gp-ct{font-size:11px;font-family:'DM Mono',monospace;color:var(--txt2);width:38px;text-align:right;flex-shrink:0}
+.gp-pa{color:var(--txt2);font-weight:500}
 
 /* TABLE */
 .tbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
@@ -434,10 +428,10 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
       <button class="gp-tab" onclick="gpSwitch(this,'area')">Per Area</button>
     </div>
     <div class="gp-body">
-      <div class="gp-pane on" id="gp-kat"><div style="font-size:11px;color:var(--txt3);margin-bottom:10px">Klik kategori untuk highlight semua grafik dan tabel</div><div class="gp-grid" id="gpKat"></div></div>
-      <div class="gp-pane" id="gp-mesin"><div class="gp-leg"><span class="gp-li"><span class="gp-sq" style="background:var(--grn)"></span>Selesai</span><span class="gp-li"><span class="gp-sq" style="background:#C97F1A"></span>Temporary</span><span class="gp-li"><span class="gp-sq" style="background:#8BBDE0"></span>Open</span></div><div id="gpMesin"></div></div>
-      <div class="gp-pane" id="gp-part"><div class="gp-leg"><span class="gp-li"><span class="gp-sq" style="background:var(--grn)"></span>Selesai</span><span class="gp-li"><span class="gp-sq" style="background:#C97F1A"></span>Temporary</span><span class="gp-li"><span class="gp-sq" style="background:#8BBDE0"></span>Open</span></div><div id="gpPart"></div></div>
-      <div class="gp-pane" id="gp-area"><div class="gp-leg"><span class="gp-li"><span class="gp-sq" style="background:var(--grn)"></span>Selesai</span><span class="gp-li"><span class="gp-sq" style="background:#C97F1A"></span>Temporary</span><span class="gp-li"><span class="gp-sq" style="background:#8BBDE0"></span>Open</span></div><div id="gpArea"></div></div>
+      <div class="gp-pane on" id="gp-kat"><div id="gpKat"></div></div>
+      <div class="gp-pane" id="gp-mesin"><div id="gpMesin"></div></div>
+      <div class="gp-pane" id="gp-part"><div id="gpPart"></div></div>
+      <div class="gp-pane" id="gp-area"><div id="gpArea"></div></div>
     </div>
   </div>
 
@@ -923,6 +917,7 @@ function renderAreaMatrix(){
       el.width=80; el.height=80;
       donutCharts[cid]=new Chart(el,{
         type:'doughnut',
+        plugins:[ChartDataLabels],
         data:{labels:['Selesai','Temporary','Open'],datasets:[{data:[cls,tmp,opn],backgroundColor:DCOLS,borderWidth:0,hoverOffset:4}]},
         options:{
           responsive:false,
@@ -933,7 +928,18 @@ function renderAreaMatrix(){
                 const pct=tot?Math.round(c.raw/tot*100):0;
                 return c.label+': '+c.raw+' ('+pct+'%)';
               }
-            }}
+            }},
+            datalabels:{
+              display:function(ctx){ return ctx.dataset.data[ctx.dataIndex]>0; },
+              color:'#fff',
+              font:{size:10,weight:'700',family:"'DM Sans',sans-serif"},
+              formatter:function(val){ return val; },
+              anchor:'center',
+              align:'center',
+              offset:0,
+              textShadowColor:'rgba(0,0,0,.35)',
+              textShadowBlur:3
+            }
           },
           cutout:'62%',animation:{duration:400}
         }
@@ -954,6 +960,7 @@ function gpBar(name,v,maxT,field){
   const pC=Math.round(v.cls/maxT*100),pT=Math.round(v.tmp/maxT*100),pO=Math.round(v.opn/maxT*100);
   const isOn=activeHL&&activeHL.f===field&&activeHL.v===name;
   const isDim=activeHL&&!isOn;
+  const pa=v.t+'/'+v.cls; /* P/A: Penugasan / Aktual selesai */
   return '<div class="gp-br" onclick="toggleHL(\''+field+'\',\''+escQ(name)+'\')">' +
     '<div class="gp-lbl'+(isOn?' on':'')+(isDim?' dim':'')+'" title="'+esc(name)+'">'+esc(name)+'</div>' +
     '<div class="gp-trk'+(isOn?' on':'')+(isDim?' dim':'')+'">' +
@@ -961,7 +968,7 @@ function gpBar(name,v,maxT,field){
       '<div class="gp-tmp" style="width:'+pT+'%"></div>' +
       '<div class="gp-opn" style="width:'+pO+'%"></div>' +
     '</div>' +
-    '<div class="gp-ct">'+v.t+'</div>' +
+    '<div class="gp-ct gp-pa" title="Total/Selesai (P/A)">'+pa+'</div>' +
   '</div>';
 }
 
@@ -969,35 +976,31 @@ function renderGlobalPareto(){
   const fd=visData(), sd=slicedData();
   document.getElementById('gpanel').classList.toggle('on',!!activeHL);
 
-  /* kategori cards */
+  const parLeg='<div class="gp-leg"><span class="gp-li"><span class="gp-sq" style="background:var(--grn)"></span>Selesai</span><span class="gp-li"><span class="gp-sq" style="background:#C97F1A"></span>Temporary</span><span class="gp-li"><span class="gp-sq" style="background:#8BBDE0"></span>Open</span><span class="gp-li" style="margin-left:8px;color:var(--txt2);font-style:normal"><b>P/A</b> = Total/Selesai</span></div>';
+
+  /* ── KATEGORI — pareto bar format sama dengan mesin/part ── */
   const kats=[...new Set(sd.map(r=>r.kategori))].sort();
-  document.getElementById('gpKat').innerHTML=kats.map(function(name){
+  const katData=kats.map(function(name){
     const rows=fd.filter(r=>r.kategori===name);
     const t=rows.length,
-          c=rows.filter(r=>gS(r)==='Close').length,
-          o=rows.filter(r=>gS(r)==='Open').length,
-          a=rows.filter(r=>gS(r)==='Temporary').length;
-    const isOn=activeHL&&activeHL.f==='kategori'&&activeHL.v===name;
-    const isDim=activeHL&&!isOn;
-    return '<div class="kcard'+(isOn?' on':'')+(isDim?' dim':'')+'" onclick="toggleHL(\'kategori\',\''+escQ(name)+'\')">' +
-      '<div class="kcard-name">'+esc(name)+'</div>' +
-      '<div class="kpills">' +
-        '<span class="kp kp-n">'+t+' temuan</span>' +
-        (o?'<span class="kp kp-r">'+o+' open</span>':'') +
-        (a?'<span class="kp kp-a">'+a+' temp</span>':'') +
-        (c?'<span class="kp kp-g">'+c+' selesai</span>':'') +
-      '</div>' +
-    '</div>';
-  }).join('');
+          cls=rows.filter(r=>gS(r)==='Close').length,
+          tmp=rows.filter(r=>gS(r)==='Temporary').length,
+          opn=rows.filter(r=>gS(r)==='Open').length;
+    return [name,{t,cls,tmp,opn}];
+  }).sort((a,b)=>b[1].t-a[1].t);
+  const km=katData[0]?.[1].t||1;
+  document.getElementById('gpKat').innerHTML=
+    parLeg+
+    katData.map(e=>gpBar(e[0],e[1],km,'kategori')).join('');
 
   const md=grpBy(fd,'mesin'), mm=md[0]?.[1].t||1;
-  document.getElementById('gpMesin').innerHTML=md.map(e=>gpBar(e[0],e[1],mm,'mesin')).join('');
+  document.getElementById('gpMesin').innerHTML=parLeg+md.map(e=>gpBar(e[0],e[1],mm,'mesin')).join('');
 
   const pd=grpBy(fd,'part'), pm=pd[0]?.[1].t||1;
-  document.getElementById('gpPart').innerHTML=pd.map(e=>gpBar(e[0],e[1],pm,'part')).join('');
+  document.getElementById('gpPart').innerHTML=parLeg+pd.map(e=>gpBar(e[0],e[1],pm,'part')).join('');
 
   const ad=grpBy(fd,'area'), am=ad[0]?.[1].t||1;
-  document.getElementById('gpArea').innerHTML=ad.map(e=>gpBar(e[0],e[1],am,'area')).join('');
+  document.getElementById('gpArea').innerHTML=parLeg+ad.map(e=>gpBar(e[0],e[1],am,'area')).join('');
 }
 
 /* ═══ HIGHLIGHT ═══ */
