@@ -95,13 +95,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 
 /* body: donut + 3 pareto cols */
 .ar-body{display:grid;grid-template-columns:150px 1fr 1fr 1fr}
-.ar-donut{padding:10px 12px;border-right:1px solid var(--bord);display:flex;align-items:center;gap:10px}
+.ar-donut{padding:10px 8px;border-right:1px solid var(--bord);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
 .ar-donut-canvas{width:80px!important;height:80px!important;flex-shrink:0;display:block}
-.ar-dleg{display:flex;flex-direction:column;gap:3px}
-.dl-r{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11px}
-.dl-left{display:flex;align-items:center;gap:3px;color:var(--txt2)}
+.ar-dleg{display:flex;flex-direction:row;gap:7px;flex-wrap:wrap;justify-content:center}
+.dl-r{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--txt2)}
+.dl-left{display:flex;align-items:center;gap:3px}
 .dl-sq{width:7px;height:7px;border-radius:2px;flex-shrink:0}
-.dl-n{font-size:11px;font-weight:600;font-family:'DM Mono',monospace;color:var(--txt)}
+.dl-n{display:none}
 
 /* pareto cols */
 .ar-par{padding:8px 10px;border-right:1px solid var(--bord);overflow:hidden}
@@ -286,8 +286,8 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 
   /* Body: stack vertically */
   .ar-body{grid-template-columns:1fr}
-  .ar-donut{border-right:none;border-bottom:1px solid var(--bord);flex-direction:row;gap:14px}
-  .ar-dleg{flex-direction:row;gap:10px;flex-wrap:wrap}
+  .ar-donut{border-right:none;border-bottom:1px solid var(--bord);flex-direction:row;gap:14px;padding:10px 12px}
+  .ar-dleg{flex-direction:row;gap:8px;flex-wrap:wrap;justify-content:flex-start}
   .ar-par{border-right:none;border-bottom:1px solid var(--bord)}
   .ar-par:last-child{border-bottom:none}
 
@@ -923,11 +923,19 @@ function renderAreaMatrix(){
       el.width=80; el.height=80;
       donutCharts[cid]=new Chart(el,{
         type:'doughnut',
-        data:{labels:['Selesai','Temporary','Open'],datasets:[{data:[cls,tmp,opn],backgroundColor:DCOLS,borderWidth:0,hoverOffset:3}]},
+        data:{labels:['Selesai','Temporary','Open'],datasets:[{data:[cls,tmp,opn],backgroundColor:DCOLS,borderWidth:0,hoverOffset:4}]},
         options:{
           responsive:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+c.raw}}},
-          cutout:'65%',animation:{duration:400}
+          plugins:{
+            legend:{display:false},
+            tooltip:{callbacks:{
+              label:function(c){
+                const pct=tot?Math.round(c.raw/tot*100):0;
+                return c.label+': '+c.raw+' ('+pct+'%)';
+              }
+            }}
+          },
+          cutout:'62%',animation:{duration:400}
         }
       });
     });
