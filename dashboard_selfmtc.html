@@ -77,8 +77,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .area-row{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rlg);overflow:hidden;transition:.15s}
 .area-row.dim{opacity:.3}.area-row.hl{border-color:var(--hl3);box-shadow:0 0 0 2px var(--hl2)}
 
-/* Area row: header + chart dalam 1 grid container agar kolom sejajar */
-.ar-wrap{display:grid;grid-template-columns:130px 1fr 1fr 1fr}
+/* Area row layout: 130px label | 4 equal chart cols */
+.ar-wrap{display:grid;grid-template-columns:130px 1fr 1fr 1fr 1fr}
 .ar-left{grid-column:1;grid-row:1/3;padding:14px 14px;border-right:1px solid var(--bord);display:flex;flex-direction:column;justify-content:center;gap:6px}
 .ar-name{font-size:16px;font-weight:700}
 .ar-hl-badge{font-size:11px;font-weight:700;color:var(--hl);background:var(--hl2);padding:2px 8px;border-radius:99px;display:none;margin-top:2px}
@@ -86,16 +86,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .prog{height:4px;background:var(--surf3);border-radius:3px;display:flex;overflow:hidden;margin-top:6px}
 .pg{background:var(--grn);height:100%}.pa{background:#C97F1A;height:100%}.pr{background:var(--red);height:100%}
 
-/* stats row */
-.ar-stats{grid-column:2/5;grid-row:1;display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--bord)}
+/* stats row — span semua 4 kolom chart */
+.ar-stats{grid-column:2/6;grid-row:1;display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--bord)}
 .ar-stat{text-align:center;padding:10px 6px;border-right:1px solid var(--bord)}
 .ar-stat:last-child{border-right:none}
 .ar-stat-n{font-size:20px;font-weight:700;line-height:1;margin-bottom:2px}
 .ar-stat-n.r{color:var(--red)}.ar-stat-n.g{color:var(--grn)}.ar-stat-n.a{color:var(--amb)}.ar-stat-n.d{color:var(--txt3)}
 .ar-stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--txt3)}
 
-/* charts row */
-.ar-charts{grid-column:2/5;grid-row:2;display:grid;grid-template-columns:1fr 1fr 1fr;overflow:hidden}
+/* charts row — donut + mesin + part + kategori */
+.ar-charts{grid-column:2/6;grid-row:2;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;overflow:hidden}
 
 /* donut col */
 .ar-donut{padding:12px 12px;border-right:1px solid var(--bord);display:flex;align-items:center;gap:12px}
@@ -113,8 +113,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .ap-leg{display:flex;gap:6px}
 .ap-li{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--txt3)}
 .ap-sq{width:6px;height:6px;border-radius:1px;flex-shrink:0}
-/* Scroll container — 5 baris, sisanya scroll */
-.par-scroll{max-height:130px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bord2) transparent}
+/* Scroll container — 5 baris, sisanya scroll vertikal saja */
+.par-scroll{max-height:130px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--bord2) transparent}
 .par-scroll::-webkit-scrollbar{width:3px}
 .par-scroll::-webkit-scrollbar-thumb{background:var(--bord2);border-radius:3px}
 .p-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;cursor:pointer}
@@ -857,10 +857,10 @@ function renderAreaMatrix(){
       return '<div class="kat-row">' +
         '<div class="kat-nm" title="'+esc(n)+'">'+esc(n)+'</div>' +
         '<div class="kat-chips">' +
-          '<span class="kc kc-tot"><span class="kc-n">'+v.t+'</span><span class="kc-l">temuan</span></span>' +
-          (v.o?'<span class="kc kc-opn"><span class="kc-n">'+v.o+'</span><span class="kc-l">open</span></span>':'') +
-          (v.a?'<span class="kc kc-tmp"><span class="kc-n">'+v.a+'</span><span class="kc-l">temp</span></span>':'') +
-          (v.d?'<span class="kc kc-cls"><span class="kc-n">'+v.d+'</span><span class="kc-l">selesai</span></span>':'') +
+          '<span class="kc kc-tot"><span class="kc-n">'+v.t+'</span><span class="kc-l"> tmn</span></span>' +
+          (v.o?'<span class="kc kc-opn"><span class="kc-n">'+v.o+'</span><span class="kc-l"> open</span></span>':'') +
+          (v.a?'<span class="kc kc-tmp"><span class="kc-n">'+v.a+'</span><span class="kc-l"> tmp</span></span>':'') +
+          (v.d?'<span class="kc kc-cls"><span class="kc-n">'+v.d+'</span><span class="kc-l"> ✓</span></span>':'') +
         '</div>' +
       '</div>';
     }).join('');
