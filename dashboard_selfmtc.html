@@ -369,6 +369,11 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 18px 18px}
 .mi label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:3px}
 .mi span{font-size:13px}.mi.full{grid-column:span 2}
+.mi-sel{width:100%;font-size:13px;padding:6px 10px;border-radius:7px;border:1.5px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit;transition:border-color .15s}
+.mi-sel:focus{outline:none;border-color:var(--acc)}
+.modal-save-btn{width:100%;font-size:13px;font-weight:600;padding:9px;border-radius:7px;background:var(--acc);color:#fff;border:none;cursor:pointer;font-family:inherit;transition:.15s}
+.modal-save-btn:hover:not(:disabled){filter:brightness(1.1)}
+.modal-save-btn:disabled{background:var(--surf3);color:var(--txt3);cursor:not-allowed}
 
 /* hidden file inputs */
 #afterCamera,#afterGaleri{display:none}
@@ -1170,6 +1175,8 @@ function openM(id){
 
   /* ── Info grid ── */
   const st=gS(r),dept=gD(r),sc=st==='Close'?'sb-C':st==='Temporary'?'sb-T':'sb-O';
+  const deptOpts=DEPT.map(d=>'<option value="'+d+'"'+(dept===d?' selected':'')+'>'+(d||'-- Pilih --')+'</option>').join('');
+  const stOpts=STAT.map(s=>'<option value="'+s+'"'+(st===s?' selected':'')+'>'+s+'</option>').join('');
   document.getElementById('mGrid').innerHTML=
     '<div class="mi"><label>Area</label><span>'+r.area+'</span></div>'+
     '<div class="mi"><label>Mesin</label><span>'+r.mesin+'</span></div>'+
@@ -1178,11 +1185,20 @@ function openM(id){
     '<div class="mi"><label>Severity</label><span>'+r.severity+'</span></div>'+
     '<div class="mi"><label>Frequency</label><span>'+r.frequency+'</span></div>'+
     '<div class="mi"><label>Prioritas</label><span class="pb pb-'+r.priority+'">'+r.priority+'</span></div>'+
-    '<div class="mi"><label>Status</label><span class="sb '+sc+'">'+st+'</span></div>'+
     '<div class="mi"><label>Penemu (PIC)</label><span>'+r.pic+'</span></div>'+
-    '<div class="mi"><label>Dept Pengerjaan</label><span>'+(dept||'—')+'</span></div>'+
+    /* Dept & Status — editable */
+    '<div class="mi"><label>Dept Pengerjaan</label>'+
+      '<select class="mi-sel" id="mDeptSel" onchange="markModalDirty()">'+deptOpts+'</select>'+
+    '</div>'+
+    '<div class="mi"><label>Status</label>'+
+      '<select class="mi-sel" id="mStatusSel" onchange="markModalDirty()">'+stOpts+'</select>'+
+    '</div>'+
     '<div class="mi full"><label>PIC Perbaikan</label><span id="picPerbaikanDisplay">'+(afterPICVal||'—')+'</span></div>'+
-    '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>';
+    '<div class="mi full"><label>Deskripsi</label><span>'+esc(r.deskripsi)+'</span></div>'+
+    /* Tombol simpan dept/status */
+    '<div class="mi full" id="mSaveWrap" style="display:none">'+
+      '<button class="modal-save-btn" id="mSaveBtn" onclick="saveModalChanges()">💾 Simpan Dept &amp; Status</button>'+
+    '</div>';
 
   /* Tampilkan mode upload atau mode view tergantung ada/tidaknya foto after */
   setAfterMode(hasAfter);
@@ -1191,6 +1207,43 @@ function openM(id){
 }
 
 /* ── Toggle after section: view mode vs edit mode ── */
+function markModalDirty(){
+  const wrap=document.getElementById('mSaveWrap');
+  if(wrap) wrap.style.display='block';
+}
+
+function saveModalChanges(){
+  const btn=document.getElementById('mSaveBtn');
+  const newDept=document.getElementById('mDeptSel').value;
+  const newStatus=document.getElementById('mStatusSel').value;
+  btn.disabled=true; btn.textContent='Menyimpan...';
+
+  fetch(APPS_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({action:'updateStatus',changes:[{id:currentModalId,dept:newDept,status:newStatus}]})
+  })
+  .then(function(){
+    DATA=DATA.map(r=>r.id===currentModalId?Object.assign({},r,{dept:newDept,status:newStatus}):r);
+    if(pending[currentModalId]){delete pending[currentModalId].dept;delete pending[currentModalId].status}
+    updateSaveBar();
+    renderSummary(); renderAreaMatrix(); renderGlobalPareto(); renderTable();
+    btn.textContent='✓ Tersimpan!';
+    setTimeout(function(){
+      btn.disabled=false;
+      btn.textContent='💾 Simpan Dept & Status';
+      const wrap=document.getElementById('mSaveWrap');
+      if(wrap) wrap.style.display='none';
+    },1500);
+  })
+  .catch(function(err){
+    btn.disabled=false;
+    btn.textContent='💾 Simpan Dept & Status';
+    alert('Gagal: '+err.message);
+  });
+}
+
 function setAfterMode(hasAfterPhoto){
   const uploadArea = document.getElementById('afterUploadArea');
   const saveBtn    = document.getElementById('saveAfterBtn');
