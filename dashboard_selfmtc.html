@@ -78,54 +78,66 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .area-row.dim{opacity:.3}.area-row.hl{border-color:var(--hl3);box-shadow:0 0 0 2px var(--hl2)}
 
 /* Area row layout: 130px label | 4 equal chart cols */
-.ar-wrap{display:grid;grid-template-columns:130px 1fr 1fr 1fr 1fr}
-.ar-left{grid-column:1;grid-row:1/3;padding:14px 14px;border-right:1px solid var(--bord);display:flex;flex-direction:column;justify-content:center;gap:6px}
-.ar-name{font-size:16px;font-weight:700}
-.ar-hl-badge{font-size:11px;font-weight:700;color:var(--hl);background:var(--hl2);padding:2px 8px;border-radius:99px;display:none;margin-top:2px}
+/* ── AREA CARD: header row + body row ── */
+.ar-header{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--bord)}
+.ar-header-left{display:flex;flex-direction:column;min-width:90px;flex-shrink:0}
+.ar-name{font-size:15px;font-weight:700}
+.ar-hl-badge{font-size:10px;font-weight:700;color:var(--hl);background:var(--hl2);padding:2px 7px;border-radius:99px;display:none;margin-top:3px;align-self:flex-start}
 .ar-hl-badge.on{display:inline-block}
-.prog{height:4px;background:var(--surf3);border-radius:3px;display:flex;overflow:hidden;margin-top:6px}
+.prog{height:4px;background:var(--surf3);border-radius:3px;display:flex;overflow:hidden;margin-top:5px}
 .pg{background:var(--grn);height:100%}.pa{background:#C97F1A;height:100%}.pr{background:var(--red);height:100%}
-
-/* stats row — span semua 4 kolom chart */
-.ar-stats{grid-column:2/6;grid-row:1;display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--bord)}
-.ar-stat{text-align:center;padding:10px 6px;border-right:1px solid var(--bord)}
-.ar-stat:last-child{border-right:none}
-.ar-stat-n{font-size:20px;font-weight:700;line-height:1;margin-bottom:2px}
+.ar-stats{display:flex;flex:1;gap:0}
+.ar-stat{flex:1;text-align:center;padding:6px 4px;border-left:1px solid var(--bord)}
+.ar-stat:first-child{border-left:none}
+.ar-stat-n{font-size:18px;font-weight:700;line-height:1;margin-bottom:1px}
 .ar-stat-n.r{color:var(--red)}.ar-stat-n.g{color:var(--grn)}.ar-stat-n.a{color:var(--amb)}.ar-stat-n.d{color:var(--txt3)}
-.ar-stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--txt3)}
+.ar-stat-l{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--txt3)}
 
-/* charts row — donut + mesin + part + kategori */
-.ar-charts{grid-column:2/6;grid-row:2;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;overflow:hidden}
-
-/* donut col */
-.ar-donut{padding:12px 12px;border-right:1px solid var(--bord);display:flex;align-items:center;gap:12px}
+/* body: donut + 3 pareto cols */
+.ar-body{display:grid;grid-template-columns:150px 1fr 1fr 1fr}
+.ar-donut{padding:10px 12px;border-right:1px solid var(--bord);display:flex;align-items:center;gap:10px}
 .ar-donut-canvas{width:80px!important;height:80px!important;flex-shrink:0;display:block}
-.ar-dleg{display:flex;flex-direction:column;gap:4px}
-.dl-r{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px}
-.dl-left{display:flex;align-items:center;gap:4px;color:var(--txt2)}
-.dl-sq{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-.dl-n{font-size:12px;font-weight:600;font-family:'DM Mono',monospace;color:var(--txt)}
+.ar-dleg{display:flex;flex-direction:column;gap:3px}
+.dl-r{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11px}
+.dl-left{display:flex;align-items:center;gap:3px;color:var(--txt2)}
+.dl-sq{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.dl-n{font-size:11px;font-weight:600;font-family:'DM Mono',monospace;color:var(--txt)}
 
 /* pareto cols */
 .ar-par{padding:8px 10px;border-right:1px solid var(--bord);overflow:hidden}
 .ar-par:last-child{border-right:none}
-.ap-ttl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
-.ap-leg{display:flex;gap:6px}
-.ap-li{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--txt3)}
-.ap-sq{width:6px;height:6px;border-radius:1px;flex-shrink:0}
-/* Scroll container — 5 baris, sisanya scroll vertikal saja */
+.ap-ttl{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:4px}
+.ap-leg{display:flex;gap:5px;flex-shrink:0}
+.ap-li{display:flex;align-items:center;gap:2px;font-size:8px;color:var(--txt3)}
+.ap-sq{width:5px;height:5px;border-radius:1px;flex-shrink:0}
+
+/* Scroll container */
 .par-scroll{max-height:130px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--bord2) transparent}
 .par-scroll::-webkit-scrollbar{width:3px}
 .par-scroll::-webkit-scrollbar-thumb{background:var(--bord2);border-radius:3px}
-.p-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;cursor:pointer}
+
+.p-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;cursor:pointer}
 .p-row:last-child{margin-bottom:0}
 .p-row:hover .p-lbl{color:var(--acc)}
-.p-lbl{font-size:12px;color:var(--txt2);width:76px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.p-lbl{font-size:11px;color:var(--txt2);width:64px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
 .p-lbl.on{color:var(--hl);font-weight:700}.p-lbl.dim{opacity:.3}
-.p-track{flex:1;height:14px;background:var(--surf2);border-radius:3px;overflow:hidden;display:flex;cursor:pointer}
+.p-track{flex:1;height:12px;background:var(--surf2);border-radius:2px;overflow:hidden;display:flex;cursor:pointer}
 .p-track.on{box-shadow:0 0 0 2px var(--hl)}.p-track.dim{opacity:.25}
 .p-cls{background:var(--grn);height:100%}.p-tmp{background:#C97F1A;height:100%}.p-opn{background:#8BBDE0;height:100%}
-.p-ct{font-size:11px;font-family:'DM Mono',monospace;color:var(--txt3);width:28px;text-align:right;flex-shrink:0}
+.p-ct{font-size:10px;font-family:'DM Mono',monospace;color:var(--txt3);width:26px;text-align:right;flex-shrink:0}
+
+/* Kategori rows — pareto style, clickable */
+.kat-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;cursor:pointer;border-radius:3px;padding:2px 3px;transition:background .12s}
+.kat-row:last-child{margin-bottom:0}
+.kat-row:hover{background:var(--surf2)}
+.kat-row.kat-on{background:var(--hl2)}
+.kat-row.kat-dim{opacity:.25}
+.kat-nm{font-size:11px;color:var(--txt2);width:64px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.kat-row.kat-on .kat-nm{color:var(--hl);font-weight:700}
+.kat-bar-wrap{flex:1}
+.kat-bar-track{height:12px;background:var(--surf2);border-radius:2px;overflow:hidden;display:flex}
+.kat-ct{font-size:10px;font-family:'DM Mono',monospace;color:var(--txt3);width:26px;text-align:right;flex-shrink:0}
+
 /* Date filter */
 .td-date{font-size:13px;padding:6px 10px;border-radius:7px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit}
 /* WA share button */
@@ -263,31 +275,18 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
   /* Area matrix — 1 kolom */
   .area-matrix{grid-template-columns:1fr}
 
-  /* Area row: stack vertically */
-  .ar-wrap{grid-template-columns:1fr}
-  .ar-left{grid-column:1;grid-row:auto;border-right:none;border-bottom:1px solid var(--bord);padding:10px 12px;flex-direction:row;align-items:center;gap:12px}
+  /* Area row mobile */
+  .ar-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .ar-header-left{flex-direction:row;align-items:center;gap:10px;width:100%}
   .ar-name{font-size:14px}
   .prog{flex:1;margin-top:0}
-
-  /* Stats: scrollable horizontal strip */
-  .ar-stats{
-    grid-column:1;grid-row:auto;
-    grid-template-columns:repeat(5,minmax(56px,1fr));
-    overflow-x:auto;
-    border-bottom:1px solid var(--bord);
-    scrollbar-width:none;
-  }
+  .ar-stats{width:100%;overflow-x:auto;scrollbar-width:none}
   .ar-stats::-webkit-scrollbar{display:none}
+  .ar-stat{min-width:52px}
 
-  /* Charts: stack vertically */
-  .ar-charts{
-    grid-column:1;grid-row:auto;
-    grid-template-columns:1fr;
-  }
-  .ar-donut{
-    border-right:none;border-bottom:1px solid var(--bord);
-    flex-direction:row;padding:10px 12px;gap:14px;
-  }
+  /* Body: stack vertically */
+  .ar-body{grid-template-columns:1fr}
+  .ar-donut{border-right:none;border-bottom:1px solid var(--bord);flex-direction:row;gap:14px}
   .ar-dleg{flex-direction:row;gap:10px;flex-wrap:wrap}
   .ar-par{border-right:none;border-bottom:1px solid var(--bord)}
   .ar-par:last-child{border-bottom:none}
@@ -851,35 +850,40 @@ function renderAreaMatrix(){
       '</div>';
     }
 
-    /* kategori row html */
+    /* kategori row html — CLICKABLE sebagai filter */
     const katHtml=kArr.map(function(e){
       const n=e[0],v=e[1];
-      return '<div class="kat-row">' +
-        '<div class="kat-nm" title="'+esc(n)+'">'+esc(n)+'</div>' +
-        '<div class="kat-chips">' +
-          '<span class="kc kc-tot"><span class="kc-n">'+v.t+'</span><span class="kc-l"> tmn</span></span>' +
-          (v.o?'<span class="kc kc-opn"><span class="kc-n">'+v.o+'</span><span class="kc-l"> open</span></span>':'') +
-          (v.a?'<span class="kc kc-tmp"><span class="kc-n">'+v.a+'</span><span class="kc-l"> tmp</span></span>':'') +
-          (v.d?'<span class="kc kc-cls"><span class="kc-n">'+v.d+'</span><span class="kc-l"> ✓</span></span>':'') +
+      const isOn=activeHL&&activeHL.f==='kategori'&&activeHL.v===n;
+      const isDim=activeHL&&!(activeHL.f==='kategori'&&activeHL.v===n);
+      const pC=Math.round(v.d/v.t*100)||0;
+      const pO=Math.round(v.o/v.t*100)||0;
+      const pA=Math.round(v.a/v.t*100)||0;
+      return '<div class="kat-row'+(isOn?' kat-on':'')+(isDim?' kat-dim':'')+'" onclick="toggleHL(\'kategori\',\''+escQ(n)+'\')" title="Klik untuk filter: '+esc(n)+'">' +
+        '<div class="kat-nm">'+esc(n)+'</div>' +
+        '<div class="kat-bar-wrap">' +
+          '<div class="kat-bar-track">' +
+            '<div class="p-cls" style="width:'+pC+'%"></div>' +
+            '<div class="p-tmp" style="width:'+pA+'%"></div>' +
+            '<div class="p-opn" style="width:'+pO+'%"></div>' +
+          '</div>' +
         '</div>' +
+        '<div class="kat-ct">'+v.t+'/'+v.d+'</div>' +
       '</div>';
     }).join('');
 
     const cid='donut_'+area.replace(/[^a-zA-Z0-9]/g,'_');
-    const hlBadge=isHlAct?'<div class="ar-hl-badge on">'+frows.length+' match</div>':'<div class="ar-hl-badge"></div>';
+    const hlBadge=isHlAct?'<span class="ar-hl-badge on">'+frows.length+' match</span>':'';
     const parLeg='<div class="ap-leg"><span class="ap-li"><span class="ap-sq" style="background:var(--grn)"></span>✓</span><span class="ap-li"><span class="ap-sq" style="background:#C97F1A"></span>T</span><span class="ap-li"><span class="ap-sq" style="background:#8BBDE0"></span>O</span></div>';
 
     const row=document.createElement('div');
     row.className='area-row'+(isHlDim?' dim':isHlAct?' hl':'');
     row.innerHTML=
-      '<div class="ar-wrap">' +
-        /* LEFT — spans 2 rows */
-        '<div class="ar-left">' +
-          '<div class="ar-name">'+area+'</div>' +
-          hlBadge +
-          '<div class="prog"><div class="pg" style="width:'+pgG+'%"></div><div class="pa" style="width:'+pgA+'%"></div><div class="pr" style="width:'+pgR+'%"></div></div>' +
-        '</div>' +
-        /* STATS ROW */
+      /* ── HEADER: nama area + stats dalam satu baris ── */
+      '<div class="ar-header">' +
+        '<div class="ar-header-left">' +
+          '<span class="ar-name">'+area+'</span>'+hlBadge+
+          '<div class="prog" style="width:100px;margin-top:5px"><div class="pg" style="width:'+pgG+'%"></div><div class="pa" style="width:'+pgA+'%"></div><div class="pr" style="width:'+pgR+'%"></div></div>'+
+        '</div>'+
         '<div class="ar-stats">' +
           '<div class="ar-stat"><div class="ar-stat-n d">'+tot+'</div><div class="ar-stat-l">Total</div></div>' +
           '<div class="ar-stat"><div class="ar-stat-n r">'+opn+'</div><div class="ar-stat-l">Open</div></div>' +
@@ -887,29 +891,29 @@ function renderAreaMatrix(){
           '<div class="ar-stat"><div class="ar-stat-n g">'+cls+'</div><div class="ar-stat-l">Selesai</div></div>' +
           '<div class="ar-stat"><div class="ar-stat-n a">'+remain+'</div><div class="ar-stat-l">Remain</div></div>' +
         '</div>' +
-        /* CHARTS ROW */
-        '<div class="ar-charts">' +
-          /* donut */
-          '<div class="ar-donut">' +
-            '<div style="position:relative;width:80px;height:80px;flex-shrink:0">' +
-              '<canvas id="'+cid+'" style="width:80px!important;height:80px!important;display:block"></canvas>' +
-              '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">' +
-                '<div style="font-size:20px;font-weight:700;color:var(--txt);line-height:1">'+tot+'</div>' +
-              '</div>' +
-            '</div>' +
-            '<div class="ar-dleg">' +
-              '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:var(--grn)"></span>Selesai</div><span class="dl-n">'+cls+'</span></div>' +
-              '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:#C97F1A"></span>Temp.</div><span class="dl-n">'+tmp+'</span></div>' +
-              '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:var(--red)"></span>Open</div><span class="dl-n">'+opn+'</span></div>' +
+      '</div>' +
+      /* ── BODY: donut + 3 kolom pareto ── */
+      '<div class="ar-body">' +
+        /* donut */
+        '<div class="ar-donut">' +
+          '<div style="position:relative;width:80px;height:80px;flex-shrink:0">' +
+            '<canvas id="'+cid+'" style="width:80px!important;height:80px!important;display:block"></canvas>' +
+            '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">' +
+              '<div style="font-size:20px;font-weight:700;color:var(--txt);line-height:1">'+tot+'</div>' +
             '</div>' +
           '</div>' +
-          /* mesin */
-          '<div class="ar-par"><div class="ap-ttl">Pareto Mesin'+parLeg+'</div><div class="par-scroll">'+mArr.map(e=>pBarHtml(e[0],e[1],mMax,'mesin')).join('')+'</div></div>' +
-          /* part */
-          '<div class="ar-par"><div class="ap-ttl">Pareto Part'+parLeg+'</div><div class="par-scroll">'+pArr.map(e=>pBarHtml(e[0],e[1],pMax,'part')).join('')+'</div></div>' +
-          /* kategori */
-          '<div class="ar-par"><div class="ap-ttl">Kategori Temuan</div><div class="par-scroll">'+katHtml+'</div></div>' +
+          '<div class="ar-dleg">' +
+            '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:var(--grn)"></span>Selesai</div><span class="dl-n">'+cls+'</span></div>' +
+            '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:#C97F1A"></span>Temp.</div><span class="dl-n">'+tmp+'</span></div>' +
+            '<div class="dl-r"><div class="dl-left"><span class="dl-sq" style="background:var(--red)"></span>Open</div><span class="dl-n">'+opn+'</span></div>' +
+          '</div>' +
         '</div>' +
+        /* mesin */
+        '<div class="ar-par"><div class="ap-ttl">Pareto Mesin'+parLeg+'</div><div class="par-scroll">'+mArr.map(e=>pBarHtml(e[0],e[1],mMax,'mesin')).join('')+'</div></div>' +
+        /* part */
+        '<div class="ar-par"><div class="ap-ttl">Pareto Part'+parLeg+'</div><div class="par-scroll">'+pArr.map(e=>pBarHtml(e[0],e[1],pMax,'part')).join('')+'</div></div>' +
+        /* kategori — clickable filter */
+        '<div class="ar-par"><div class="ap-ttl">Kategori Temuan <span style="font-size:8px;color:var(--acc);font-weight:500;text-transform:none;letter-spacing:0">klik=filter</span></div><div class="par-scroll">'+katHtml+'</div></div>' +
       '</div>';
     mat.appendChild(row);
 
