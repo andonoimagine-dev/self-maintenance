@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPM HSB — Casting 2 · PT AT Indonesia</title>
+<style>
+/* ============== THEME ============== */
+[data-theme="light"]{
+  --bg:#eef2f7;--card:#fff;--card2:#f6f8fb;
+  --border:#d8dfe9;--border2:#c4cdda;
+  --text:#1a2332;--text2:#3d5068;--muted:#7a93ad;
+  --accent:#0066cc;--accent-bg:rgba(0,102,204,.08);
+  --ok:#059669;--ok-bg:rgba(5,150,105,.1);
+  --warn:#d97706;--warn-bg:rgba(217,119,6,.1);
+  --danger:#dc2626;--danger-bg:rgba(220,38,38,.1);
+  --info:#0891b2;--info-bg:rgba(8,145,178,.1);
+  --shadow:0 1px 3px rgba(15,30,55,.06),0 4px 14px rgba(15,30,55,.06);
+  --header:rgba(238,242,247,.96);
+}
+[data-theme="dark"]{
+  --bg:#0a0f17;--card:#141d2c;--card2:#0f1825;
+  --border:#1e2c44;--border2:#2a3a55;
+  --text:#e0eaf5;--text2:#a0b6cd;--muted:#5a7390;
+  --accent:#3b9eff;--accent-bg:rgba(59,158,255,.12);
+  --ok:#10b981;--ok-bg:rgba(16,185,129,.13);
+  --warn:#f59e0b;--warn-bg:rgba(245,158,11,.13);
+  --danger:#ef4444;--danger-bg:rgba(239,68,68,.13);
+  --info:#06b6d4;--info-bg:rgba(6,182,212,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  --header:rgba(10,15,23,.96);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.45;min-height:100vh;}
+
+/* ============== HEADER ============== */
+.hdr{position:sticky;top:0;z-index:100;background:var(--header);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.lg{display:flex;align-items:center;gap:12px;}
+.lg-ic{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),#0044aa);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;box-shadow:0 3px 10px rgba(0,102,204,.25);flex-shrink:0;}
+.lg-t1{font-size:1.2rem;font-weight:800;letter-spacing:.5px;line-height:1.05;}
+.lg-t2{font-size:.7rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;font-weight:600;}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+.live{display:flex;align-items:center;gap:5px;background:var(--ok-bg);border:1px solid rgba(5,150,105,.3);border-radius:20px;padding:4px 11px;font-size:.7rem;color:var(--ok);font-weight:700;letter-spacing:.5px;}
+.live-d{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:bk 1.5s infinite;}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
+#clk{font-family:'Courier New',monospace;font-size:.82rem;color:var(--accent);font-weight:600;}
+.thbtn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:1rem;color:var(--text2);}
+.thbtn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ============== NAV ============== */
+.nv{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:60px;z-index:99;box-shadow:var(--shadow);}
+.nv::-webkit-scrollbar{display:none;}
+.tb{flex:0 0 auto;padding:11px 16px;background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tb.on{color:var(--accent);border-bottom-color:var(--accent);}
+.tb:hover:not(.on){color:var(--text);}
+
+/* ============== CONTENT ============== */
+.ct{padding:14px;max-width:1800px;margin:0 auto;}
+.pg{display:none;}.pg.on{display:block;}
+
+/* CARDS */
+.cd{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow);}
+.cd+.cd{margin-top:12px;}
+.st{font-size:.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.st::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* CHIPS */
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.cp{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:5px 10px;display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:var(--text2);}
+.cp .v{font-family:'Courier New',monospace;font-size:1.05rem;font-weight:700;}
+.cp.ok .v{color:var(--ok);} .cp.wn .v{color:var(--warn);} .cp.dg .v{color:var(--danger);} .cp.if .v{color:var(--info);} .cp.mu .v{color:var(--muted);}
+
+/* ALERTS */
+.al{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.al-i{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:600;}
+.al-d{background:var(--danger-bg);border:1px solid rgba(220,38,38,.25);color:var(--danger);}
+.al-w{background:var(--warn-bg);border:1px solid rgba(217,119,6,.25);color:var(--warn);}
+.al-o{background:var(--ok-bg);border:1px solid rgba(5,150,105,.25);color:var(--ok);}
+
+/* IMPELLER GRID */
+.ig{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+@media(min-width:700px){.ig{grid-template-columns:repeat(8,1fr);gap:8px;}}
+.ic{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:9px 5px;text-align:center;cursor:pointer;transition:transform .12s,border-color .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;overflow:hidden;}
+.ic:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.ic-n{font-family:'Courier New',monospace;font-size:.62rem;color:var(--muted);}
+.ic-nm{font-size:.7rem;font-weight:700;color:var(--text);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ic-a{font-family:'Courier New',monospace;font-size:1.05rem;font-weight:700;margin:2px 0;line-height:1;}
+.ic-f{font-size:.92rem;line-height:1;}
+.ic-s{font-size:.58rem;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:4px;margin-top:1px;}
+.ic-attn{font-size:.58rem;color:var(--warn);font-weight:700;margin-top:2px;}
+.ic-of{border-color:var(--border2);opacity:.6;}
+.ic-of .ic-a{color:var(--muted);} .ic-of .ic-s{background:var(--card2);color:var(--muted);}
+.ic-ok{border-color:rgba(5,150,105,.45);background:rgba(5,150,105,.04);}
+.ic-ok .ic-a{color:var(--ok);} .ic-ok .ic-s{background:var(--ok-bg);color:var(--ok);}
+.ic-lo{border-color:rgba(217,119,6,.55);}
+.ic-lo .ic-a{color:var(--warn);animation:bk2 1s infinite;} .ic-lo .ic-s{background:var(--warn-bg);color:var(--warn);}
+.ic-hi{border-color:rgba(220,38,38,.55);box-shadow:0 0 8px rgba(220,38,38,.12);}
+.ic-hi .ic-a{color:var(--danger);animation:bk2 .65s infinite;} .ic-hi .ic-s{background:var(--danger-bg);color:var(--danger);}
+.ic-attn-flag::after{content:'!';position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:var(--warn);color:#fff;font-size:.55rem;font-weight:900;line-height:14px;text-align:center;}
+@keyframes bk2{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ALL ON/OFF */
+.iac{display:flex;gap:10px;margin-bottom:10px;}
+.iac-b{flex:1;padding:10px 0;border-radius:9px;border:2px solid;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;}
+.iac-on{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);}
+.iac-on:hover{background:var(--ok);color:#fff;}
+.iac-of{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
+.iac-of:hover{background:var(--danger);color:#fff;}
+
+/* HANGER GRID */
+.hg{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;}
+@media(min-width:500px){.hg{grid-template-columns:repeat(10,1fr);}}
+@media(min-width:900px){.hg{grid-template-columns:repeat(12,1fr);}}
+@media(min-width:1400px){.hg{grid-template-columns:repeat(15,1fr);}}
+.hc{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 2px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;}
+.hc:hover{transform:translateY(-1px);}
+.hc-n{font-family:'Courier New',monospace;font-size:.6rem;color:var(--muted);}
+.hc-f{font-size:.85rem;}
+.hc-s{font-size:.55rem;font-weight:700;letter-spacing:.3px;}
+.hc-ok{border-color:rgba(5,150,105,.3);} .hc-ok .hc-s{color:var(--ok);}
+.hc-ng{border-color:rgba(220,38,38,.5);background:var(--danger-bg);} .hc-ng .hc-s{color:var(--danger);}
+.hc-wn{border-color:rgba(217,119,6,.45);background:var(--warn-bg);} .hc-wn .hc-s{color:var(--warn);}
+.hc-cf{border-color:rgba(0,102,204,.3);} .hc-cf .hc-s{color:var(--accent);}
+
+/* ============== DASHBOARD BOTTOM 3 COLS ==============
+   Solusi sederhana: semua card height 380px FIXED. Body pakai grid dengan
+   slot-slot eksplisit. Canvas dimensi mengisi slot dengan absolute fill.
+*/
+.db3{display:grid;gap:12px;grid-template-columns:1fr;}
+@media(min-width:700px){.db3{grid-template-columns:1fr 1fr;}}
+@media(min-width:1100px){.db3{grid-template-columns:1fr 1fr 1fr;}}
+
+.db-card{height:380px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow);overflow:hidden;}
+.db-head{height:30px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;margin-bottom:6px;}
+.db-canvas{flex:1;min-height:0;position:relative;}
+.db-canvas>canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;}
+.db-foot{flex-shrink:0;margin-top:8px;}
+
+/* CHART CONTROLS */
+.chc{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
+.chc-b{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer;}
+.chc-b.on,.chc-b:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* LEGEND */
+.lg-r{display:flex;gap:10px;flex-wrap:wrap;}
+.lg-i{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text2);font-weight:600;}
+.lg-d{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* FORMS */
+.fr{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.fg{flex:1;min-width:120px;}
+.fg label{display:block;font-size:.65rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:.85rem;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+.fg textarea{resize:vertical;min-height:55px;}
+
+/* TABLE */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.78rem;}
+th{background:var(--card2);color:var(--muted);padding:8px 10px;text-align:left;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-bottom:2px solid var(--border);font-size:.65rem;}
+td{padding:7px 10px;border-bottom:1px solid var(--border);}
+tr:hover td{background:var(--accent-bg);}
+.bd{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:700;letter-spacing:.4px;}
+.bd-ok{background:var(--ok-bg);color:var(--ok);} .bd-ng{background:var(--danger-bg);color:var(--danger);} .bd-wn{background:var(--warn-bg);color:var(--warn);} .bd-if{background:var(--info-bg);color:var(--info);}
+
+/* PV ITEMS */
+.pv-s{margin-bottom:10px;}
+.pv-t{font-size:.82rem;font-weight:700;color:var(--text);padding:7px 11px;background:var(--card2);border-radius:8px;border:1px solid var(--border);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.pv-i{display:flex;align-items:center;gap:8px;padding:7px 11px;background:var(--bg);border:1px solid var(--border);border-radius:7px;margin-bottom:4px;}
+.pv-i.pv-ok{border-color:rgba(5,150,105,.4);background:var(--ok-bg);}
+.pv-i.pv-ng{border-color:rgba(220,38,38,.4);background:var(--danger-bg);}
+.pv-l{flex:1;font-size:.8rem;}
+.pv-d{font-size:.65rem;color:var(--muted);margin-top:1px;}
+.pv-bb{display:flex;gap:5px;}
+.pv-b{border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:.7rem;font-weight:700;cursor:pointer;background:var(--card2);color:var(--muted);}
+.pv-b.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);}
+.pv-b.ng{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
+
+/* LIFETIME BAR */
+.ltw{width:100%;background:var(--border);border-radius:4px;height:6px;margin-top:3px;}
+.lt{height:6px;border-radius:4px;transition:width .3s;}
+
+/* BUTTONS */
+.btn{padding:9px 18px;border-radius:9px;border:none;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+.btn:hover{filter:brightness(.92);}
+.btn-p{background:var(--accent);color:#fff;}
+.btn-d{background:var(--danger);color:#fff;}
+.btn-w{background:var(--warn);color:#fff;}
+.btn-k{background:var(--ok);color:#fff;}
+.btn-g{background:var(--card2);border:1px solid var(--border);color:var(--text2);}
+.btn-s{padding:5px 11px;font-size:.7rem;}
+
+/* MODAL */
+.mv{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(2px);}
+.mv.on{display:flex;}
+.mw{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.2);}
+.mh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);border-radius:14px 14px 0 0;z-index:1;}
+.mh h3{font-size:1rem;font-weight:700;}
+.mx{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;padding:2px 6px;border-radius:5px;line-height:1;}
+.mx:hover{background:var(--danger-bg);color:var(--danger);}
+.mb{padding:14px 18px;}
+.mb label{display:block;font-size:.65rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
+.mb input,.mb select,.mb textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:.85rem;margin-bottom:10px;}
+.ma{display:flex;gap:7px;flex-wrap:wrap;}
+
+/* SETTING */
+.sr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+.sr:last-child{border:none;}
+.sl{flex:1;font-weight:500;}
+.si{width:110px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;color:var(--text);font-family:'Courier New',monospace;font-size:.82rem;text-align:right;}
+
+/* MISC */
+.fb{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.fg-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.es{text-align:center;padding:25px;color:var(--muted);font-size:.82rem;}
+.mn{font-family:'Courier New',monospace;}
+.t-ok{color:var(--ok);} .t-wn{color:var(--warn);} .t-dg{color:var(--danger);} .t-mu{color:var(--muted);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="lg">
+    <div class="lg-ic">⚙</div>
+    <div>
+      <div class="lg-t1">TPM HSB</div>
+      <div class="lg-t2">Casting 2 · PT AT Indonesia</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <button class="thbtn" id="thbtn" onclick="tgTheme()" title="Toggle tema">🌙</button>
+    <div class="live"><span class="live-d"></span>LIVE</div>
+    <div id="clk"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nv">
+  <button class="tb on" data-t="dash">📊 Dashboard</button>
+  <button class="tb" data-t="prev">🔧 Preventive</button>
+  <button class="tb" data-t="sp">🔩 Impeller &amp; Hanger</button>
+  <button class="tb" data-t="amp">⚡ Ampere Log</button>
+  <button class="tb" data-t="lb">🗑 Limbah</button>
+  <button class="tb" data-t="ss">🔮 Steel Shot</button>
+  <button class="tb" data-t="set">⚙ Setting</button>
+</div>
+
+<div class="ct">
+
+<!-- ===== DASHBOARD ===== -->
+<div id="p-dash" class="pg on">
+  <div id="al-box" class="al"></div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">⚙ Status Impeller — 16 Unit</div>
+    <div class="iac">
+      <button class="iac-b iac-on" onclick="allOn()">▶ SEMUA ON <span style="opacity:.75;">(16 unit)</span></button>
+      <button class="iac-b iac-of" onclick="allOff()">⏹ SEMUA OFF <span style="opacity:.75;">(matikan semua)</span></button>
+    </div>
+    <div class="bar" id="i-sum"></div>
+    <div class="ig" id="i-grid"></div>
+  </div>
+
+  <div class="db3">
+    <!-- STEEL SHOT -->
+    <div class="db-card">
+      <div class="db-head">
+        <div class="st" style="margin:0;flex:1;">🔮 Steel Shot — Trend</div>
+        <button class="btn btn-g btn-s" onclick="goTab('ss')">Detail →</button>
+      </div>
+      <div class="db-canvas"><canvas id="c-ss"></canvas></div>
+      <div class="db-foot">
+        <div class="lg-r">
+          <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (karung)</div>
+          <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (karung)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIMBAH -->
+    <div class="db-card">
+      <div class="db-head">
+        <div class="st" style="margin:0;flex:1;">🗑 Limbah — Trend Bulanan</div>
+        <button class="btn btn-g btn-s" onclick="goTab('lb')">Detail →</button>
+      </div>
+      <div class="db-canvas"><canvas id="c-lb"></canvas></div>
+      <div class="db-foot">
+        <div class="lg-r">
+          <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Pasir (Trolley)</div>
+          <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Debu (Trolley)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HANGER -->
+    <div class="db-card">
+      <div class="db-head">
+        <div class="st" style="margin:0;flex:1;">🪝 Hanger — 60 Unit</div>
+        <button class="btn btn-g btn-s" onclick="goTab('sp')">Detail →</button>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+        <div class="bar" id="hg-sum" style="margin-bottom:6px;flex-shrink:0;"></div>
+        <div style="flex:1;min-height:0;overflow-y:auto;">
+          <div class="hg" id="hg-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PREVENTIVE ===== -->
+<div id="p-prev" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🔧 Weekly Check Sheet — Hanger HSB</div>
+    <div class="fr">
+      <div class="fg"><label>Minggu ke-</label><select id="pv-w"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div class="fg"><label>Bulan</label><input type="month" id="pv-m"></div>
+      <div class="fg"><label>Tanggal Check</label><input type="date" id="pv-d"></div>
+      <div class="fg"><label>PIC</label><input type="text" id="pv-p" placeholder="Nama..."></div>
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">○ = Planning &nbsp;● = Sudah dicek &nbsp;√ = Sesuai Standard &nbsp;X = Abnormal</div>
+    <div id="pv-ck"></div>
+    <div class="fr" style="margin-top:10px;"><div class="fg"><label>Catatan Abnormal</label><textarea id="pv-n"></textarea></div></div>
+    <button class="btn btn-p" onclick="savePv()">💾 Simpan</button>
+  </div>
+  <div class="cd">
+    <div class="st">📋 Riwayat Preventive</div>
+    <div class="tw"><table>
+      <thead><tr><th>Periode</th><th>Tgl</th><th>PIC</th><th>OK</th><th>NG</th><th>Catatan</th></tr></thead>
+      <tbody id="pv-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== SPAREPART & HANGER ===== -->
+<div id="p-sp" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🔩 Input Penggantian Sparepart Impeller</div>
+    <div class="fr">
+      <div class="fg"><label>Tanggal</label><input type="date" id="sp-d"></div>
+      <div class="fg"><label>Impeller</label><select id="sp-i"></select></div>
+      <div class="fg"><label>Jenis Penggantian</label>
+        <select id="sp-j" onchange="onJChange()">
+          <option value="part">Sparepart Satuan</option>
+          <option value="assy">Impeller Unit Assy — Motor tidak termasuk</option>
+        </select>
+      </div>
+    </div>
+    <div id="sp-pr">
+      <div class="fr">
+        <div class="fg"><label>Nama Sparepart</label>
+          <select id="sp-nm">
+            <option>Impeller Blade</option><option>Control Cage</option><option>Distributor</option>
+            <option>End Liner Atas</option><option>End Liner Bawah</option><option>Ceiling Liner</option>
+            <option>Front Cover</option><option>V-Belt</option><option>Motor</option>
+          </select>
+        </div>
+        <div class="fg"><label>Jam Pakai (h)</label><input type="number" id="sp-jm" placeholder="480"></div>
+        <div class="fg"><label>Qty</label><input type="number" id="sp-q" value="1"></div>
+        <div class="fg"><label>Kondisi Lama</label>
+          <select id="sp-k"><option>Aus</option><option>Pecah</option><option>Kotor</option><option>Rusak</option></select>
+        </div>
+      </div>
+    </div>
+    <div id="sp-ai" style="display:none;background:var(--info-bg);border:1px solid rgba(8,145,178,.3);border-radius:8px;padding:11px 13px;font-size:.78rem;color:var(--info);margin-bottom:8px;">
+      ⚙ <strong>Impeller Unit Assy:</strong> Impeller Blade, Control Cage, Distributor, End Liner Atas/Bawah, Ceiling Liner, Front Cover, V-Belt — semua dicatat <strong>diganti baru</strong>.<br>
+      <span style="color:var(--danger);font-weight:700;">✖ Motor TIDAK termasuk</span> dalam Unit Assy ini.
+      <div class="fr" style="margin-top:8px;"><div class="fg"><label>Jam Running (h)</label><input type="number" id="sp-aj" placeholder="480"></div></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Operator</label><input type="text" id="sp-op" placeholder="Nama..."></div>
+      <div class="fg"><label>Catatan</label><input type="text" id="sp-no"></div>
+    </div>
+    <button class="btn btn-p" onclick="saveSp()">💾 Simpan</button>
+  </div>
+
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📊 Lifetime Tracker Impeller (Modus History)</div>
+    <div id="lt-i"></div>
+  </div>
+
+  <div class="cd" style="margin-bottom:16px;">
+    <div class="st">📋 History Penggantian Sparepart</div>
+    <div class="tw"><table>
+      <thead><tr><th>Tgl</th><th>Impeller</th><th>Sparepart</th><th>Jam</th><th>Qty</th><th>Kondisi</th><th>Op</th></tr></thead>
+      <tbody id="sp-tb"></tbody>
+    </table></div>
+  </div>
+
+  <div class="cd" style="margin-bottom:12px;border-top:3px solid var(--accent);">
+    <div class="st">🪝 Status Hanger — 60 Unit</div>
+    <div class="bar" id="hg-fs"></div>
+    <div class="hg" id="hg-fg"></div>
+  </div>
+
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📋 Input Penggantian Hanger</div>
+    <div class="fr">
+      <div class="fg"><label>Tanggal</label><input type="date" id="hg-d"></div>
+      <div class="fg"><label>No. Hanger</label><select id="hg-n"></select></div>
+      <div class="fg"><label>Tipe</label>
+        <select id="hg-tp"><option value="baru">Ganti Baru ◼</option><option value="repair">Ganti Repair ◧</option></select>
+      </div>
+      <div class="fg"><label>Jam Pakai</label><input type="number" id="hg-jm" placeholder="960"></div>
+      <div class="fg"><label>Kondisi</label><select id="hg-k"><option>Deformasi</option><option>Retak</option><option>Aus</option><option>Rusak Berat</option></select></div>
+      <div class="fg"><label>Op</label><input type="text" id="hg-op"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Catatan</label><textarea id="hg-no"></textarea></div></div>
+    <button class="btn btn-p" onclick="saveHg()">💾 Simpan</button>
+  </div>
+
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🔖 Set Status Manual Hanger</div>
+    <div class="fr">
+      <div class="fg"><label>No. Hanger</label><select id="hg-sn"></select></div>
+      <div class="fg"><label>Status</label>
+        <select id="hg-ss"><option value="ok">OK</option><option value="ng">NG</option><option value="conf">Confirmed (setelah inspeksi)</option></select>
+      </div>
+      <div class="fg"><label>Catatan</label><input type="text" id="hg-sno"></div>
+    </div>
+    <button class="btn btn-w btn-s" onclick="setHgSt()">✔ Set Status</button>
+  </div>
+
+  <div class="cd">
+    <div class="st">📋 History Penggantian Hanger</div>
+    <div class="tw"><table>
+      <thead><tr><th>Tgl</th><th>Hanger</th><th>Tipe</th><th>Jam</th><th>Kondisi</th><th>Op</th></tr></thead>
+      <tbody id="hg-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== AMPERE ===== -->
+<div id="p-amp" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">⚡ Input Ampere — 16 Impeller Sekaligus</div>
+    <div class="fr">
+      <div class="fg"><label>Tgl &amp; Waktu</label><input type="datetime-local" id="amp-dt"></div>
+      <div class="fg"><label>Shift</label><select id="amp-sh"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>Operator</label><input type="text" id="amp-op"></div>
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">Range normal: <span id="amp-rg" class="mn t-ok" style="font-weight:700;"></span></div>
+    <div class="ig" id="amp-ig"></div>
+    <div class="fr" style="margin-top:10px;"><div class="fg"><label>Catatan</label><textarea id="amp-no"></textarea></div></div>
+    <button class="btn btn-p" onclick="saveAmp()">💾 Simpan Semua</button>
+  </div>
+  <div class="cd">
+    <div class="st">📋 Log Ampere</div>
+    <div class="tw"><table>
+      <thead><tr><th>Waktu</th><th>Shift</th><th>Impeller</th><th>Ampere</th><th>Status</th><th>Op</th></tr></thead>
+      <tbody id="amp-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== LIMBAH ===== -->
+<div id="p-lb" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🗑 Input Limbah Harian</div>
+    <div class="fr">
+      <div class="fg"><label>Tanggal</label><input type="date" id="lb-d"></div>
+      <div class="fg"><label>Shift</label><select id="lb-sh"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>Jenis</label><select id="lb-j"><option>Pasir</option><option>Debu</option></select></div>
+      <div class="fg"><label>Volume (Trolley)</label><input type="number" id="lb-v" step="0.5"></div>
+      <div class="fg"><label>Lokasi TPS</label><input type="text" id="lb-l"></div>
+      <div class="fg"><label>Op</label><input type="text" id="lb-op"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="lb-kt"></textarea></div></div>
+    <button class="btn btn-p" onclick="saveLb()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📈 Grafik Trend Limbah</div>
+    <div class="chc">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">PERIODE:</span>
+      <button class="chc-b on" data-pd="cur" onclick="lbPd(this,'cur')">Bulan Ini</button>
+      <button class="chc-b" data-pd="prev" onclick="lbPd(this,'prev')">Bulan Lalu</button>
+      <button class="chc-b" data-pd="3m" onclick="lbPd(this,'3m')">3 Bulan</button>
+      <button class="chc-b" data-pd="6m" onclick="lbPd(this,'6m')">6 Bulan</button>
+      <button class="chc-b" data-pd="1y" onclick="lbPd(this,'1y')">1 Tahun</button>
+      <button class="chc-b" data-pd="cust" onclick="lbPd(this,'cust')">Custom</button>
+      <span id="lb-cust" style="display:none;" class="fg-r">
+        <input type="month" id="lb-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <span style="font-size:.72rem;color:var(--muted);">s/d</span>
+        <input type="month" id="lb-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <button class="btn btn-p btn-s" onclick="drawFullLb()">Tampilkan</button>
+      </span>
+    </div>
+    <div style="height:260px;position:relative;"><canvas id="c-lb-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
+    <div class="lg-r" style="margin-top:8px;">
+      <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Pasir (Trolley)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Debu (Trolley)</div>
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:5px;">Range Pasir: <span id="lb-rp" class="t-ok" style="font-weight:700;"></span> &nbsp;|&nbsp; Range Debu: <span id="lb-rd" class="t-ok" style="font-weight:700;"></span></div>
+  </div>
+  <div class="cd">
+    <div class="st">📋 History Limbah</div>
+    <div class="tw"><table>
+      <thead><tr><th>Tgl</th><th>Shift</th><th>Jenis</th><th>Vol</th><th>Status</th><th>Lokasi</th><th>Op</th></tr></thead>
+      <tbody id="lb-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== STEEL SHOT ===== -->
+<div id="p-ss" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🔮 Input Steelshot Harian</div>
+    <div style="font-size:.75rem;color:var(--info);background:var(--info-bg);border:1px solid rgba(8,145,178,.25);border-radius:8px;padding:8px 12px;margin-bottom:10px;">
+      ℹ SS 550 = 1 karung = 1 Ton (baru) &nbsp;|&nbsp; Wire Cut = bekas, biasanya 2–4 karung/hari
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Tanggal</label><input type="date" id="ss-d"></div>
+      <div class="fg"><label>Shift</label><select id="ss-sh"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>SS 550 (karung)</label><input type="number" id="ss-50" min="0"></div>
+      <div class="fg"><label>Wire Cut (karung)</label><input type="number" id="ss-wc" min="0"></div>
+      <div class="fg"><label>Op</label><input type="text" id="ss-op"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="ss-no"></textarea></div></div>
+    <button class="btn btn-p" onclick="saveSs()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📈 Grafik Trend Steelshot</div>
+    <div class="chc">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">PERIODE:</span>
+      <button class="chc-b on" data-pd="cur" onclick="ssPd(this,'cur')">Bulan Ini</button>
+      <button class="chc-b" data-pd="prev" onclick="ssPd(this,'prev')">Bulan Lalu</button>
+      <button class="chc-b" data-pd="3m" onclick="ssPd(this,'3m')">3 Bulan</button>
+      <button class="chc-b" data-pd="6m" onclick="ssPd(this,'6m')">6 Bulan</button>
+      <button class="chc-b" data-pd="1y" onclick="ssPd(this,'1y')">1 Tahun</button>
+      <button class="chc-b" data-pd="cust" onclick="ssPd(this,'cust')">Custom</button>
+      <span id="ss-cust" style="display:none;" class="fg-r">
+        <input type="month" id="ss-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <span style="font-size:.72rem;color:var(--muted);">s/d</span>
+        <input type="month" id="ss-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <button class="btn btn-p btn-s" onclick="drawFullSs()">Tampilkan</button>
+      </span>
+    </div>
+    <div style="height:260px;position:relative;"><canvas id="c-ss-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
+    <div class="lg-r" style="margin-top:8px;">
+      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (karung)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (karung)</div>
+    </div>
+  </div>
+  <div class="cd">
+    <div class="st">📋 History Steelshot</div>
+    <div class="tw"><table>
+      <thead><tr><th>Tgl</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>Total</th><th>Op</th><th>Ket</th></tr></thead>
+      <tbody id="ss-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== SETTING ===== -->
+<div id="p-set" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">⚡ Range Ampere Impeller</div>
+    <div class="sr"><div class="sl">Batas Bawah (A)</div><input class="si" type="number" id="s-alo" step="0.1"></div>
+    <div class="sr"><div class="sl">Batas Atas (A)</div><input class="si" type="number" id="s-ahi" step="0.1"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🗑 Range Limbah</div>
+    <div class="sr"><div class="sl">Pasir — Bawah (Trolley)</div><input class="si" type="number" id="s-plo" step="0.5"></div>
+    <div class="sr"><div class="sl">Pasir — Atas (Trolley)</div><input class="si" type="number" id="s-phi" step="0.5"></div>
+    <div class="sr"><div class="sl">Debu — Bawah (Trolley)</div><input class="si" type="number" id="s-dlo" step="0.5"></div>
+    <div class="sr"><div class="sl">Debu — Atas (Trolley)</div><input class="si" type="number" id="s-dhi" step="0.5"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🔮 Range Steelshot</div>
+    <div class="sr"><div class="sl">SS 550 — Bawah (karung/hari)</div><input class="si" type="number" id="s-slo"></div>
+    <div class="sr"><div class="sl">SS 550 — Atas (karung/hari)</div><input class="si" type="number" id="s-shi"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🔩 Lifetime Default Sparepart (jam)</div>
+    <div id="lt-set"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveLt()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">⚙ Nama Impeller</div>
+    <div id="i-nm-rows"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveNm()">💾 Simpan</button>
+  </div>
+  <div class="cd">
+    <div class="st">🗃 Data Management</div>
+    <div class="fg-r">
+      <button class="btn btn-g btn-s" onclick="exp()">📤 Export JSON</button>
+      <button class="btn btn-d btn-s" onclick="if(confirm('Reset semua data?'))rst()">🗑 Reset Data</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /ct -->
+
+<!-- MODAL IMPELLER -->
+<div class="mv" id="m-i">
+  <div class="mw">
+    <div class="mh"><h3 id="mi-t">Impeller</h3><button class="mx" onclick="cM('m-i')">×</button></div>
+    <div class="mb">
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button class="btn btn-k" style="flex:1;" onclick="setOn(true)">▶ Set ON</button>
+        <button class="btn btn-g" style="flex:1;" onclick="setOn(false)">⏹ Set OFF</button>
+      </div>
+      <label>Ampere Saat Ini (A)</label>
+      <input type="number" id="mi-a" step="0.1">
+      <div id="mi-af" style="font-size:.78rem;margin:-7px 0 10px;min-height:18px;font-weight:600;"></div>
+      <label>Catatan</label>
+      <textarea id="mi-n"></textarea>
+      <div id="mi-lt"></div>
+      <div class="ma">
+        <button class="btn btn-p" style="flex:1;" onclick="saveMi()">💾 Simpan</button>
+        <button class="btn btn-w btn-s" onclick="confI()">✔ Konfirmasi OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HANGER -->
+<div class="mv" id="m-h">
+  <div class="mw">
+    <div class="mh"><h3 id="mh-t">Hanger</h3><button class="mx" onclick="cM('m-h')">×</button></div>
+    <div class="mb">
+      <div id="mh-i" style="margin-bottom:12px;font-size:.82rem;"></div>
+      <div class="ma">
+        <button class="btn btn-k" style="flex:1;" onclick="confH()">✔ Konfirmasi OK</button>
+        <button class="btn btn-d btn-s" onclick="ngH()">✖ Set NG</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============ STORAGE ============
+const K='hsb9_';
+const ld=k=>{try{return JSON.parse(localStorage.getItem(K+k))}catch{return null}};
+const sv=(k,v)=>localStorage.setItem(K+k,JSON.stringify(v));
+
+// ============ STATE ============
+let cfg=ld('cfg')||{aLo:37.5,aHi:42.5,pLo:2,pHi:4,dLo:2,dHi:4,sLo:1,sHi:1};
+let nms=ld('nms')||Array.from({length:16},(_,i)=>`IMP-${String(i+1).padStart(2,'0')}`);
+let st=ld('st')||Array.from({length:16},()=>({on:true,a:null,dt:null,n:'',cf:false}));
+let ampLog=ld('ampLog')||[];
+let spLog=ld('spLog')||[];
+let pvLog=ld('pvLog')||[];
+let lbLog=ld('lbLog')||[];
+let ssLog=ld('ssLog')||[];
+let ltCfg=ld('ltCfg')||{'Impeller Blade':480,'Control Cage':480,'Distributor':480,'End Liner Atas':960,'End Liner Bawah':960,'Ceiling Liner':960,'Front Cover':720,'V-Belt':1440,'Motor':8760,'Hanger':960};
+let hSt=ld('hSt')||Array.from({length:60},(_,i)=>({id:i+1,s:'ok',n:'',cf:false}));
+let hLog=ld('hLog')||[];
+
+// ============ DATE HELPERS (LOCAL TZ — never UTC!) ============
+const M=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+function dStr(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function fD(s){if(!s)return'-';const [y,m,d]=s.split('-');return`${+d}-${M[+m-1]}-${y.slice(2)}`;}
+function fDt(s){if(!s)return'-';const d=new Date(s);return`${d.getDate()}-${M[d.getMonth()]}-${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+const today=()=>dStr(new Date());
+const curMo=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
+function nowL(){const d=new Date();const off=d.getTimezoneOffset();const lcl=new Date(d.getTime()-off*60000);return lcl.toISOString().slice(0,16);}
+
+// ============ SEED 1-YEAR DEMO ============
+function seed(){
+  if(ampLog.length>0) return;
+  const now=new Date();
+  
+  // === AMPERE: 14 days back, 2 shifts/day, 16 impellers ===
+  for(let dd=13;dd>=0;dd--){
+    ['NSP','NSM'].forEach(sh=>{
+      const dt=new Date(now);dt.setDate(dt.getDate()-dd);dt.setHours(sh==='NSP'?8:20,0,0,0);
+      for(let i=0;i<16;i++){
+        let v=38+Math.random()*4;
+        if(dd===1&&i===3)v=46.5;
+        if(dd===2&&i===7)v=34.5;
+        if(dd===0&&i===11)v=47;
+        if(dd===0&&i===14)v=33;
+        ampLog.push({dt:dt.toISOString(),sh,i,v:+v.toFixed(1),op:'Demo'});
+      }
+    });
+  }
+  for(let i=0;i<16;i++){
+    const ll=ampLog.filter(x=>x.i===i);
+    if(ll.length){const l=ll[ll.length-1];st[i].a=l.v;st[i].dt=l.dt;}
+  }
+
+  // === SPAREPART: 1 year history ===
+  const spDates=[];
+  for(let i=0;i<24;i++){
+    const d=new Date(now);d.setDate(d.getDate()-(15*i+5));
+    spDates.push(dStr(d));
+  }
+  spDates.forEach((d,idx)=>{
+    spLog.push({date:d,i:idx%16,nm:'Impeller Blade',q:1,jm:[460,480,480,500,470,490,480,480][idx%8],kn:'Aus',op:'Demo',no:'',j:'part'});
+  });
+  // Other parts
+  spLog.push({date:dStr(new Date(now.getTime()-86400000*120)),i:0,nm:'V-Belt',q:2,jm:1440,kn:'Aus',op:'Demo',no:'',j:'part'});
+  spLog.push({date:dStr(new Date(now.getTime()-86400000*60)),i:2,nm:'Control Cage',q:1,jm:480,kn:'Pecah',op:'Demo',no:'',j:'part'});
+  spLog.push({date:dStr(new Date(now.getTime()-86400000*180)),i:5,nm:'Distributor',q:1,jm:470,kn:'Aus',op:'Demo',no:'',j:'part'});
+  spLog.push({date:dStr(new Date(now.getTime()-86400000*200)),i:8,nm:'End Liner Atas',q:1,jm:950,kn:'Aus',op:'Demo',no:'',j:'part'});
+  spLog.push({date:dStr(new Date(now.getTime()-86400000*250)),i:0,nm:'Ceiling Liner',q:1,jm:980,kn:'Aus',op:'Demo',no:'',j:'part'});
+
+  // === LIMBAH: full year (365 days) ===
+  for(let dd=365;dd>=0;dd--){
+    const d=new Date(now);d.setDate(d.getDate()-dd);
+    const ds=dStr(d);
+    lbLog.push({date:ds,sh:'NSP',j:'Pasir',v:2+Math.round(Math.random()*2),l:'TPS-1',op:'Demo',k:''});
+    lbLog.push({date:ds,sh:'NSP',j:'Debu',v:2+Math.round(Math.random()*2),l:'TPS-2',op:'Demo',k:''});
+    lbLog.push({date:ds,sh:'NSM',j:'Pasir',v:1+Math.round(Math.random()*2),l:'TPS-1',op:'Demo',k:''});
+    lbLog.push({date:ds,sh:'NSM',j:'Debu',v:1+Math.round(Math.random()*2),l:'TPS-2',op:'Demo',k:''});
+  }
+
+  // === STEELSHOT: full year (365 days) ===
+  for(let dd=365;dd>=0;dd--){
+    const d=new Date(now);d.setDate(d.getDate()-dd);
+    const ds=dStr(d);
+    ssLog.push({date:ds,sh:'NSP',s5:1,wc:Math.floor(Math.random()*3)+1,op:'Demo',n:'SS 550 + WC'});
+  }
+
+  // === HANGER: a few NG/warn ===
+  hSt[4].s='ng';hSt[4].n='Retak';
+  hSt[11].s='ng';hSt[11].n='Deformasi';
+  hSt[22].s='warn';hSt[22].n='Lifetime ≈85%';
+  hSt[37].s='warn';hSt[37].n='Lifetime ≈92%';
+
+  // === HANGER LOG: 1 year ===
+  for(let i=1;i<=20;i++){
+    const d=new Date(now);d.setDate(d.getDate()-(20*i+10));
+    hLog.push({date:dStr(d),id:((i*3)%60)+1,tp:i%3===0?'repair':'baru',jm:900+Math.floor(Math.random()*120),kn:'Aus',op:'Demo',n:''});
+  }
+
+  // === PREVENTIVE: a few entries ===
+  for(let w=0;w<4;w++){
+    const d=new Date(now);d.setDate(d.getDate()-w*7);
+    pvLog.push({pr:`Minggu ${4-w} / ${curMo()}`,td:dStr(d),pic:'Demo',no:w===0?'Normal semua':'',rs:[]});
+  }
+
+  saveAll();
+}
+function saveAll(){
+  sv('cfg',cfg);sv('nms',nms);sv('st',st);sv('ampLog',ampLog);sv('spLog',spLog);
+  sv('pvLog',pvLog);sv('lbLog',lbLog);sv('ssLog',ssLog);sv('ltCfg',ltCfg);sv('hSt',hSt);sv('hLog',hLog);
+}
+
+// ============ HELPERS ============
+function ampS(v){if(v==null)return'na';if(v<cfg.aLo)return'lo';if(v>cfg.aHi)return'hi';return'ok';}
+function modus(nm){
+  const js=spLog.filter(s=>s.nm===nm).map(s=>+s.jm).filter(j=>j>0);
+  if(!js.length)return ltCfg[nm]||480;
+  const r=js.map(j=>Math.round(j/10)*10);const f={};
+  r.forEach(j=>f[j]=(f[j]||0)+1);
+  return +Object.entries(f).sort((a,b)=>b[1]-a[1])[0][0];
+}
+function daysSP(i,nm){
+  const r=spLog.filter(s=>s.i===i&&s.nm===nm).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!r.length)return null;
+  const [y,m,d]=r[0].date.split('-');
+  const ld=new Date(+y,+m-1,+d);
+  return Math.floor((Date.now()-ld.getTime())/86400000);
+}
+const estJ=d=>d*16;
+function needAttn(i){
+  if(st[i].cf)return false;
+  for(const nm of Object.keys(ltCfg).filter(n=>n!=='Hanger')){
+    const d=daysSP(i,nm);if(d==null)continue;
+    if(estJ(d)/modus(nm)>=0.8)return true;
+  }
+  return false;
+}
+function hgModus(id){
+  const js=hLog.filter(r=>r.id===id).map(r=>+r.jm).filter(j=>j>0);
+  if(!js.length)return ltCfg['Hanger']||960;
+  const r=js.map(j=>Math.round(j/10)*10);const f={};
+  r.forEach(j=>f[j]=(f[j]||0)+1);
+  return +Object.entries(f).sort((a,b)=>b[1]-a[1])[0][0];
+}
+function chkHgLT(){
+  hSt.forEach(h=>{
+    if(h.s==='conf')return;
+    const r=hLog.filter(x=>x.id===h.id).sort((a,b)=>b.date.localeCompare(a.date));
+    if(!r.length)return;
+    const m=hgModus(h.id);
+    const [y,mn,d]=r[0].date.split('-');
+    const ld=new Date(+y,+mn-1,+d);
+    const days=Math.floor((Date.now()-ld.getTime())/86400000);
+    if(estJ(days)>=m && h.s==='ok'){h.s='warn';h.n=`Lifetime ${estJ(days)}h ≥ modus ${m}h`;}
+  });
+}
+
+// ============ DATE RANGE ============
+function dtRange(p,cf,ct){
+  const n=new Date();const y=n.getFullYear(),m=n.getMonth();
+  if(p==='cur')return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};
+  if(p==='prev')return{f:dStr(new Date(y,m-1,1)),t:dStr(new Date(y,m,0))};
+  if(p==='3m')return{f:dStr(new Date(y,m-2,1)),t:dStr(new Date(y,m+1,0))};
+  if(p==='6m')return{f:dStr(new Date(y,m-5,1)),t:dStr(new Date(y,m+1,0))};
+  if(p==='1y')return{f:dStr(new Date(y-1,m+1,1)),t:dStr(new Date(y,m+1,0))};
+  if(p==='cust'&&cf&&ct){
+    const [fy,fm]=cf.split('-');const [ty,tm]=ct.split('-');
+    return{f:`${fy}-${fm}-01`,t:dStr(new Date(+ty,+tm,0))};
+  }
+  return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};
+}
+function allDays(f,t){
+  const days=[];
+  const [fy,fm,fd]=f.split('-').map(Number);
+  const [ty,tm,td]=t.split('-').map(Number);
+  let cur=new Date(fy,fm-1,fd);
+  const end=new Date(ty,tm-1,td);
+  while(cur<=end){days.push(dStr(cur));cur.setDate(cur.getDate()+1);}
+  return days;
+}
+
+// ============ CLOCK + THEME ============
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(tick,1000);tick();
+function tgTheme(){
+  const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';
+  localStorage.setItem(K+'theme',t);
+  // Redraw charts on theme change
+  if(document.getElementById('p-dash').classList.contains('on'))drawDashCharts();
+}
+(()=>{const t=localStorage.getItem(K+'theme')||'light';document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';})();
+
+// ============ TAB NAV ============
+function goTab(t){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+t).classList.add('on');
+  document.querySelectorAll('.tb').forEach(b=>{if(b.dataset.t===t)b.classList.add('on');});
+  ({dash:rDash,prev:rPv,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,set:rSet})[t]?.();
+}
+document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.t)));
+
+// ============ CHART ENGINE ============
+function readVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+function drawChart(canvasId,data,series,opts){
+  const cv=document.getElementById(canvasId);if(!cv)return;
+  const r=cv.getBoundingClientRect();
+  const W=Math.round(r.width),H=Math.round(r.height);
+  if(W<20||H<20){
+    // Container not ready, retry
+    requestAnimationFrame(()=>drawChart(canvasId,data,series,opts));
+    return;
+  }
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+
+  const isDk=document.documentElement.getAttribute('data-theme')==='dark';
+  const gC=isDk?'rgba(255,255,255,.07)':'rgba(0,0,0,.07)';
+  const tC=isDk?'#7a98b5':'#5a7a90';
+  const lC=isDk?'#a0b6cd':'#2a4560';
+
+  // Detect single-month data
+  const sm=data.length>0 && data.every(d=>d.date && d.date.slice(0,7)===data[0].date.slice(0,7));
+  const showDay=sm && data.length>1;
+  const yLb=opts.yLabel||'';
+  const pad={t:10,r:8,b:showDay?40:22,l:yLb?40:32};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  if(cW<10||cH<10)return;
+  ctx.clearRect(0,0,W,H);
+
+  const allV=data.flatMap(d=>series.map(s=>+(d[s.k]||0)));
+  const dMax=Math.max(...allV,0);
+  const rMax=Math.max(...(opts.ranges||[]).map(r=>+r.v||0),0);
+  const mxV=Math.max(dMax,rMax,0.5)*1.18;
+  const n=data.length;
+  const xOf=i=>pad.l+(n>1?(cW/(n-1))*i:cW/2);
+  const yOf=v=>pad.t+cH*(1-Math.min(v,mxV)/mxV);
+
+  // Y grid + values
+  for(let i=0;i<=4;i++){
+    const y=yOf(mxV*i/4);
+    ctx.strokeStyle=gC;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    const lv=mxV*i/4;
+    ctx.fillStyle=tC;ctx.font='600 10px sans-serif';ctx.textAlign='right';
+    ctx.fillText(lv>=10?lv.toFixed(0):lv.toFixed(1),pad.l-4,y+3.5);
+  }
+
+  // Y axis label
+  if(yLb){
+    ctx.save();
+    ctx.fillStyle=lC;ctx.font='700 10px sans-serif';ctx.textAlign='center';
+    ctx.translate(11,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+    ctx.fillText(yLb,0,0);
+    ctx.restore();
+  }
+
+  // Range lines
+  (opts.ranges||[]).forEach(r=>{
+    if(r.v==null)return;
+    const y=yOf(r.v);
+    if(y<pad.t-2||y>pad.t+cH+2)return;
+    ctx.save();ctx.strokeStyle=r.c;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();ctx.restore();
+  });
+
+  // Series
+  series.forEach(s=>{
+    const pts=data.map(d=>+(d[s.k]||0));
+    // Fill
+    ctx.beginPath();
+    pts.forEach((p,i)=>{i?ctx.lineTo(xOf(i),yOf(p)):ctx.moveTo(xOf(i),yOf(p));});
+    ctx.lineTo(xOf(n-1),pad.t+cH);ctx.lineTo(xOf(0),pad.t+cH);ctx.closePath();
+    const g=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
+    g.addColorStop(0,s.c+'45');g.addColorStop(1,s.c+'04');
+    ctx.fillStyle=g;ctx.fill();
+    // Line
+    ctx.beginPath();ctx.strokeStyle=s.c;ctx.lineWidth=2;
+    ctx.lineJoin='round';ctx.lineCap='round';
+    pts.forEach((p,i)=>{i?ctx.lineTo(xOf(i),yOf(p)):ctx.moveTo(xOf(i),yOf(p));});
+    ctx.stroke();
+    // Dots
+    if(n<=31){
+      pts.forEach((p,i)=>{
+        ctx.beginPath();ctx.arc(xOf(i),yOf(p),2.5,0,Math.PI*2);
+        ctx.fillStyle=s.c;ctx.fill();
+      });
+    }
+  });
+
+  // X axis
+  if(showDay){
+    // All day numbers, rotated -55°
+    ctx.font='bold 9px sans-serif';
+    const yB=pad.t+cH+3;
+    data.forEach((d,i)=>{
+      const day=parseInt(d.date.slice(8),10);
+      ctx.save();
+      ctx.fillStyle=tC;ctx.textAlign='right';ctx.textBaseline='top';
+      ctx.translate(xOf(i),yB);ctx.rotate(-Math.PI*55/180);
+      ctx.fillText(day,0,0);
+      ctx.restore();
+    });
+    // Month label centered at very bottom
+    const [yy,mm]=data[0].date.split('-');
+    const ml=`${M[+mm-1]} ${yy}`;
+    ctx.font='bold 11px sans-serif';
+    ctx.fillStyle=lC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText(ml,pad.l+cW/2,H-2);
+  }else{
+    // Multi-month
+    const skip=Math.max(1,Math.ceil(n/10));
+    ctx.font='600 10px sans-serif';ctx.fillStyle=tC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    data.forEach((d,i)=>{
+      if(i%skip!==0&&i!==n-1)return;
+      const [yy,mm,dd]=d.date.split('-');
+      ctx.fillText(`${+dd} ${M[+mm-1]}`,xOf(i),pad.t+cH+14);
+    });
+  }
+}
+
+// ============ DASHBOARD ============
+let activeI=null;
+function rDash(){
+  rAlerts();rIGrid();chkHgLT();
+  rHgMini('hg-grid','hg-sum');
+  drawDashCharts();
+}
+function drawDashCharts(){
+  // SS
+  const sd=allDays(...Object.values(dtRange('cur'))).map(date=>({
+    date,
+    s5:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.s5||0),0),
+    wc:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.wc||0),0),
+  }));
+  drawChart('c-ss',sd,[{k:'s5',c:'#7c3aed'},{k:'wc',c:'#059669'}],{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
+  // LB
+  const ld=allDays(...Object.values(dtRange('cur'))).map(date=>({
+    date,
+    pasir:lbLog.filter(l=>l.date===date&&l.j==='Pasir').reduce((s,x)=>s+x.v,0),
+    debu:lbLog.filter(l=>l.date===date&&l.j==='Debu').reduce((s,x)=>s+x.v,0),
+  }));
+  drawChart('c-lb',ld,[{k:'pasir',c:'#d97706'},{k:'debu',c:'#0891b2'}],{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.dHi,c:'#0891b2'}]});
+}
+
+function rAlerts(){
+  const a=[];
+  for(let i=0;i<16;i++){
+    if(!st[i].on)continue;
+    const s=ampS(st[i].a);
+    if(s==='hi')a.push({c:'al-d',m:`🔺 ${nms[i]}: Ampere OVER ${st[i].a}A (max ${cfg.aHi}A)`});
+    if(s==='lo')a.push({c:'al-w',m:`⬇ ${nms[i]}: Ampere UNDER ${st[i].a}A (min ${cfg.aLo}A)`});
+  }
+  for(let i=0;i<16;i++){
+    if(st[i].cf)continue;
+    for(const nm of Object.keys(ltCfg).filter(n=>n!=='Hanger')){
+      const d=daysSP(i,nm);if(d==null)continue;
+      const m=modus(nm),j=estJ(d),p=j/m*100;
+      if(p>=100)a.push({c:'al-d',m:`🔩 ${nms[i]} — ${nm}: LIFETIME TERLEWATI ${Math.round(p)}% (modus ${m}h)`});
+      else if(p>=80)a.push({c:'al-w',m:`🔩 ${nms[i]} — ${nm}: Lifetime ${Math.round(p)}% — segera cek`});
+    }
+  }
+  const ng=hSt.filter(h=>h.s==='ng');
+  if(ng.length)a.push({c:'al-d',m:`🪝 Hanger NG: ${ng.map(h=>'#'+h.id).join(', ')}`});
+  const wn=hSt.filter(h=>h.s==='warn');
+  if(wn.length)a.push({c:'al-w',m:`🪝 Hanger Warning: ${wn.map(h=>'#'+h.id).join(', ')}`});
+  const e=document.getElementById('al-box');
+  e.innerHTML=!a.length?'<div class="al-i al-o">✅ Semua sistem normal</div>':a.slice(0,8).map(x=>`<div class="al-i ${x.c}">${x.m}</div>`).join('');
+}
+
+function rIGrid(){
+  const g=document.getElementById('i-grid');
+  g.innerHTML='';
+  let nOn=0,nOf=0,nOk=0,nLo=0,nHi=0,nAt=0;
+  for(let i=0;i<16;i++){
+    const x=st[i],on=x.on,a=x.a;
+    const s=on?ampS(a):'of';const at=needAttn(i);
+    if(on)nOn++;else nOf++;
+    if(s==='ok')nOk++;if(s==='lo')nLo++;if(s==='hi')nHi++;if(at)nAt++;
+    const cl=on?(s==='ok'?'ic-ok':s==='lo'?'ic-lo':s==='hi'?'ic-hi':'ic-ok'):'ic-of';
+    const aS=a!=null?a.toFixed(1)+'A':'--';
+    let f='❓';if(!on)f='⭕';else if(s==='ok')f='✅';else if(s==='lo')f='⬇️';else if(s==='hi')f='🔺';
+    const d=document.createElement('div');
+    d.className='ic '+cl+(at?' ic-attn-flag':'');
+    d.onclick=()=>oM(i);
+    d.innerHTML=`<div class="ic-n">#${String(i+1).padStart(2,'0')}</div><div class="ic-nm">${nms[i]}</div><div class="ic-a">${aS}</div><div class="ic-f">${f}</div><div class="ic-s">${on?'ON':'OFF'}</div>${at&&!x.cf?'<div class="ic-attn">⚠ Perlu Cek</div>':''}${x.cf?'<div class="ic-attn" style="color:var(--ok);">✔ Confirmed</div>':''}`;
+    g.appendChild(d);
+  }
+  document.getElementById('i-sum').innerHTML=`<div class="cp ok"><span class="v">${nOn}</span>ON</div><div class="cp mu"><span class="v">${nOf}</span>OFF</div><div class="cp ok"><span class="v">${nOk}</span>Normal</div><div class="cp wn"><span class="v">${nLo}</span>Under</div><div class="cp dg"><span class="v">${nHi}</span>Over</div><div class="cp wn"><span class="v">${nAt}</span>Perlu Perhatian</div>`;
+}
+
+function oM(i){
+  activeI=i;const x=st[i];
+  document.getElementById('mi-t').textContent=`${nms[i]} — #${i+1}`;
+  document.getElementById('mi-a').value=x.a||'';
+  document.getElementById('mi-n').value=x.n||'';
+  upMiAf(x.a);
+  let h='<div style="font-size:.65rem;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;">Lifetime Sparepart</div>';
+  Object.keys(ltCfg).filter(n=>n!=='Hanger').forEach(nm=>{
+    const d=daysSP(i,nm);if(d==null)return;
+    const m=modus(nm),j=estJ(d),p=Math.min(100,Math.round(j/m*100));
+    const c=p>=100?'var(--danger)':p>=80?'var(--warn)':'var(--ok)';
+    h+=`<div style="margin-bottom:5px;"><div style="display:flex;justify-content:space-between;font-size:.72rem;"><span>${nm}</span><span style="color:${c};font-weight:700;">${p}% <span class="mn">(${j}/${m}h)</span></span></div><div class="ltw"><div class="lt" style="width:${p}%;background:${c};"></div></div></div>`;
+  });
+  document.getElementById('mi-lt').innerHTML=h;
+  document.getElementById('m-i').classList.add('on');
+}
+function upMiAf(v){
+  const f=document.getElementById('mi-af');const nv=parseFloat(v);
+  if(isNaN(nv)){f.innerHTML='';return;}
+  const s=ampS(nv);
+  if(s==='ok')f.innerHTML=`<span class="t-ok">✅ Normal (${cfg.aLo}–${cfg.aHi}A)</span>`;
+  else if(s==='lo')f.innerHTML=`<span class="t-wn">⬇️ RENDAH — di bawah ${cfg.aLo}A</span>`;
+  else if(s==='hi')f.innerHTML=`<span class="t-dg">🔺 TINGGI — di atas ${cfg.aHi}A</span>`;
+}
+document.getElementById('mi-a').addEventListener('input',e=>upMiAf(e.target.value));
+function setOn(on){if(activeI==null)return;st[activeI].on=on;if(!on){st[activeI].a=null;st[activeI].cf=false;}sv('st',st);rIGrid();rAlerts();}
+function saveMi(){
+  if(activeI==null)return;
+  const a=parseFloat(document.getElementById('mi-a').value);const n=document.getElementById('mi-n').value;
+  if(!isNaN(a)){st[activeI].a=a;st[activeI].dt=new Date().toISOString();ampLog.push({dt:new Date().toISOString(),sh:'Manual',i:activeI,v:a,op:'Manual'});sv('ampLog',ampLog);}
+  st[activeI].n=n;sv('st',st);cM('m-i');rIGrid();rAlerts();
+}
+function confI(){if(activeI==null)return;st[activeI].cf=true;sv('st',st);cM('m-i');rIGrid();rAlerts();}
+function allOn(){st.forEach(s=>s.on=true);sv('st',st);rIGrid();rAlerts();}
+function allOff(){st.forEach(s=>{s.on=false;s.a=null;});sv('st',st);rIGrid();rAlerts();}
+
+// ============ HANGER ============
+let activeH=null;
+function rHgMini(gId,sId){
+  chkHgLT();sv('hSt',hSt);
+  const g=document.getElementById(gId);if(!g)return;
+  g.innerHTML='';
+  let nOk=0,nNg=0,nWn=0,nCf=0;
+  hSt.forEach(h=>{
+    if(h.s==='ok')nOk++;else if(h.s==='ng')nNg++;else if(h.s==='warn')nWn++;else if(h.s==='conf')nCf++;
+    let f='✅',cl='hc-ok',sn='OK';
+    if(h.s==='ng'){f='❌';cl='hc-ng';sn='NG';}
+    else if(h.s==='warn'){f='⚠';cl='hc-wn';sn='WARN';}
+    else if(h.s==='conf'){f='🔵';cl='hc-cf';sn='CONF';}
+    const d=document.createElement('div');
+    d.className='hc '+cl;d.onclick=()=>oH(h.id-1);
+    d.innerHTML=`<div class="hc-n">#${String(h.id).padStart(2,'0')}</div><div class="hc-f">${f}</div><div class="hc-s">${sn}</div>`;
+    g.appendChild(d);
+  });
+  const s=document.getElementById(sId);
+  if(s)s.innerHTML=`<div class="cp ok"><span class="v">${nOk}</span>OK</div><div class="cp dg"><span class="v">${nNg}</span>NG</div><div class="cp wn"><span class="v">${nWn}</span>Warn</div><div class="cp if"><span class="v">${nCf}</span>Conf</div>`;
+}
+function oH(i){
+  activeH=i;const h=hSt[i];const m=hgModus(h.id);
+  document.getElementById('mh-t').textContent=`Hanger #${h.id}`;
+  const r=hLog.filter(x=>x.id===h.id).sort((a,b)=>b.date.localeCompare(a.date));
+  let days=null,pct=null;
+  if(r.length){
+    const [y,mn,d]=r[0].date.split('-');
+    days=Math.floor((Date.now()-new Date(+y,+mn-1,+d).getTime())/86400000);
+    pct=Math.round(estJ(days)/m*100);
+  }
+  const c=pct!=null?(pct>=100?'var(--danger)':pct>=80?'var(--warn)':'var(--ok)'):'var(--muted)';
+  document.getElementById('mh-i').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;">
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:3px;">STATUS</div>
+        <div style="font-weight:700;color:${h.s==='ok'||h.s==='conf'?'var(--ok)':h.s==='ng'?'var(--danger)':'var(--warn)'};">${h.s.toUpperCase()}</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;">
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:3px;">MODUS LT</div>
+        <div style="font-weight:700;">${m}h</div>
+      </div>
+      ${pct!=null?`<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;">
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:3px;">TERPAKAI</div>
+        <div style="font-weight:700;color:${c};">${pct}%</div>
+      </div>`:''}
+    </div>
+    ${h.n?`<div style="font-size:.78rem;color:var(--warn);background:var(--warn-bg);border-radius:6px;padding:6px 9px;margin-bottom:6px;">⚠ ${h.n}</div>`:''}
+    ${r.length?`<div style="font-size:.72rem;color:var(--muted);">Terakhir ganti: ${fD(r[0].date)} · Tipe: ${r[0].tp||'baru'} · ${r[0].jm}h pakai</div>`:''}
+  `;
+  document.getElementById('m-h').classList.add('on');
+}
+function confH(){if(activeH==null)return;hSt[activeH].s='conf';hSt[activeH].n='Dikonfirmasi OK setelah inspeksi';sv('hSt',hSt);cM('m-h');rHgMini('hg-grid','hg-sum');rHgMini('hg-fg','hg-fs');rAlerts();}
+function ngH(){if(activeH==null)return;hSt[activeH].s='ng';sv('hSt',hSt);cM('m-h');rHgMini('hg-grid','hg-sum');rHgMini('hg-fg','hg-fs');rAlerts();}
+
+// ============ MODAL ============
+function cM(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.mv').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');}));
+
+// ============ PREVENTIVE ============
+const PV_IT=[
+  {id:'a',l:'Distributor, Liner, Control Cage',d:'Tidak aus / Tidak lepas / Tidak pecah'},
+  {id:'b',l:'Wing Blade (Impeller Blade)',d:'Tidak aus / Tidak pecah / Putaran ringan normal'},
+];
+let pvR={};
+function rPv(){
+  const sd=document.getElementById('pv-d');if(sd&&!sd.value)sd.value=today();
+  const sm=document.getElementById('pv-m');if(sm&&!sm.value)sm.value=curMo();
+  const c=document.getElementById('pv-ck');
+  let h='';
+  for(let i=0;i<16;i++){
+    h+=`<div class="pv-s"><div class="pv-t">⚙ ${nms[i]} — Impeller #${i+1}</div>`;
+    PV_IT.forEach(it=>{
+      const k=`${i}-${it.id}`;
+      h+=`<div class="pv-i" id="pv-${k}"><div style="flex:1;"><div class="pv-l">${it.l}</div><div class="pv-d">${it.d}</div></div><div class="pv-bb"><button class="pv-b" id="pvk-${k}" onclick="setPv('${k}','ok')">√ OK</button><button class="pv-b" id="pvg-${k}" onclick="setPv('${k}','ng')">X NG</button></div></div>`;
+    });
+    h+='</div>';
+  }
+  c.innerHTML=h;
+  Object.entries(pvR).forEach(([k,v])=>upPv(k,v));
+  const tb=document.getElementById('pv-tb');
+  const sr=[...pvLog].sort((a,b)=>(b.td||'').localeCompare(a.td||''));
+  tb.innerHTML=sr.map(r=>{
+    const ok=(r.rs||[]).filter(x=>x.v==='ok').length;
+    const ng=(r.rs||[]).filter(x=>x.v==='ng').length;
+    return`<tr><td>${r.pr||'-'}</td><td>${fD(r.td)}</td><td>${r.pic||'-'}</td><td class="mn t-ok">${ok}</td><td class="mn t-dg">${ng}</td><td>${r.no||'-'}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
+}
+function setPv(k,v){pvR[k]=v;upPv(k,v);}
+function upPv(k,v){
+  const i=document.getElementById('pv-'+k);if(!i)return;
+  i.className='pv-i'+(v==='ok'?' pv-ok':v==='ng'?' pv-ng':'');
+  document.getElementById('pvk-'+k).className='pv-b'+(v==='ok'?' ok':'');
+  document.getElementById('pvg-'+k).className='pv-b'+(v==='ng'?' ng':'');
+}
+function savePv(){
+  const w=document.getElementById('pv-w').value;const m=document.getElementById('pv-m').value;
+  const td=document.getElementById('pv-d').value;const pic=document.getElementById('pv-p').value||'PIC';
+  const no=document.getElementById('pv-n').value;
+  const rs=[];
+  for(let i=0;i<16;i++)PV_IT.forEach(it=>{const k=`${i}-${it.id}`;rs.push({i,it:it.l,v:pvR[k]||'pending'});});
+  pvLog.push({pr:`Minggu ${w} / ${m}`,td,pic,no,rs});
+  sv('pvLog',pvLog);pvR={};rPv();rAlerts();alert('Tersimpan!');
+}
+
+// ============ SPAREPART ============
+const SP_PT=['Impeller Blade','Control Cage','Distributor','End Liner Atas','End Liner Bawah','Ceiling Liner','Front Cover','V-Belt','Motor'];
+function onJChange(){
+  const v=document.getElementById('sp-j').value;
+  document.getElementById('sp-pr').style.display=v==='assy'?'none':'block';
+  document.getElementById('sp-ai').style.display=v==='assy'?'block':'none';
+}
+function rSp(){
+  const si=document.getElementById('sp-i');si.innerHTML=Array.from({length:16},(_,i)=>`<option value="${i}">${nms[i]}</option>`).join('');
+  const sd=document.getElementById('sp-d');if(!sd.value)sd.value=today();
+  // LT tracker
+  const lt=document.getElementById('lt-i');
+  let h='';
+  SP_PT.forEach(nm=>{
+    const m=modus(nm);
+    h+=`<div style="margin-bottom:10px;"><div class="fb" style="margin-bottom:4px;"><div style="font-size:.82rem;font-weight:700;">${nm}</div><div style="font-size:.65rem;color:var(--muted);">Modus: ${m}h</div></div>`;
+    let any=false;
+    for(let i=0;i<16;i++){
+      const d=daysSP(i,nm);if(d==null)continue;any=true;
+      const j=estJ(d),p=Math.min(100,Math.round(j/m*100));
+      const c=p>=100?'var(--danger)':p>=80?'var(--warn)':'var(--ok)';
+      h+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:78px;font-size:.7rem;color:var(--text2);">${nms[i]}</div><div class="ltw" style="flex:1;"><div class="lt" style="width:${p}%;background:${c};"></div></div><div style="width:55px;text-align:right;font-size:.7rem;font-family:'Courier New',monospace;color:${c};">${p}%</div></div>`;
+    }
+    if(!any)h+=`<div style="font-size:.72rem;color:var(--muted);">Belum ada history</div>`;
+    h+='</div>';
+  });
+  lt.innerHTML=h;
+  // Table
+  const tb=document.getElementById('sp-tb');
+  const sr=[...spLog].sort((a,b)=>b.date.localeCompare(a.date));
+  tb.innerHTML=sr.map(r=>`<tr><td>${fD(r.date)}</td><td>${nms[r.i]||'Imp '+(+r.i+1)}</td><td>${r.nm}${r.j==='assy'?' <span class="bd bd-if">ASSY</span>':''}</td><td class="mn">${r.jm}h</td><td>${r.q}</td><td><span class="bd bd-wn">${r.kn}</span></td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+  // Hanger full
+  rHgMini('hg-fg','hg-fs');
+  const hn=document.getElementById('hg-n');hn.innerHTML=Array.from({length:60},(_,i)=>`<option value="${i+1}">Hanger #${String(i+1).padStart(2,'0')}</option>`).join('');
+  const hs=document.getElementById('hg-sn');hs.innerHTML=hn.innerHTML;
+  const hd=document.getElementById('hg-d');if(!hd.value)hd.value=today();
+  // Hanger history
+  const ht=document.getElementById('hg-tb');
+  const hsr=[...hLog].sort((a,b)=>b.date.localeCompare(a.date));
+  ht.innerHTML=hsr.map(r=>`<tr><td>${fD(r.date)}</td><td>Hanger #${r.id}</td><td><span class="bd ${r.tp==='repair'?'bd-wn':'bd-ok'}">${r.tp==='repair'?'Repair':'Baru'}</span></td><td class="mn">${r.jm}h</td><td>${r.kn}</td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
+}
+function saveSp(){
+  const date=document.getElementById('sp-d').value;const i=+document.getElementById('sp-i').value;
+  const j=document.getElementById('sp-j').value;const op=document.getElementById('sp-op').value||'Op';
+  const no=document.getElementById('sp-no').value;
+  if(!date){alert('Tanggal wajib');return;}
+  if(j==='assy'){
+    const jm=+document.getElementById('sp-aj').value||0;
+    if(!jm){alert('Jam running wajib');return;}
+    SP_PT.filter(n=>n!=='Motor').forEach(nm=>spLog.push({date,i,nm,q:1,jm,kn:'Aus',op,no:'Unit Assy',j:'assy'}));
+    st[i].cf=false;
+  }else{
+    const nm=document.getElementById('sp-nm').value;const jm=+document.getElementById('sp-jm').value;
+    const q=+document.getElementById('sp-q').value||1;const kn=document.getElementById('sp-k').value;
+    if(!jm){alert('Jam wajib');return;}
+    spLog.push({date,i,nm,q,jm,kn,op,no,j:'part'});
+    st[i].cf=false;
+  }
+  sv('spLog',spLog);sv('st',st);rSp();rAlerts();alert('Tersimpan!');
+}
+function saveHg(){
+  const date=document.getElementById('hg-d').value;const id=+document.getElementById('hg-n').value;
+  const tp=document.getElementById('hg-tp').value;const jm=+document.getElementById('hg-jm').value;
+  const kn=document.getElementById('hg-k').value;const op=document.getElementById('hg-op').value||'Op';
+  const n=document.getElementById('hg-no').value;
+  if(!date||!jm){alert('Tanggal & jam wajib');return;}
+  hLog.push({date,id,tp,jm,kn,op,n});hSt[id-1].s='ok';hSt[id-1].n='';hSt[id-1].cf=false;
+  sv('hLog',hLog);sv('hSt',hSt);rSp();rAlerts();alert('Tersimpan!');
+}
+function setHgSt(){
+  const id=+document.getElementById('hg-sn').value;const s=document.getElementById('hg-ss').value;
+  const n=document.getElementById('hg-sno').value;
+  hSt[id-1].s=s;hSt[id-1].n=n;sv('hSt',hSt);rSp();rAlerts();alert(`Hanger #${id} → ${s.toUpperCase()}`);
+}
+
+// ============ AMPERE ============
+function rAmp(){
+  document.getElementById('amp-rg').textContent=`${cfg.aLo} – ${cfg.aHi} A`;
+  const g=document.getElementById('amp-ig');
+  let h='';
+  for(let i=0;i<16;i++){
+    const last=st[i].a;
+    h+=`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:.6rem;color:var(--muted);font-family:'Courier New',monospace;">#${String(i+1).padStart(2,'0')}</div><div style="font-size:.62rem;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;">${nms[i]}</div><input type="number" id="ai-${i}" placeholder="${last||'--'}" step="0.1" style="width:68px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px;color:var(--text);font-family:'Courier New',monospace;font-size:.85rem;text-align:center;" oninput="hl(${i},this.value)"><div id="af-${i}" style="font-size:.75rem;height:16px;"></div></div>`;
+  }
+  g.innerHTML=h;
+  const dt=document.getElementById('amp-dt');if(!dt.value)dt.value=nowL();
+  const tb=document.getElementById('amp-tb');
+  const sr=[...ampLog].sort((a,b)=>(b.dt||'').localeCompare(a.dt||''));
+  tb.innerHTML=sr.slice(0,150).map(r=>{
+    const s=ampS(r.v);const cl=s==='ok'?'bd-ok':s==='lo'?'bd-wn':s==='hi'?'bd-ng':'bd-if';
+    const tc=s==='hi'?'t-dg':s==='lo'?'t-wn':'t-ok';
+    return`<tr><td>${fDt(r.dt)}</td><td>${r.sh}</td><td>${nms[r.i]||'Imp '+(+r.i+1)}</td><td class="mn ${tc}">${r.v}A</td><td><span class="bd ${cl}">${s.toUpperCase()}</span></td><td>${r.op||'-'}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="es">Belum ada log</td></tr>';
+}
+function hl(i,v){
+  const nv=parseFloat(v);const f=document.getElementById('af-'+i);const inp=document.getElementById('ai-'+i);
+  if(isNaN(nv)){f.innerHTML='';inp.style.borderColor='var(--border)';return;}
+  const s=ampS(nv);
+  if(s==='ok'){f.innerHTML='✅';inp.style.borderColor='var(--ok)';}
+  else if(s==='lo'){f.innerHTML='⬇️';inp.style.borderColor='var(--warn)';}
+  else if(s==='hi'){f.innerHTML='🔺';inp.style.borderColor='var(--danger)';}
+}
+function saveAmp(){
+  const dt=document.getElementById('amp-dt').value;const sh=document.getElementById('amp-sh').value;const op=document.getElementById('amp-op').value||'Op';
+  let c=0;
+  for(let i=0;i<16;i++){
+    const v=parseFloat(document.getElementById('ai-'+i).value);
+    if(isNaN(v))continue;
+    ampLog.push({dt:new Date(dt).toISOString(),sh,i,v,op});
+    st[i].a=v;st[i].dt=new Date().toISOString();c++;
+  }
+  sv('ampLog',ampLog);sv('st',st);alert(`${c} data tersimpan!`);rAmp();rIGrid();rAlerts();
+}
+
+// ============ LIMBAH ============
+let lbPdV='cur';
+function lbPd(b,p){
+  document.querySelectorAll('#p-lb .chc-b').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');lbPdV=p;
+  document.getElementById('lb-cust').style.display=p==='cust'?'flex':'none';
+  if(p!=='cust')drawFullLb();
+}
+function drawFullLb(){
+  let cf,ct;if(lbPdV==='cust'){cf=document.getElementById('lb-cf').value;ct=document.getElementById('lb-ct').value;if(!cf||!ct)return;}
+  const{f,t}=dtRange(lbPdV,cf,ct);
+  const data=allDays(f,t).map(date=>({
+    date,
+    pasir:lbLog.filter(l=>l.date===date&&l.j==='Pasir').reduce((s,x)=>s+x.v,0),
+    debu:lbLog.filter(l=>l.date===date&&l.j==='Debu').reduce((s,x)=>s+x.v,0),
+  }));
+  drawChart('c-lb-full',data,[{k:'pasir',c:'#d97706'},{k:'debu',c:'#0891b2'}],{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.pLo,c:'#d9770680'},{v:cfg.dHi,c:'#0891b2'},{v:cfg.dLo,c:'#0891b280'}]});
+}
+function rLb(){
+  const sd=document.getElementById('lb-d');if(!sd.value)sd.value=today();
+  document.getElementById('lb-rp').textContent=`${cfg.pLo}–${cfg.pHi} Trolley`;
+  document.getElementById('lb-rd').textContent=`${cfg.dLo}–${cfg.dHi} Trolley`;
+  requestAnimationFrame(()=>drawFullLb());
+  const tb=document.getElementById('lb-tb');
+  const sr=[...lbLog].sort((a,b)=>b.date.localeCompare(a.date));
+  tb.innerHTML=sr.slice(0,200).map(r=>{
+    const rg=r.j==='Pasir'?{lo:cfg.pLo,hi:cfg.pHi}:{lo:cfg.dLo,hi:cfg.dHi};
+    let s='OK',cl='bd-ok';
+    if(r.v>rg.hi){s='TINGGI';cl='bd-ng';}else if(r.v<rg.lo&&r.v>0){s='RENDAH';cl='bd-wn';}
+    return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td>${r.j}</td><td class="mn">${r.v}</td><td><span class="bd ${cl}">${s}</span></td><td>${r.l||'-'}</td><td>${r.op}</td></tr>`;
+  }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+}
+function saveLb(){
+  const date=document.getElementById('lb-d').value;const sh=document.getElementById('lb-sh').value;
+  const j=document.getElementById('lb-j').value;const v=+document.getElementById('lb-v').value;
+  const l=document.getElementById('lb-l').value;const op=document.getElementById('lb-op').value||'Op';
+  const k=document.getElementById('lb-kt').value;
+  if(!date||!v){alert('Tanggal & volume wajib');return;}
+  lbLog.push({date,sh,j,v,l,op,k});sv('lbLog',lbLog);rLb();alert('Tersimpan!');
+}
+
+// ============ STEELSHOT ============
+let ssPdV='cur';
+function ssPd(b,p){
+  document.querySelectorAll('#p-ss .chc-b').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');ssPdV=p;
+  document.getElementById('ss-cust').style.display=p==='cust'?'flex':'none';
+  if(p!=='cust')drawFullSs();
+}
+function drawFullSs(){
+  let cf,ct;if(ssPdV==='cust'){cf=document.getElementById('ss-cf').value;ct=document.getElementById('ss-ct').value;if(!cf||!ct)return;}
+  const{f,t}=dtRange(ssPdV,cf,ct);
+  const data=allDays(f,t).map(date=>({
+    date,
+    s5:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.s5||0),0),
+    wc:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.wc||0),0),
+  }));
+  drawChart('c-ss-full',data,[{k:'s5',c:'#7c3aed'},{k:'wc',c:'#059669'}],{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed80'}]});
+}
+function rSs(){
+  const sd=document.getElementById('ss-d');if(!sd.value)sd.value=today();
+  requestAnimationFrame(()=>drawFullSs());
+  const tb=document.getElementById('ss-tb');
+  const sr=[...ssLog].sort((a,b)=>b.date.localeCompare(a.date));
+  tb.innerHTML=sr.slice(0,200).map(r=>{
+    const tot=(+r.s5||0)+(+r.wc||0);
+    return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${r.s5||0}</td><td class="mn">${r.wc||0}</td><td class="mn">${tot}</td><td>${r.op}</td><td>${r.n||'-'}</td></tr>`;
+  }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+}
+function saveSs(){
+  const date=document.getElementById('ss-d').value;const sh=document.getElementById('ss-sh').value;
+  const s5=+document.getElementById('ss-50').value||0;const wc=+document.getElementById('ss-wc').value||0;
+  const op=document.getElementById('ss-op').value||'Op';const n=document.getElementById('ss-no').value;
+  if(!date){alert('Tanggal wajib');return;}
+  ssLog.push({date,sh,s5,wc,op,n});sv('ssLog',ssLog);rSs();alert('Tersimpan!');
+}
+
+// ============ SETTING ============
+function rSet(){
+  document.getElementById('s-alo').value=cfg.aLo;document.getElementById('s-ahi').value=cfg.aHi;
+  document.getElementById('s-plo').value=cfg.pLo;document.getElementById('s-phi').value=cfg.pHi;
+  document.getElementById('s-dlo').value=cfg.dLo;document.getElementById('s-dhi').value=cfg.dHi;
+  document.getElementById('s-slo').value=cfg.sLo;document.getElementById('s-shi').value=cfg.sHi;
+  const ALL=[...SP_PT,'Hanger'];
+  document.getElementById('lt-set').innerHTML=ALL.map(n=>`<div class="sr"><div class="sl">${n}</div><input class="si" type="number" id="lts-${n.replace(/ /g,'_')}" value="${ltCfg[n]||480}"> jam</div>`).join('');
+  document.getElementById('i-nm-rows').innerHTML=Array.from({length:16},(_,i)=>`<div class="sr"><div class="sl">#${String(i+1).padStart(2,'0')}</div><input class="si" type="text" id="inm-${i}" value="${nms[i]}" style="width:160px;text-align:left;font-family:inherit;"></div>`).join('');
+}
+function saveSt(){
+  cfg.aLo=+document.getElementById('s-alo').value||37.5;cfg.aHi=+document.getElementById('s-ahi').value||42.5;
+  cfg.pLo=+document.getElementById('s-plo').value||2;cfg.pHi=+document.getElementById('s-phi').value||4;
+  cfg.dLo=+document.getElementById('s-dlo').value||2;cfg.dHi=+document.getElementById('s-dhi').value||4;
+  cfg.sLo=+document.getElementById('s-slo').value||1;cfg.sHi=+document.getElementById('s-shi').value||1;
+  sv('cfg',cfg);alert('Tersimpan!');rAlerts();rIGrid();
+}
+function saveLt(){
+  [...SP_PT,'Hanger'].forEach(n=>{const e=document.getElementById('lts-'+n.replace(/ /g,'_'));if(e)ltCfg[n]=+e.value||480;});
+  sv('ltCfg',ltCfg);alert('Tersimpan!');
+}
+function saveNm(){
+  for(let i=0;i<16;i++){const e=document.getElementById('inm-'+i);if(e)nms[i]=e.value||`IMP-${String(i+1).padStart(2,'0')}`;}
+  sv('nms',nms);alert('Tersimpan!');rIGrid();
+}
+function exp(){
+  const blob=new Blob([JSON.stringify({cfg,nms,st,ampLog,spLog,pvLog,lbLog,ssLog,ltCfg,hSt,hLog},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`hsb-${today()}.json`;a.click();
+}
+function rst(){['cfg','nms','st','ampLog','spLog','pvLog','lbLog','ssLog','ltCfg','hSt','hLog','theme'].forEach(k=>localStorage.removeItem(K+k));location.reload();}
+
+// ============ INIT ============
+seed();
+rDash();
+// Redraw on resize (debounced)
+let rzT=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(rzT);
+  rzT=setTimeout(()=>{
+    if(document.getElementById('p-dash').classList.contains('on'))drawDashCharts();
+    if(document.getElementById('p-lb').classList.contains('on'))drawFullLb();
+    if(document.getElementById('p-ss').classList.contains('on'))drawFullSs();
+  },150);
+});
+// Auto-refresh dashboard every 30s
+setInterval(()=>{
+  if(document.getElementById('p-dash').classList.contains('on')){
+    rIGrid();rAlerts();chkHgLT();
+    rHgMini('hg-grid','hg-sum');
+    drawDashCharts();
+  }
+},30000);
+</script>
+</body>
+</html>
