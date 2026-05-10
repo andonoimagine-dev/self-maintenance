@@ -1064,11 +1064,7 @@ function drawChart(canvasId,data,series,opts){
   const cv=document.getElementById(canvasId);if(!cv)return;
   const r=cv.getBoundingClientRect();
   const W=Math.round(r.width),H=Math.round(r.height);
-  if(W<20||H<20){
-    // Container not ready, retry
-    requestAnimationFrame(()=>drawChart(canvasId,data,series,opts));
-    return;
-  }
+  if(W<20||H<20){ requestAnimationFrame(()=>drawChart(canvasId,data,series,opts)); return; }
   const dpr=Math.min(window.devicePixelRatio||1,2);
   cv.width=W*dpr;cv.height=H*dpr;
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
@@ -1078,9 +1074,9 @@ function drawChart(canvasId,data,series,opts){
   const tC=isDk?'#7a98b5':'#5a7a90';
   const lC=isDk?'#a0b6cd':'#2a4560';
 
-  // Detect single-month data
-  const sm=data.length>0 && data.every(d=>d.date && d.date.slice(0,7)===data[0].date.slice(0,7));
-  const showDay=sm && data.length>1;
+  // Single-month detection
+  const sm=data.length>0&&data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
+  const showDay=sm&&data.length>1;
   const yLb=opts.yLabel||'';
   const pad={t:10,r:8,b:showDay?40:22,l:yLb?40:32};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
@@ -1090,22 +1086,45 @@ function drawChart(canvasId,data,series,opts){
   const allV=data.flatMap(d=>series.map(s=>+(d[s.k]||0)));
   const dMax=Math.max(...allV,0);
   const rMax=Math.max(...(opts.ranges||[]).map(r=>+r.v||0),0);
-  const mxV=Math.max(dMax,rMax,0.5)*1.18;
-  const n=data.length;
-  const xOf=i=>pad.l+(n>1?(cW/(n-1))*i:cW/2);
+  const rawMax=Math.max(dMax,rMax,1);
+
+  // ── Y axis: nice integer ticks ───────────────────────────
+  // Find a "nice" max that's a round number above rawMax
+  function niceMax(v){
+    if(v<=0)return 5;
+    const exp=Math.pow(10,Math.floor(Math.log10(v)));
+    const f=v/exp;
+    let nice;
+    if(f<=1)nice=1;
+    else if(f<=2)nice=2;
+    else if(f<=5)nice=5;
+    else nice=10;
+    return nice*exp;
+  }
+  const mxV=niceMax(rawMax*1.15);
+  // Choose tick step so we get 4-6 integer ticks
+  function niceStep(max){
+    const steps=[1,2,5,10,20,50,100];
+    for(const s of steps){ if(max/s<=6) return s; }
+    return Math.ceil(max/5);
+  }
+  const tickStep=niceStep(mxV);
+  const ticks=[];
+  for(let t=0;t<=mxV;t+=tickStep) ticks.push(t);
+
+  const xOf=i=>pad.l+(data.length>1?(cW/(data.length-1))*i:cW/2);
   const yOf=v=>pad.t+cH*(1-Math.min(v,mxV)/mxV);
 
-  // Y grid + values
-  for(let i=0;i<=4;i++){
-    const y=yOf(mxV*i/4);
+  // Y grid + integer tick labels
+  ticks.forEach(t=>{
+    const y=yOf(t);
     ctx.strokeStyle=gC;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
-    const lv=mxV*i/4;
     ctx.fillStyle=tC;ctx.font='600 10px sans-serif';ctx.textAlign='right';
-    ctx.fillText(lv>=10?lv.toFixed(0):lv.toFixed(1),pad.l-4,y+3.5);
-  }
+    ctx.fillText(t,pad.l-4,y+3.5);
+  });
 
-  // Y axis label
+  // Y axis unit label
   if(yLb){
     ctx.save();
     ctx.fillStyle=lC;ctx.font='700 10px sans-serif';ctx.textAlign='center';
@@ -1114,7 +1133,7 @@ function drawChart(canvasId,data,series,opts){
     ctx.restore();
   }
 
-  // Range lines
+  // Range dashed lines
   (opts.ranges||[]).forEach(r=>{
     if(r.v==null)return;
     const y=yOf(r.v);
@@ -1123,15 +1142,26 @@ function drawChart(canvasId,data,series,opts){
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();ctx.restore();
   });
 
-  // Series
+  // ── Series: fill + line + dots + data labels ─────────────
+  // First pass: collect all point positions for label collision detection
+  const allLabels=[]; // {x, y, val, color, seriesIdx}
+  series.forEach((s,si)=>{
+    const pts=data.map(d=>+(d[s.k]||0));
+    pts.forEach((p,i)=>{
+      if(p>0) allLabels.push({x:xOf(i),y:yOf(p),val:p,c:s.c,si,i});
+    });
+  });
+
+  // Draw fills and lines
   series.forEach(s=>{
     const pts=data.map(d=>+(d[s.k]||0));
-    // Fill
+    const n=data.length;
+    // Gradient fill
     ctx.beginPath();
     pts.forEach((p,i)=>{i?ctx.lineTo(xOf(i),yOf(p)):ctx.moveTo(xOf(i),yOf(p));});
     ctx.lineTo(xOf(n-1),pad.t+cH);ctx.lineTo(xOf(0),pad.t+cH);ctx.closePath();
     const g=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
-    g.addColorStop(0,s.c+'45');g.addColorStop(1,s.c+'04');
+    g.addColorStop(0,s.c+'38');g.addColorStop(1,s.c+'04');
     ctx.fillStyle=g;ctx.fill();
     // Line
     ctx.beginPath();ctx.strokeStyle=s.c;ctx.lineWidth=2;
@@ -1141,15 +1171,55 @@ function drawChart(canvasId,data,series,opts){
     // Dots
     if(n<=31){
       pts.forEach((p,i)=>{
+        if(p===0)return;
         ctx.beginPath();ctx.arc(xOf(i),yOf(p),2.5,0,Math.PI*2);
         ctx.fillStyle=s.c;ctx.fill();
       });
     }
   });
 
-  // X axis
+  // ── Data labels with collision avoidance ─────────────────
+  // Only show labels for non-zero values, ≤31 data points
+  if(data.length<=31){
+    const placed=[]; // {x1,x2,y1,y2} bounding boxes already drawn
+    const LW=16,LH=12; // approx label size
+
+    function overlaps(a,b){
+      return !(a.x2<b.x1||a.x1>b.x2||a.y2<b.y1||a.y1>b.y2);
+    }
+    function tryPlace(x,y,dx,dy){
+      const bx={x1:x+dx-LW/2,x2:x+dx+LW/2,y1:y+dy-LH,y2:y+dy};
+      const ok=placed.every(p=>!overlaps(p,bx))&&bx.x1>=pad.l&&bx.x2<=W-4&&bx.y1>=pad.t-2;
+      if(ok)placed.push(bx);
+      return ok;
+    }
+
+    // Sort by series then by position
+    allLabels.forEach(lb=>{
+      if(lb.val===0)return;
+      // Try positions: above, below, above+offset, below+offset
+      const offsets=[
+        {dx:0,dy:-6},   // above dot
+        {dx:0,dy:14},   // below dot
+        {dx:0,dy:-14},  // further above
+        {dx:4,dy:-6},   // above+right
+        {dx:-4,dy:-6},  // above+left
+      ];
+      for(const off of offsets){
+        if(tryPlace(lb.x,lb.y,off.dx,off.dy)){
+          ctx.font='bold 9px sans-serif';
+          ctx.fillStyle=lb.c;
+          ctx.textAlign='center';
+          ctx.textBaseline='alphabetic';
+          ctx.fillText(lb.val,lb.x+off.dx,lb.y+off.dy);
+          break;
+        }
+      }
+    });
+  }
+
+  // ── X axis ───────────────────────────────────────────────
   if(showDay){
-    // All day numbers, rotated -55°
     ctx.font='bold 9px sans-serif';
     const yB=pad.t+cH+3;
     data.forEach((d,i)=>{
@@ -1160,23 +1230,22 @@ function drawChart(canvasId,data,series,opts){
       ctx.fillText(day,0,0);
       ctx.restore();
     });
-    // Month label centered at very bottom
     const [yy,mm]=data[0].date.split('-');
-    const ml=`${M[+mm-1]} ${yy}`;
     ctx.font='bold 11px sans-serif';
     ctx.fillStyle=lC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
-    ctx.fillText(ml,pad.l+cW/2,H-2);
+    ctx.fillText(`${M[+mm-1]} ${yy}`,pad.l+cW/2,H-2);
   }else{
-    // Multi-month
-    const skip=Math.max(1,Math.ceil(n/10));
-    ctx.font='600 10px sans-serif';ctx.fillStyle=tC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    const skip=Math.max(1,Math.ceil(data.length/10));
+    ctx.font='600 10px sans-serif';ctx.fillStyle=tC;
+    ctx.textAlign='center';ctx.textBaseline='alphabetic';
     data.forEach((d,i)=>{
-      if(i%skip!==0&&i!==n-1)return;
+      if(i%skip!==0&&i!==data.length-1)return;
       const [yy,mm,dd]=d.date.split('-');
       ctx.fillText(`${+dd} ${M[+mm-1]}`,xOf(i),pad.t+cH+14);
     });
   }
 }
+
 
 // ============ DASHBOARD ============
 let activeI=null;
