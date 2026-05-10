@@ -230,6 +230,7 @@ tr:hover td{background:var(--accent-bg);}
     </div>
   </div>
   <div class="hdr-r">
+    <span id="sync-st" style="font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.5px;"></span>
     <button class="thbtn" id="thbtn" onclick="tgTheme()" title="Toggle tema">🌙</button>
     <div class="live"><span class="live-d"></span>LIVE</div>
     <div id="clk"></div>
@@ -242,8 +243,8 @@ tr:hover td{background:var(--accent-bg);}
   <button class="tb" data-t="prev">🔧 Preventive</button>
   <button class="tb" data-t="sp">🔩 Impeller &amp; Hanger</button>
   <button class="tb" data-t="amp">⚡ Ampere Log</button>
-  <button class="tb" data-t="lb">🗑 Limbah</button>
   <button class="tb" data-t="ss">🔮 Steel Shot</button>
+  <button class="tb" data-t="lb">🗑 Limbah</button>
   <button class="tb" data-t="set">⚙ Setting</button>
 </div>
 
@@ -633,6 +634,182 @@ tr:hover td{background:var(--accent-bg);}
 
 <script>
 'use strict';
+
+// ============================================================
+// CONFIGURATION — GANTI SESUAI SETUP ANDA
+// ============================================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwXDrhim2_OLNBznufGpk9wDOeYv3aLAOuzMzqYsNFh82zN_UVSeUSbEBzp_l0lfKhplg/exec'; // <-- paste Web App URL dari Google Apps Script di sini
+const APP_PWD  = 'hsb2026'; // password default (harus sama dengan di Apps Script)
+
+// ============================================================
+// ONLINE / OFFLINE MODE
+// GAS_URL kosong = offline mode (localStorage saja)
+// GAS_URL terisi = online mode (Google Sheets sebagai database)
+// ============================================================
+const ONLINE = GAS_URL.length > 0;
+
+// ============================================================
+// API LAYER
+// ============================================================
+async function api(action, data={}) {
+  if (!ONLINE) return { ok: true, offline: true };
+  const pwd = sessionStorage.getItem('hsb_pwd') || '';
+  const payload = { action, pwd, ...data };
+  try {
+    // Google Apps Script hanya bisa POST via URL params karena CORS
+    const url = GAS_URL + '?action=' + action + '&pwd=' + encodeURIComponent(pwd);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+    if (!json.ok && json.error) console.warn('API error:', json.error);
+    return json;
+  } catch(e) {
+    console.warn('API fetch error:', e);
+    showToast('⚠ Gagal sync ke server — disimpan lokal', 'warn');
+    return { ok: false, offline: true };
+  }
+}
+
+// Sync queue — aksi yang gagal di-queue dan dicoba ulang
+let syncQueue = JSON.parse(localStorage.getItem('hsb9_queue') || '[]');
+function queueSync(action, data) {
+  syncQueue.push({ action, data, ts: Date.now() });
+  localStorage.setItem('hsb9_queue', JSON.stringify(syncQueue));
+}
+async function flushQueue() {
+  if (!ONLINE || syncQueue.length === 0) return;
+  const failed = [];
+  for (const item of syncQueue) {
+    const r = await api(item.action, item.data);
+    if (!r.ok) failed.push(item);
+  }
+  syncQueue = failed;
+  localStorage.setItem('hsb9_queue', JSON.stringify(syncQueue));
+  if (failed.length === 0 && syncQueue.length === 0) showToast('✅ Semua data berhasil disync', 'ok');
+}
+
+// ============================================================
+// TOAST NOTIFICATION
+// ============================================================
+function showToast(msg, type='ok') {
+  let t = document.getElementById('toast');
+  if (!t) { t = document.createElement('div'); t.id='toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:9px;font-size:.82rem;font-weight:700;z-index:9999;transition:opacity .3s;` +
+    (type==='ok' ? 'background:var(--ok);color:#fff;' :
+     type==='warn' ? 'background:var(--warn);color:#fff;' :
+     'background:var(--danger);color:#fff;');
+  t.style.opacity='1';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(()=>{ t.style.opacity='0'; }, 3000);
+}
+
+// ============================================================
+// LOGIN SCREEN
+// ============================================================
+function showLogin() {
+  // Remove any existing login screen
+  const ex = document.getElementById('login-screen');
+  if (ex) ex.remove();
+  
+  const div = document.createElement('div');
+  div.id = 'login-screen';
+  div.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  div.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);text-align:center;">
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--accent),#0044aa);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;margin:0 auto 20px;box-shadow:0 4px 16px rgba(0,102,204,.3);">⚙</div>
+      <div style="font-size:1.4rem;font-weight:800;margin-bottom:4px;">TPM HSB</div>
+      <div style="font-size:.75rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px;">Casting 2 · PT AT Indonesia</div>
+      <input id="pwd-input" type="password" placeholder="Masukkan password..." autofocus
+        style="width:100%;background:var(--bg);border:2px solid var(--border);border-radius:9px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:1rem;margin-bottom:12px;text-align:center;letter-spacing:4px;"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <div id="pwd-err" style="font-size:.78rem;color:var(--danger);min-height:20px;margin-bottom:10px;"></div>
+      <button onclick="doLogin()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:13px;font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;">
+        Masuk →
+      </button>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:16px;">HSB Monitor v9 · ${new Date().getFullYear()}</div>
+    </div>
+  `;
+  document.body.appendChild(div);
+  setTimeout(()=>document.getElementById('pwd-input')?.focus(), 100);
+}
+
+function doLogin() {
+  const pwd = document.getElementById('pwd-input').value;
+  if (pwd === APP_PWD) {
+    sessionStorage.setItem('hsb_pwd', pwd);
+    document.getElementById('login-screen')?.remove();
+    initApp();
+  } else {
+    const err = document.getElementById('pwd-err');
+    if (err) { err.textContent = '⚠ Password salah, coba lagi'; }
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+  }
+}
+
+// ============================================================
+// SYNC STATUS INDICATOR
+// ============================================================
+function setSyncStatus(status) {
+  let el = document.getElementById('sync-st');
+  if (!el) return;
+  if (status === 'syncing') { el.textContent='⟳ Sync...'; el.style.color='var(--warn)'; }
+  else if (status === 'ok')  { el.textContent='✓ Tersync'; el.style.color='var(--ok)'; }
+  else if (status === 'off') { el.textContent='⚡ Lokal'; el.style.color='var(--muted)'; }
+  else                       { el.textContent='⚠ Offline'; el.style.color='var(--danger)'; }
+}
+
+// ============================================================
+// LOAD FROM GOOGLE SHEETS
+// ============================================================
+async function loadFromSheets() {
+  if (!ONLINE) { setSyncStatus('off'); return false; }
+  setSyncStatus('syncing');
+  const r = await api('getAll');
+  if (!r.ok) { setSyncStatus('error'); return false; }
+  
+  // Map sheets data to local state
+  if (r.ampere?.length)     { ampLog = r.ampere.map(x=>({ dt:x.datetime, sh:x.shift, i:+x.impeller_idx, v:+x.ampere, op:x.operator, status:x.status })); sv('ampLog',ampLog); }
+  if (r.sparepart?.length)  { spLog = r.sparepart.map(x=>({ date:x.date, i:+x.impeller_idx, nm:x.nama_part, jm:+x.jam_pakai, q:+x.qty, kn:x.kondisi, j:x.jenis, op:x.operator, no:x.catatan })); sv('spLog',spLog); }
+  if (r.preventive?.length) { pvLog = r.preventive; sv('pvLog',pvLog); }
+  if (r.limbah?.length)     { lbLog = r.limbah.map(x=>({ date:x.date, sh:x.shift, j:x.jenis, v:+x.volume_trolley, l:x.lokasi, op:x.operator, k:x.keterangan })); sv('lbLog',lbLog); }
+  if (r.steelshot?.length)  { ssLog = r.steelshot.map(x=>({ date:x.date, sh:x.shift, s5:+x.ss550_karung, wc:+x.wirecut_karung, op:x.operator, n:x.keterangan })); sv('ssLog',ssLog); }
+  if (r.hanger?.length)     { hLog = r.hanger.map(x=>({ date:x.date, id:+x.hanger_id, tp:x.tipe, jm:+x.jam_pakai, kn:x.kondisi, op:x.operator, n:x.catatan })); sv('hLog',hLog); }
+  
+  if (r.impeller_state?.length) { st = r.impeller_state; sv('st',st); }
+  if (r.hanger_state?.length)   { hSt = r.hanger_state; sv('hSt',hSt); }
+  
+  // Config
+  if (r.config) {
+    const c = r.config;
+    cfg = {
+      aLo: +c.amp_low||37.5, aHi: +c.amp_high||42.5,
+      pLo: +c.pasir_low||2,  pHi: +c.pasir_high||4,
+      dLo: +c.debu_low||2,   dHi: +c.debu_high||4,
+      sLo: +c.ss_low||1,     sHi: +c.ss_high||1,
+    };
+    if (c.imp_names) nms = c.imp_names.split(',');
+    sv('cfg',cfg);sv('nms',nms);
+  }
+  
+  setSyncStatus('ok');
+  return true;
+}
+
+// ============================================================
+// SAVE WRAPPERS — save local + push to sheets
+// ============================================================
+async function pushToSheets(action, rows) {
+  if (!ONLINE) return;
+  setSyncStatus('syncing');
+  const r = await api(action, { rows: JSON.stringify(rows) });
+  setSyncStatus(r.ok ? 'ok' : 'error');
+  if (!r.ok) queueSync(action, { rows: JSON.stringify(rows) });
+}
 
 // ============ STORAGE ============
 const K='hsb9_';
@@ -1053,13 +1230,19 @@ function upMiAf(v){
 }
 document.getElementById('mi-a').addEventListener('input',e=>upMiAf(e.target.value));
 function setOn(on){if(activeI==null)return;st[activeI].on=on;if(!on){st[activeI].a=null;st[activeI].cf=false;}sv('st',st);rIGrid();rAlerts();}
-function saveMi(){
+async function saveMi(){
   if(activeI==null)return;
   const a=parseFloat(document.getElementById('mi-a').value);const n=document.getElementById('mi-n').value;
-  if(!isNaN(a)){st[activeI].a=a;st[activeI].dt=new Date().toISOString();ampLog.push({dt:new Date().toISOString(),sh:'Manual',i:activeI,v:a,op:'Manual'});sv('ampLog',ampLog);}
-  st[activeI].n=n;sv('st',st);cM('m-i');rIGrid();rAlerts();
+  if(!isNaN(a)){st[activeI].a=a;st[activeI].dt=new Date().toISOString();
+    const row={datetime:new Date().toISOString(),shift:'Manual',impeller_idx:activeI,impeller_name:nms[activeI],ampere:a,status:ampS(a),operator:'Manual',catatan:n};
+    ampLog.push({dt:row.datetime,sh:'Manual',i:activeI,v:a,op:'Manual'});sv('ampLog',ampLog);
+    pushToSheets('saveAmpere',[row]);
+  }
+  st[activeI].n=n;sv('st',st);
+  pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
+  cM('m-i');rIGrid();rAlerts();
 }
-function confI(){if(activeI==null)return;st[activeI].cf=true;sv('st',st);cM('m-i');rIGrid();rAlerts();}
+async function confI(){if(activeI==null)return;st[activeI].cf=true;sv('st',st);pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));cM('m-i');rIGrid();rAlerts();showToast('✅ Impeller dikonfirmasi OK','ok');}
 function allOn(){st.forEach(s=>s.on=true);sv('st',st);rIGrid();rAlerts();}
 function allOff(){st.forEach(s=>{s.on=false;s.a=null;});sv('st',st);rIGrid();rAlerts();}
 
@@ -1115,8 +1298,8 @@ function oH(i){
   `;
   document.getElementById('m-h').classList.add('on');
 }
-function confH(){if(activeH==null)return;hSt[activeH].s='conf';hSt[activeH].n='Dikonfirmasi OK setelah inspeksi';sv('hSt',hSt);cM('m-h');rHgMini('hg-grid','hg-sum');rHgMini('hg-fg','hg-fs');rAlerts();}
-function ngH(){if(activeH==null)return;hSt[activeH].s='ng';sv('hSt',hSt);cM('m-h');rHgMini('hg-grid','hg-sum');rHgMini('hg-fg','hg-fs');rAlerts();}
+async function confH(){if(activeH==null)return;hSt[activeH].s='conf';hSt[activeH].n='Dikonfirmasi OK setelah inspeksi';sv('hSt',hSt);pushToSheets('updateHangerState',hSt.map(h=>({id:h.id,s:h.s,n:h.n||'',cf:h.cf||false})));cM('m-h');rHgMini('hg-grid','hg-sum');rHgMini('hg-fg','hg-fs');rAlerts();showToast('✅ Hanger dikonfirmasi OK','ok');}
+async function ngH(){if(activeH==null)return;hSt[activeH].s='ng';sv('hSt',hSt);pushToSheets('updateHangerState',hSt.map(h=>({id:h.id,s:h.s,n:h.n||'',cf:h.cf||false})));cM('m-h');rHgMini('hg-grid','hg-sum');rHgMini('hg-fg','hg-fs');rAlerts();}
 
 // ============ MODAL ============
 function cM(id){document.getElementById(id).classList.remove('on');}
@@ -1158,14 +1341,20 @@ function upPv(k,v){
   document.getElementById('pvk-'+k).className='pv-b'+(v==='ok'?' ok':'');
   document.getElementById('pvg-'+k).className='pv-b'+(v==='ng'?' ng':'');
 }
-function savePv(){
+async function savePv(){
   const w=document.getElementById('pv-w').value;const m=document.getElementById('pv-m').value;
   const td=document.getElementById('pv-d').value;const pic=document.getElementById('pv-p').value||'PIC';
   const no=document.getElementById('pv-n').value;
-  const rs=[];
-  for(let i=0;i<16;i++)PV_IT.forEach(it=>{const k=`${i}-${it.id}`;rs.push({i,it:it.l,v:pvR[k]||'pending'});});
+  const rs=[];const rows=[];
+  for(let i=0;i<16;i++)PV_IT.forEach(it=>{
+    const k=`${i}-${it.id}`;const v=pvR[k]||'pending';
+    rs.push({i,it:it.l,v});
+    rows.push({date:td,minggu:w,bulan:m,impeller_idx:i,item:it.l,hasil:v,pic,catatan:no});
+  });
   pvLog.push({pr:`Minggu ${w} / ${m}`,td,pic,no,rs});
-  sv('pvLog',pvLog);pvR={};rPv();rAlerts();alert('Tersimpan!');
+  sv('pvLog',pvLog);pvR={};
+  pushToSheets('savePrev',rows);
+  rPv();rAlerts();showToast('✅ Check sheet tersimpan!','ok');
 }
 
 // ============ SPAREPART ============
@@ -1209,38 +1398,50 @@ function rSp(){
   const hsr=[...hLog].sort((a,b)=>b.date.localeCompare(a.date));
   ht.innerHTML=hsr.map(r=>`<tr><td>${fD(r.date)}</td><td>Hanger #${r.id}</td><td><span class="bd ${r.tp==='repair'?'bd-wn':'bd-ok'}">${r.tp==='repair'?'Repair':'Baru'}</span></td><td class="mn">${r.jm}h</td><td>${r.kn}</td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
 }
-function saveSp(){
+async function saveSp(){
   const date=document.getElementById('sp-d').value;const i=+document.getElementById('sp-i').value;
   const j=document.getElementById('sp-j').value;const op=document.getElementById('sp-op').value||'Op';
   const no=document.getElementById('sp-no').value;
-  if(!date){alert('Tanggal wajib');return;}
+  if(!date){showToast('Tanggal wajib','warn');return;}
+  const rows=[];
   if(j==='assy'){
     const jm=+document.getElementById('sp-aj').value||0;
-    if(!jm){alert('Jam running wajib');return;}
-    SP_PT.filter(n=>n!=='Motor').forEach(nm=>spLog.push({date,i,nm,q:1,jm,kn:'Aus',op,no:'Unit Assy',j:'assy'}));
+    if(!jm){showToast('Jam running wajib','warn');return;}
+    SP_PT.filter(n=>n!=='Motor').forEach(nm=>{
+      spLog.push({date,i,nm,q:1,jm,kn:'Aus',op,no:'Unit Assy',j:'assy'});
+      rows.push({date,impeller_idx:i,impeller_name:nms[i],nama_part:nm,jam_pakai:jm,qty:1,kondisi:'Aus',jenis:'assy',operator:op,catatan:'Unit Assy'});
+    });
     st[i].cf=false;
   }else{
     const nm=document.getElementById('sp-nm').value;const jm=+document.getElementById('sp-jm').value;
     const q=+document.getElementById('sp-q').value||1;const kn=document.getElementById('sp-k').value;
-    if(!jm){alert('Jam wajib');return;}
+    if(!jm){showToast('Jam wajib','warn');return;}
     spLog.push({date,i,nm,q,jm,kn,op,no,j:'part'});
+    rows.push({date,impeller_idx:i,impeller_name:nms[i],nama_part:nm,jam_pakai:jm,qty:q,kondisi:kn,jenis:'part',operator:op,catatan:no});
     st[i].cf=false;
   }
-  sv('spLog',spLog);sv('st',st);rSp();rAlerts();alert('Tersimpan!');
+  sv('spLog',spLog);sv('st',st);
+  pushToSheets('saveSparepart',rows);
+  rSp();rAlerts();showToast('✅ Sparepart tersimpan!','ok');
 }
-function saveHg(){
+async function saveHg(){
   const date=document.getElementById('hg-d').value;const id=+document.getElementById('hg-n').value;
   const tp=document.getElementById('hg-tp').value;const jm=+document.getElementById('hg-jm').value;
   const kn=document.getElementById('hg-k').value;const op=document.getElementById('hg-op').value||'Op';
   const n=document.getElementById('hg-no').value;
-  if(!date||!jm){alert('Tanggal & jam wajib');return;}
+  if(!date||!jm){showToast('Tanggal & jam wajib','warn');return;}
   hLog.push({date,id,tp,jm,kn,op,n});hSt[id-1].s='ok';hSt[id-1].n='';hSt[id-1].cf=false;
-  sv('hLog',hLog);sv('hSt',hSt);rSp();rAlerts();alert('Tersimpan!');
+  sv('hLog',hLog);sv('hSt',hSt);
+  pushToSheets('saveHanger',[{date,hanger_id:id,tipe:tp,jam_pakai:jm,kondisi:kn,operator:op,catatan:n}]);
+  pushToSheets('updateHangerState',hSt.map(h=>({id:h.id,s:h.s,n:h.n||'',cf:h.cf||false})));
+  rSp();rAlerts();showToast('✅ Hanger tersimpan!','ok');
 }
-function setHgSt(){
+async function setHgSt(){
   const id=+document.getElementById('hg-sn').value;const s=document.getElementById('hg-ss').value;
   const n=document.getElementById('hg-sno').value;
-  hSt[id-1].s=s;hSt[id-1].n=n;sv('hSt',hSt);rSp();rAlerts();alert(`Hanger #${id} → ${s.toUpperCase()}`);
+  hSt[id-1].s=s;hSt[id-1].n=n;sv('hSt',hSt);
+  pushToSheets('updateHangerState',hSt.map(h=>({id:h.id,s:h.s,n:h.n||'',cf:h.cf||false})));
+  rSp();rAlerts();showToast(`✅ Hanger #${id} → ${s.toUpperCase()}`,'ok');
 }
 
 // ============ AMPERE ============
@@ -1270,16 +1471,23 @@ function hl(i,v){
   else if(s==='lo'){f.innerHTML='⬇️';inp.style.borderColor='var(--warn)';}
   else if(s==='hi'){f.innerHTML='🔺';inp.style.borderColor='var(--danger)';}
 }
-function saveAmp(){
+async function saveAmp(){
   const dt=document.getElementById('amp-dt').value;const sh=document.getElementById('amp-sh').value;const op=document.getElementById('amp-op').value||'Op';
-  let c=0;
+  let c=0;const rows=[];
   for(let i=0;i<16;i++){
     const v=parseFloat(document.getElementById('ai-'+i).value);
     if(isNaN(v))continue;
-    ampLog.push({dt:new Date(dt).toISOString(),sh,i,v,op});
+    const dtISO=new Date(dt).toISOString();
+    ampLog.push({dt:dtISO,sh,i,v,op});
+    rows.push({datetime:dtISO,shift:sh,impeller_idx:i,impeller_name:nms[i],ampere:v,status:ampS(v),operator:op,catatan:''});
     st[i].a=v;st[i].dt=new Date().toISOString();c++;
   }
-  sv('ampLog',ampLog);sv('st',st);alert(`${c} data tersimpan!`);rAmp();rIGrid();rAlerts();
+  sv('ampLog',ampLog);sv('st',st);
+  if(rows.length){
+    pushToSheets('saveAmpere',rows);
+    pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
+  }
+  showToast(`✅ ${c} data ampere tersimpan!`,'ok');rAmp();rIGrid();rAlerts();
 }
 
 // ============ LIMBAH ============
@@ -1314,13 +1522,16 @@ function rLb(){
     return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td>${r.j}</td><td class="mn">${r.v}</td><td><span class="bd ${cl}">${s}</span></td><td>${r.l||'-'}</td><td>${r.op}</td></tr>`;
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
-function saveLb(){
+async function saveLb(){
   const date=document.getElementById('lb-d').value;const sh=document.getElementById('lb-sh').value;
   const j=document.getElementById('lb-j').value;const v=+document.getElementById('lb-v').value;
   const l=document.getElementById('lb-l').value;const op=document.getElementById('lb-op').value||'Op';
   const k=document.getElementById('lb-kt').value;
-  if(!date||!v){alert('Tanggal & volume wajib');return;}
-  lbLog.push({date,sh,j,v,l,op,k});sv('lbLog',lbLog);rLb();alert('Tersimpan!');
+  if(!date||!v){showToast('Tanggal & volume wajib','warn');return;}
+  const row={date,sh,j,v,l,op,k};
+  lbLog.push(row);sv('lbLog',lbLog);
+  pushToSheets('saveLimbah',[{date,shift:sh,jenis:j,volume_trolley:v,lokasi:l,operator:op,keterangan:k}]);
+  rLb();showToast('✅ Data limbah tersimpan!','ok');
 }
 
 // ============ STEELSHOT ============
@@ -1351,12 +1562,14 @@ function rSs(){
     return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${r.s5||0}</td><td class="mn">${r.wc||0}</td><td class="mn">${tot}</td><td>${r.op}</td><td>${r.n||'-'}</td></tr>`;
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
-function saveSs(){
+async function saveSs(){
   const date=document.getElementById('ss-d').value;const sh=document.getElementById('ss-sh').value;
   const s5=+document.getElementById('ss-50').value||0;const wc=+document.getElementById('ss-wc').value||0;
   const op=document.getElementById('ss-op').value||'Op';const n=document.getElementById('ss-no').value;
-  if(!date){alert('Tanggal wajib');return;}
-  ssLog.push({date,sh,s5,wc,op,n});sv('ssLog',ssLog);rSs();alert('Tersimpan!');
+  if(!date){showToast('Tanggal wajib','warn');return;}
+  ssLog.push({date,sh,s5,wc,op,n});sv('ssLog',ssLog);
+  pushToSheets('saveSteelshot',[{date,shift:sh,ss550_karung:s5,wirecut_karung:wc,total:s5+wc,operator:op,keterangan:n}]);
+  rSs();showToast('✅ Data steelshot tersimpan!','ok');
 }
 
 // ============ SETTING ============
@@ -1391,8 +1604,47 @@ function exp(){
 function rst(){['cfg','nms','st','ampLog','spLog','pvLog','lbLog','ssLog','ltCfg','hSt','hLog','theme'].forEach(k=>localStorage.removeItem(K+k));location.reload();}
 
 // ============ INIT ============
-seed();
-rDash();
+async function initApp() {
+  // Try to load from Google Sheets first
+  if (ONLINE) {
+    showToast('⟳ Memuat data dari server...','warn');
+    const loaded = await loadFromSheets();
+    if (!loaded) {
+      // Fallback to local
+      seed();
+      showToast('⚠ Menggunakan data lokal (server tidak tersedia)','warn');
+    } else {
+      showToast('✅ Data berhasil dimuat dari server','ok');
+      // Try to flush any queued offline changes
+      await flushQueue();
+    }
+  } else {
+    seed();
+    setSyncStatus('off');
+  }
+  rDash();
+}
+
+// Show login if needed, otherwise start app
+if (ONLINE) {
+  // Show login screen on load
+  document.addEventListener('DOMContentLoaded', () => {
+    // Check if already logged in this session
+    if (sessionStorage.getItem('hsb_pwd') === APP_PWD) {
+      initApp();
+    } else {
+      showLogin();
+    }
+  });
+} else {
+  // Offline mode — no login needed
+  document.addEventListener('DOMContentLoaded', () => {
+    seed();
+    setSyncStatus('off');
+    rDash();
+  });
+}
+
 // Redraw on resize (debounced)
 let rzT=null;
 window.addEventListener('resize',()=>{
@@ -1411,6 +1663,8 @@ setInterval(()=>{
     drawDashCharts();
   }
 },30000);
+// Sync setiap 5 menit kalau online
+if(ONLINE){setInterval(async()=>{await loadFromSheets();if(document.getElementById('p-dash').classList.contains('on')){rDash();}},5*60*1000);}
 </script>
 </body>
 </html>
