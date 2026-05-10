@@ -279,9 +279,15 @@ tr:hover td{background:var(--accent-bg);}
       </div>
       <div class="db-canvas"><canvas id="c-ss"></canvas></div>
       <div class="db-foot">
-        <div class="lg-r">
-          <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (karung)</div>
-          <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (karung)</div>
+        <div class="lg-r" style="justify-content:space-between;align-items:center;">
+          <div style="display:flex;gap:8px;">
+            <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550</div>
+            <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut</div>
+          </div>
+          <div style="display:flex;gap:5px;">
+            <button class="chc-b on" id="db-ss-f-550" style="font-size:.65rem;padding:2px 8px;" onclick="dbSsToggle('s5',this)">SS 550</button>
+            <button class="chc-b on" id="db-ss-f-wc" style="font-size:.65rem;padding:2px 8px;" onclick="dbSsToggle('wc',this)">Wire Cut</button>
+          </div>
         </div>
       </div>
     </div>
@@ -294,9 +300,15 @@ tr:hover td{background:var(--accent-bg);}
       </div>
       <div class="db-canvas"><canvas id="c-lb"></canvas></div>
       <div class="db-foot">
-        <div class="lg-r">
-          <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Pasir (Trolley)</div>
-          <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Debu (Trolley)</div>
+        <div class="lg-r" style="justify-content:space-between;align-items:center;">
+          <div style="display:flex;gap:8px;">
+            <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Pasir</div>
+            <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Debu</div>
+          </div>
+          <div style="display:flex;gap:5px;">
+            <button class="chc-b on" id="db-lb-f-pasir" style="font-size:.65rem;padding:2px 8px;" onclick="dbLbToggle('pasir',this)">Pasir</button>
+            <button class="chc-b on" id="db-lb-f-debu" style="font-size:.65rem;padding:2px 8px;" onclick="dbLbToggle('debu',this)">Debu</button>
+          </div>
         </div>
       </div>
     </div>
@@ -534,6 +546,11 @@ tr:hover td{background:var(--accent-bg);}
         <button class="btn btn-p btn-s" onclick="drawFullLb()">Tampilkan</button>
       </span>
     </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILKAN:</span>
+      <button class="chc-b on" id="lb-f-pasir" onclick="lbToggle('pasir',this)">🟠 Pasir</button>
+      <button class="chc-b on" id="lb-f-debu" onclick="lbToggle('debu',this)">🔵 Debu</button>
+    </div>
     <div style="height:260px;position:relative;"><canvas id="c-lb-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
       <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Pasir (Trolley)</div>
@@ -584,6 +601,11 @@ tr:hover td{background:var(--accent-bg);}
         <input type="month" id="ss-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
         <button class="btn btn-p btn-s" onclick="drawFullSs()">Tampilkan</button>
       </span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILKAN:</span>
+      <button class="chc-b on" id="ss-f-550" onclick="ssToggle('s5',this)">🟣 SS 550</button>
+      <button class="chc-b on" id="ss-f-wc" onclick="ssToggle('wc',this)">🟢 Wire Cut</button>
     </div>
     <div style="height:260px;position:relative;"><canvas id="c-ss-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
@@ -1212,41 +1234,30 @@ function drawChart(canvasId,data,series,opts){
     }
   });
 
-  // ── Data labels with collision avoidance ─────────────────
-  // Only show labels for non-zero values, ≤31 data points
-  if(data.length<=31){
-    const placed=[]; // {x1,x2,y1,y2} bounding boxes already drawn
-    const LW=16,LH=12; // approx label size
-
-    function overlaps(a,b){
-      return !(a.x2<b.x1||a.x1>b.x2||a.y2<b.y1||a.y1>b.y2);
-    }
-    function tryPlace(x,y,dx,dy){
+  // ── Data labels — show on all periods, skip when too dense
+  {
+    const minGapPx=24;
+    const lastX={};
+    const placed=[];
+    const LW=18,LH=13;
+    function olap(a,b){return !(a.x2<b.x1-1||a.x1>b.x2+1||a.y2<b.y1-1||a.y1>b.y2+1);}
+    function tryPl(x,y,dx,dy){
       const bx={x1:x+dx-LW/2,x2:x+dx+LW/2,y1:y+dy-LH,y2:y+dy};
-      const ok=placed.every(p=>!overlaps(p,bx))&&bx.x1>=pad.l&&bx.x2<=W-4&&bx.y1>=pad.t-2;
+      const ok=placed.every(p=>!olap(p,bx))&&bx.x1>=pad.l-2&&bx.x2<=W-2&&bx.y1>=pad.t-4;
       if(ok)placed.push(bx);
       return ok;
     }
-
-    // Sort by series then by position
     allLabels.forEach(lb=>{
-      if(lb.val===0)return;
-      // Try positions: above, below, above+offset, below+offset
-      const offsets=[
-        {dx:0,dy:-6},   // above dot
-        {dx:0,dy:14},   // below dot
-        {dx:0,dy:-14},  // further above
-        {dx:4,dy:-6},   // above+right
-        {dx:-4,dy:-6},  // above+left
-      ];
-      for(const off of offsets){
-        if(tryPlace(lb.x,lb.y,off.dx,off.dy)){
+      if(!lb.val||lb.val===0)return;
+      const lx=lastX[lb.si]??-999;
+      if(lb.x-lx<minGapPx)return;
+      const offs=[{dx:0,dy:-6},{dx:0,dy:14},{dx:0,dy:-16},{dx:6,dy:-6},{dx:-6,dy:-6},{dx:6,dy:14},{dx:-6,dy:14}];
+      for(const off of offs){
+        if(tryPl(lb.x,lb.y,off.dx,off.dy)){
           ctx.font='bold 9px sans-serif';
-          ctx.fillStyle=lb.c;
-          ctx.textAlign='center';
-          ctx.textBaseline='alphabetic';
+          ctx.fillStyle=lb.c;ctx.textAlign='center';ctx.textBaseline='alphabetic';
           ctx.fillText(lb.val,lb.x+off.dx,lb.y+off.dy);
-          break;
+          lastX[lb.si]=lb.x;break;
         }
       }
     });
@@ -1288,21 +1299,37 @@ function rDash(){
   rHgMini('hg-grid','hg-sum');
   drawDashCharts();
 }
-function drawDashCharts(){
-  // SS
-  const sd=allDays(...Object.values(dtRange('cur'))).map(date=>({
+function buildSsData(){
+  return allDays(...Object.values(dtRange('cur'))).map(date=>({
     date,
     s5:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.s5||0),0),
     wc:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.wc||0),0),
   }));
-  drawChart('c-ss',sd,[{k:'s5',c:'#7c3aed'},{k:'wc',c:'#059669'}],{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
-  // LB
-  const ld=allDays(...Object.values(dtRange('cur'))).map(date=>({
+}
+function buildLbDashData(){
+  return allDays(...Object.values(dtRange('cur'))).map(date=>({
     date,
     pasir:lbLog.filter(l=>l.date===date&&l.j==='Pasir').reduce((s,x)=>s+x.v,0),
     debu:lbLog.filter(l=>l.date===date&&l.j==='Debu').reduce((s,x)=>s+x.v,0),
   }));
-  drawChart('c-lb',ld,[{k:'pasir',c:'#d97706'},{k:'debu',c:'#0891b2'}],{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.dHi,c:'#0891b2'}]});
+}
+function renderSsDashChart(){
+  const sd=buildSsData();
+  const sr=[];
+  if(dbSsShowS5)sr.push({k:'s5',c:'#7c3aed'});
+  if(dbSsShowWc)sr.push({k:'wc',c:'#059669'});
+  if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
+}
+function renderLbDashChart(){
+  const ld=buildLbDashData();
+  const sr=[];
+  if(dbLbShowPasir)sr.push({k:'pasir',c:'#d97706'});
+  if(dbLbShowDebu) sr.push({k:'debu', c:'#0891b2'});
+  if(sr.length)drawChart('c-lb',ld,sr,{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.dHi,c:'#0891b2'}]});
+}
+function drawDashCharts(){
+  renderSsDashChart();
+  renderLbDashChart();
 }
 
 function rAlerts(){
@@ -1862,6 +1889,36 @@ function drawAmpChart(){
 
 // ============ LIMBAH ============
 let lbPdV='cur';
+let lbShowPasir=true,lbShowDebu=true;
+let ssShowS5=true,ssShowWc=true;
+// Dashboard mini chart toggles (share same state as detail charts)
+let dbLbShowPasir=true,dbLbShowDebu=true;
+let dbSsShowS5=true,dbSsShowWc=true;
+
+function dbLbToggle(key,btn){
+  if(key==='pasir')dbLbShowPasir=!dbLbShowPasir;
+  else dbLbShowDebu=!dbLbShowDebu;
+  btn.classList.toggle('on',key==='pasir'?dbLbShowPasir:dbLbShowDebu);
+  renderLbDashChart();
+}
+function dbSsToggle(key,btn){
+  if(key==='s5')dbSsShowS5=!dbSsShowS5;
+  else dbSsShowWc=!dbSsShowWc;
+  btn.classList.toggle('on',key==='s5'?dbSsShowS5:dbSsShowWc);
+  renderSsDashChart();
+}
+function lbToggle(key,btn){
+  if(key==='pasir')lbShowPasir=!lbShowPasir;
+  else lbShowDebu=!lbShowDebu;
+  btn.classList.toggle('on',key==='pasir'?lbShowPasir:lbShowDebu);
+  drawFullLb();
+}
+function ssToggle(key,btn){
+  if(key==='s5')ssShowS5=!ssShowS5;
+  else ssShowWc=!ssShowWc;
+  btn.classList.toggle('on',key==='s5'?ssShowS5:ssShowWc);
+  drawFullSs();
+}
 function lbPd(b,p){
   document.querySelectorAll('#p-lb .chc-b').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');lbPdV=p;
@@ -1876,7 +1933,10 @@ function drawFullLb(){
     pasir:lbLog.filter(l=>l.date===date&&l.j==='Pasir').reduce((s,x)=>s+x.v,0),
     debu:lbLog.filter(l=>l.date===date&&l.j==='Debu').reduce((s,x)=>s+x.v,0),
   }));
-  drawChart('c-lb-full',data,[{k:'pasir',c:'#d97706'},{k:'debu',c:'#0891b2'}],{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.pLo,c:'#d9770680'},{v:cfg.dHi,c:'#0891b2'},{v:cfg.dLo,c:'#0891b280'}]});
+  const lbSr=[];
+  if(lbShowPasir)lbSr.push({k:'pasir',c:'#d97706'});
+  if(lbShowDebu)lbSr.push({k:'debu',c:'#0891b2'});
+  if(lbSr.length)drawChart('c-lb-full',data,lbSr,{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.pLo,c:'#d9770680'},{v:cfg.dHi,c:'#0891b2'},{v:cfg.dLo,c:'#0891b280'}]});
 }
 function rLb(){
   const sd=document.getElementById('lb-d');if(!sd.value)sd.value=today();
@@ -1938,7 +1998,10 @@ function drawFullSs(){
     s5:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.s5||0),0),
     wc:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.wc||0),0),
   }));
-  drawChart('c-ss-full',data,[{k:'s5',c:'#7c3aed'},{k:'wc',c:'#059669'}],{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed80'}]});
+  const ssSr=[];
+  if(ssShowS5)ssSr.push({k:'s5',c:'#7c3aed'});
+  if(ssShowWc)ssSr.push({k:'wc',c:'#059669'});
+  if(ssSr.length)drawChart('c-ss-full',data,ssSr,{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed80'}]});
 }
 function rSs(){
   const sd=document.getElementById('ss-d');if(!sd.value)sd.value=today();
