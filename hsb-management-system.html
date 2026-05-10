@@ -634,7 +634,7 @@ tr:hover td{background:var(--accent-bg);}
     <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">⚠ Reset Cache Lokal hanya menghapus data di browser ini. <b>Data di Google Sheets tetap aman.</b> Setelah reset, data akan dimuat ulang dari server.</div>
     <div class="fg-r">
       <button class="btn btn-g btn-s" onclick="exp()">📤 Export JSON</button>
-      <button class="btn btn-d btn-s" onclick="if(confirm('Reset cache lokal di browser ini?\n\n✅ Data di Google Sheets TETAP AMAN.\nYang dihapus hanya cache di HP/browser ini.\n\nLanjutkan?'))rst()">🗑 Reset Cache Lokal</button>
+      <button class="btn btn-d btn-s" onclick="showResetModal()">🗑 Reset Cache Lokal</button>
     </div>
   </div>
 </div>
@@ -1618,10 +1618,41 @@ function exp(){
   const blob=new Blob([JSON.stringify({cfg,nms,st,ampLog,spLog,pvLog,lbLog,ssLog,ltCfg,hSt,hLog},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`hsb-${today()}.json`;a.click();
 }
+function showResetModal(){
+  // Buat modal konfirmasi custom (lebih reliable di HP daripada confirm())
+  let m = document.getElementById('m-reset');
+  if(!m){
+    m = document.createElement('div');
+    m.id = 'm-reset';
+    m.className = 'mv';
+    m.innerHTML = `
+      <div class="mw" style="max-width:360px;">
+        <div class="mh">
+          <h3 style="color:var(--danger);">🗑 Reset Cache Lokal</h3>
+          <button class="mx" onclick="document.getElementById('m-reset').classList.remove('on')">×</button>
+        </div>
+        <div class="mb">
+          <div style="background:var(--ok-bg);border:1px solid rgba(5,150,105,.3);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;color:var(--ok);font-weight:600;">
+            ✅ Data di Google Sheets TETAP AMAN
+          </div>
+          <p style="font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:14px;">
+            Yang akan dihapus hanya <b>cache lokal</b> di browser HP ini.<br>
+            Setelah reset, data akan dimuat ulang dari server otomatis.
+          </p>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-g" style="flex:1;" onclick="document.getElementById('m-reset').classList.remove('on')">Batal</button>
+            <button class="btn btn-d" style="flex:1;" onclick="rst()">Ya, Reset</button>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(m);
+    m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('on'); });
+  }
+  m.classList.add('on');
+}
 function rst(){
   ['cfg','nms','st','ampLog','spLog','pvLog','lbLog','ssLog','ltCfg','hSt','hLog','theme'].forEach(k=>localStorage.removeItem(K+k));
   localStorage.removeItem('hsb9_queue');
-  // Setelah reset, data akan dimuat ulang dari Google Sheets
   location.reload();
 }
 
