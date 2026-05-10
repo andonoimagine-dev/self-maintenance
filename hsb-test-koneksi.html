@@ -159,19 +159,19 @@ async function callGAS(action, extra={}){
   const gasUrl = url();
   const password = pwd();
   if(!gasUrl){ throw new Error('URL kosong'); }
-  const body = { action, pwd: password, ...extra };
-  log(`→ POST ${action}`);
-  const t0 = Date.now();
-  const res = await fetch(gasUrl, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify(body),
-    redirect: 'follow'
+  // Gunakan GET + URL params (CORS-safe untuk Google Apps Script)
+  const params = new URLSearchParams({ action, pwd: password });
+  Object.entries(extra).forEach(([k,v]) => {
+    params.set(k, typeof v === 'object' ? JSON.stringify(v) : v);
   });
+  const fullUrl = gasUrl + '?' + params.toString();
+  log(`→ GET ${action}`);
+  const t0 = Date.now();
+  const res = await fetch(fullUrl, { method:'GET', redirect:'follow' });
   const elapsed = Date.now() - t0;
   log(`← ${res.status} (${elapsed}ms)`);
   const text = await res.text();
-  log(`   ${text.slice(0,200)}`);
+  log(`   ${text.slice(0,300)}`);
   try{ return { data: JSON.parse(text), elapsed }; }
   catch(e){ return { data: null, raw: text, elapsed }; }
 }
