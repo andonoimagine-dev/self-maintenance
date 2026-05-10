@@ -631,9 +631,10 @@ tr:hover td{background:var(--accent-bg);}
   </div>
   <div class="cd">
     <div class="st">🗃 Data Management</div>
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">⚠ Reset Cache Lokal hanya menghapus data di browser ini. <b>Data di Google Sheets tetap aman.</b> Setelah reset, data akan dimuat ulang dari server.</div>
     <div class="fg-r">
       <button class="btn btn-g btn-s" onclick="exp()">📤 Export JSON</button>
-      <button class="btn btn-d btn-s" onclick="if(confirm('Reset semua data?'))rst()">🗑 Reset Data</button>
+      <button class="btn btn-d btn-s" onclick="if(confirm('Reset cache lokal di browser ini?\n\n✅ Data di Google Sheets TETAP AMAN.\nYang dihapus hanya cache di HP/browser ini.\n\nLanjutkan?'))rst()">🗑 Reset Cache Lokal</button>
     </div>
   </div>
 </div>
@@ -1617,7 +1618,12 @@ function exp(){
   const blob=new Blob([JSON.stringify({cfg,nms,st,ampLog,spLog,pvLog,lbLog,ssLog,ltCfg,hSt,hLog},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`hsb-${today()}.json`;a.click();
 }
-function rst(){['cfg','nms','st','ampLog','spLog','pvLog','lbLog','ssLog','ltCfg','hSt','hLog','theme'].forEach(k=>localStorage.removeItem(K+k));location.reload();}
+function rst(){
+  ['cfg','nms','st','ampLog','spLog','pvLog','lbLog','ssLog','ltCfg','hSt','hLog','theme'].forEach(k=>localStorage.removeItem(K+k));
+  localStorage.removeItem('hsb9_queue');
+  // Setelah reset, data akan dimuat ulang dari Google Sheets
+  location.reload();
+}
 
 
 // ============================================================
