@@ -279,14 +279,17 @@ tr:hover td{background:var(--accent-bg);}
       </div>
       <div class="db-canvas"><canvas id="c-ss"></canvas></div>
       <div class="db-foot">
-        <div class="lg-r" style="justify-content:space-between;align-items:center;">
+        <div class="lg-r" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
           <div style="display:flex;gap:8px;">
             <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550</div>
             <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut</div>
           </div>
-          <div style="display:flex;gap:5px;">
-            <button class="chc-b on" id="db-ss-f-550" style="font-size:.65rem;padding:2px 8px;" onclick="dbSsToggle('s5',this)">SS 550</button>
-            <button class="chc-b on" id="db-ss-f-wc" style="font-size:.65rem;padding:2px 8px;" onclick="dbSsToggle('wc',this)">Wire Cut</button>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="chc-b on" id="db-ss-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsSetView('day',this)">Harian</button>
+            <button class="chc-b" id="db-ss-v-week" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsSetView('week',this)">Mingguan</button>
+            <span style="width:1px;height:16px;background:var(--border);margin:0 2px;"></span>
+            <button class="chc-b on" id="db-ss-f-550" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('s5',this)">SS 550</button>
+            <button class="chc-b on" id="db-ss-f-wc" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('wc',this)">Wire Cut</button>
           </div>
         </div>
       </div>
@@ -300,14 +303,17 @@ tr:hover td{background:var(--accent-bg);}
       </div>
       <div class="db-canvas"><canvas id="c-lb"></canvas></div>
       <div class="db-foot">
-        <div class="lg-r" style="justify-content:space-between;align-items:center;">
+        <div class="lg-r" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
           <div style="display:flex;gap:8px;">
             <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Pasir</div>
             <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Debu</div>
           </div>
-          <div style="display:flex;gap:5px;">
-            <button class="chc-b on" id="db-lb-f-pasir" style="font-size:.65rem;padding:2px 8px;" onclick="dbLbToggle('pasir',this)">Pasir</button>
-            <button class="chc-b on" id="db-lb-f-debu" style="font-size:.65rem;padding:2px 8px;" onclick="dbLbToggle('debu',this)">Debu</button>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="chc-b on" id="db-lb-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbLbSetView('day',this)">Harian</button>
+            <button class="chc-b" id="db-lb-v-week" style="font-size:.6rem;padding:2px 6px;" onclick="dbLbSetView('week',this)">Mingguan</button>
+            <span style="width:1px;height:16px;background:var(--border);margin:0 2px;"></span>
+            <button class="chc-b on" id="db-lb-f-pasir" style="font-size:.6rem;padding:2px 6px;" onclick="dbLbToggle('pasir',this)">Pasir</button>
+            <button class="chc-b on" id="db-lb-f-debu" style="font-size:.6rem;padding:2px 6px;" onclick="dbLbToggle('debu',this)">Debu</button>
           </div>
         </div>
       </div>
@@ -488,6 +494,11 @@ tr:hover td{background:var(--accent-bg);}
       </span>
     </div>
     <!-- Pilih Impeller -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILAN:</span>
+      <button class="chc-b on" id="amp-v-day" onclick="ampSetView('day',this)">📅 Harian</button>
+      <button class="chc-b" id="amp-v-week" onclick="ampSetView('week',this)">📆 Mingguan</button>
+    </div>
     <div style="margin-bottom:8px;">
       <span style="font-size:.72rem;color:var(--muted);font-weight:700;margin-right:8px;">IMPELLER:</span>
       <button class="chc-b on" onclick="ampSelAll(this)" style="margin-right:4px;">Semua</button>
@@ -546,8 +557,11 @@ tr:hover td{background:var(--accent-bg);}
         <button class="btn btn-p btn-s" onclick="drawFullLb()">Tampilkan</button>
       </span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILKAN:</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILAN:</span>
+      <button class="chc-b on" id="lb-v-day" onclick="lbSetView('day',this)">📅 Harian</button>
+      <button class="chc-b" id="lb-v-week" onclick="lbSetView('week',this)">📆 Mingguan</button>
+      <span style="width:1px;height:18px;background:var(--border);margin:0 4px;"></span>
       <button class="chc-b on" id="lb-f-pasir" onclick="lbToggle('pasir',this)">🟠 Pasir</button>
       <button class="chc-b on" id="lb-f-debu" onclick="lbToggle('debu',this)">🔵 Debu</button>
     </div>
@@ -602,8 +616,11 @@ tr:hover td{background:var(--accent-bg);}
         <button class="btn btn-p btn-s" onclick="drawFullSs()">Tampilkan</button>
       </span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILKAN:</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILAN:</span>
+      <button class="chc-b on" id="ss-v-day" onclick="ssSetView('day',this)">📅 Harian</button>
+      <button class="chc-b" id="ss-v-week" onclick="ssSetView('week',this)">📆 Mingguan</button>
+      <span style="width:1px;height:18px;background:var(--border);margin:0 4px;"></span>
       <button class="chc-b on" id="ss-f-550" onclick="ssToggle('s5',this)">🟣 SS 550</button>
       <button class="chc-b on" id="ss-f-wc" onclick="ssToggle('wc',this)">🟢 Wire Cut</button>
     </div>
@@ -1134,7 +1151,7 @@ function drawChart(canvasId,data,series,opts){
   const sm=data.length>0&&data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
   const showDay=sm&&data.length>1;
   const yLb=opts.yLabel||'';
-  const pad={t:10,r:8,b:showDay?40:22,l:yLb?40:32};
+  const pad={t:18,r:10,b:showDay?40:36,l:yLb?40:32};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   if(cW<10||cH<10)return;
   ctx.clearRect(0,0,W,H);
@@ -1300,6 +1317,7 @@ function drawChart(canvasId,data,series,opts){
 
   // ── X axis ───────────────────────────────────────────────
   if(showDay){
+    // Single month: rotated day numbers 1-31 + month label at bottom
     ctx.font='bold 9px sans-serif';
     const yB=pad.t+cH+3;
     data.forEach((d,i)=>{
@@ -1314,18 +1332,149 @@ function drawChart(canvasId,data,series,opts){
     ctx.font='bold 11px sans-serif';
     ctx.fillStyle=lC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
     ctx.fillText(`${M[+mm-1]} ${yy}`,pad.l+cW/2,H-2);
-  }else{
-    const skip=Math.max(1,Math.ceil(data.length/10));
-    ctx.font='600 10px sans-serif';ctx.fillStyle=tC;
-    ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  } else if(opts.weekly){
+    // Weekly mode: show "W1 Apr'26" labels, month separator
+    const yBase = pad.t+cH+3;
+    let lastMonth='';
     data.forEach((d,i)=>{
-      if(i%skip!==0&&i!==data.length-1)return;
+      const x=xOf(i);
+      const lbl=d.label||d.date;
+      // Month separator when month changes
+      const mo=lbl.slice(lbl.indexOf(' ')+1);
+      if(mo!==lastMonth){
+        lastMonth=mo;
+        if(i>0){
+          ctx.save();
+          ctx.strokeStyle=isDk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
+          ctx.lineWidth=1;ctx.setLineDash([3,3]);
+          ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+cH);ctx.stroke();
+          ctx.restore();
+        }
+        ctx.font='bold 10px sans-serif';ctx.fillStyle=lC;
+        ctx.textAlign='left';ctx.textBaseline='top';
+        const mlx=Math.min(x+2,pad.l+cW-40);
+        ctx.fillText(mo,mlx,pad.t+2);
+      }
+      // Week label rotated
+      ctx.save();
+      ctx.font='bold 9px sans-serif';ctx.fillStyle=tC;
+      ctx.textAlign='right';ctx.textBaseline='top';
+      ctx.translate(x,yBase);ctx.rotate(-Math.PI*50/180);
+      ctx.fillText(lbl.split(' ')[0],0,0); // just "W1","W2",...
+      ctx.restore();
+    });
+  } else {
+    // Multi-month daily: show day+month rotated, month separator + label at top
+    const pxPerPt = n > 1 ? cW/(n-1) : cW;
+    const minLabelGap = 28;
+    const labelEvery = Math.max(1, Math.ceil(minLabelGap / pxPerPt));
+    const yBase = pad.t+cH+3;
+    let lastMonth = '';
+    data.forEach((d,i)=>{
       const [yy,mm,dd]=d.date.split('-');
-      ctx.fillText(`${+dd} ${M[+mm-1]}`,xOf(i),pad.t+cH+14);
+      const monthKey=`${yy}-${mm}`;
+      const x=xOf(i);
+      if(monthKey !== lastMonth){
+        lastMonth = monthKey;
+        if(i > 0){
+          ctx.save();
+          ctx.strokeStyle = isDk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
+          ctx.lineWidth=1;ctx.setLineDash([3,3]);
+          ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+cH);ctx.stroke();
+          ctx.restore();
+        }
+        ctx.font='bold 10px sans-serif';ctx.fillStyle=lC;
+        ctx.textAlign='left';ctx.textBaseline='top';
+        const mlx=Math.min(x+2,pad.l+cW-30);
+        ctx.fillText(`${M[+mm-1]} '${yy.slice(2)}`,mlx,pad.t+2);
+      }
+      if(i % labelEvery === 0 || i === n-1){
+        ctx.save();
+        ctx.font='600 9px sans-serif';ctx.fillStyle=tC;
+        ctx.textAlign='right';ctx.textBaseline='top';
+        ctx.translate(x,yBase);ctx.rotate(-Math.PI*50/180);
+        ctx.fillText(`${+dd}/${+mm}`,0,0);
+        ctx.restore();
+      }
     });
   }
 }
 
+
+
+// ============================================================
+// WEEKLY AGGREGATION
+// W1 = week containing the 1st of the month (starting Monday)
+// Weeks are Mon-Sun, labeled "W1", "W2", etc per month
+// ============================================================
+function getWeekLabel(dateStr) {
+  // Returns {weekLabel: "W1 Apr'26", weekStart: "2026-04-01"}
+  const [y,m,d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  // Day of week: 0=Sun,1=Mon...6=Sat → convert to Mon=0
+  const dow = (dt.getDay() + 6) % 7; // Mon=0, Sun=6
+  // Start of this week (Monday)
+  const weekStart = new Date(dt);
+  weekStart.setDate(dt.getDate() - dow);
+  // Week number within the month of the INPUT date's month
+  // W1 = week that contains the 1st of that month
+  const firstOfMonth = new Date(y, m-1, 1);
+  const firstDow = (firstOfMonth.getDay() + 6) % 7;
+  // First Monday on or before 1st
+  const w1Start = new Date(firstOfMonth);
+  w1Start.setDate(1 - firstDow); // could be in prev month
+  // Week number = how many weeks since w1Start
+  const msPerWeek = 7*24*60*60*1000;
+  const wNum = Math.floor((dt - w1Start) / msPerWeek) + 1;
+  const mo = M[m-1];
+  const yr = String(y).slice(2);
+  return {
+    label: `W${wNum} ${mo}'${yr}`,
+    weekStart: dStr(weekStart),
+    wNum, month: m, year: y
+  };
+}
+
+function aggregateWeekly(dailyData, keys) {
+  // dailyData: [{date, key1, key2, ...}]
+  // Aggregate: sum values per week, label = "W1 Apr'26"
+  const weekMap = new Map();
+  dailyData.forEach(d => {
+    if(!d.date) return;
+    const {label, weekStart} = getWeekLabel(d.date);
+    if(!weekMap.has(label)) {
+      weekMap.set(label, {date: weekStart, label});
+      keys.forEach(k => weekMap.get(label)[k] = 0);
+    }
+    const w = weekMap.get(label);
+    keys.forEach(k => { if(d[k] != null) w[k] += (d[k] || 0); });
+  });
+  // Return sorted by weekStart
+  return Array.from(weekMap.values()).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function aggregateWeeklyAvg(dailyData, keys) {
+  // Like aggregateWeekly but average (for ampere)
+  const weekMap = new Map();
+  const cntMap = new Map();
+  dailyData.forEach(d => {
+    if(!d.date) return;
+    const {label, weekStart} = getWeekLabel(d.date);
+    if(!weekMap.has(label)){
+      weekMap.set(label, {date: weekStart, label});
+      cntMap.set(label, {});
+      keys.forEach(k => { weekMap.get(label)[k]=0; cntMap.get(label)[k]=0; });
+    }
+    const w=weekMap.get(label), cnt=cntMap.get(label);
+    keys.forEach(k=>{ if(d[k]!=null&&d[k]>0){w[k]+=d[k];cnt[k]++;} });
+  });
+  return Array.from(weekMap.values()).sort((a,b)=>a.date.localeCompare(b.date)).map(w=>{
+    const lbl=w.label; const cnt=cntMap.get(lbl);
+    const obj={date:w.date,label:lbl};
+    keys.forEach(k=>{ obj[k]=cnt[k]>0?+(w[k]/cnt[k]).toFixed(1):null; });
+    return obj;
+  });
+}
 
 // ============ DASHBOARD ============
 let activeI=null;
@@ -1349,18 +1498,20 @@ function buildLbDashData(){
   }));
 }
 function renderSsDashChart(){
-  const sd=buildSsData();
+  const daily=buildSsData();
+  const sd=dbSsView==='week'?aggregateWeekly(daily,['s5','wc']):daily;
   const sr=[];
   if(dbSsShowS5)sr.push({k:'s5',c:'#7c3aed'});
   if(dbSsShowWc)sr.push({k:'wc',c:'#059669'});
-  if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
+  if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Ton',weekly:dbSsView==='week',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
 }
 function renderLbDashChart(){
-  const ld=buildLbDashData();
+  const daily=buildLbDashData();
+  const ld=dbLbView==='week'?aggregateWeekly(daily,['pasir','debu']):daily;
   const sr=[];
   if(dbLbShowPasir)sr.push({k:'pasir',c:'#d97706'});
   if(dbLbShowDebu) sr.push({k:'debu', c:'#0891b2'});
-  if(sr.length)drawChart('c-lb',ld,sr,{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.dHi,c:'#0891b2'}]});
+  if(sr.length)drawChart('c-lb',ld,sr,{yLabel:'Trolley',weekly:dbLbView==='week',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.dHi,c:'#0891b2'}]});
 }
 function drawDashCharts(){
   renderSsDashChart();
@@ -1707,7 +1858,7 @@ async function saveAmp(){
 }
 
 // ============ AMPERE CHART ============
-let ampPdV='cur';
+let ampPdV='cur', ampView='day';
 // Warna per impeller
 const IMP_COLORS=[
   '#0066cc','#059669','#d97706','#dc2626','#7c3aed','#0891b2',
@@ -1722,6 +1873,12 @@ function ampPd(btn,p){
   btn.classList.add('on');ampPdV=p;
   document.getElementById('amp-cust').style.display=p==='cust'?'flex':'none';
   if(p!=='cust')drawAmpChart();
+}
+function ampSetView(v,btn){
+  ampView=v;
+  document.getElementById('amp-v-day').classList.toggle('on',v==='day');
+  document.getElementById('amp-v-week').classList.toggle('on',v==='week');
+  drawAmpChart();
 }
 
 function buildAmpImpSel(){
@@ -1762,7 +1919,7 @@ function ampSelNone(btn){
   drawAmpChart();
 }
 
-function buildAmpData(){
+function buildAmpDataDaily(){
   let cf,ct;
   if(ampPdV==='cust'){
     cf=document.getElementById('amp-cf')?.value;
@@ -1771,11 +1928,9 @@ function buildAmpData(){
   }
   const{f,t}=dtRange(ampPdV,cf,ct);
   const days=allDays(f,t);
-
   return days.map(date=>{
     const obj={date};
     for(let i=0;i<16;i++){
-      // Get average ampere for this day from ampLog
       const dayLogs=ampLog.filter(x=>{
         if(!x.dt)return false;
         const pd=parseDate(x.dt);
@@ -1787,6 +1942,14 @@ function buildAmpData(){
     }
     return obj;
   });
+}
+function buildAmpData(){
+  const daily=buildAmpDataDaily();
+  if(ampView==='week'){
+    const keys=Array.from({length:16},(_,i)=>'i'+i);
+    return aggregateWeeklyAvg(daily,keys);
+  }
+  return daily;
 }
 
 function drawAmpChart(){
@@ -1923,13 +2086,40 @@ function drawAmpChart(){
 }
 
 // ============ LIMBAH ============
-let lbPdV='cur';
+let lbPdV='cur', lbView='day';
+let ssView='day';
 let lbShowPasir=true,lbShowDebu=true;
 let ssShowS5=true,ssShowWc=true;
+
+function lbSetView(v,btn){
+  lbView=v;
+  document.getElementById('lb-v-day').classList.toggle('on',v==='day');
+  document.getElementById('lb-v-week').classList.toggle('on',v==='week');
+  drawFullLb();
+}
+function ssSetView(v,btn){
+  ssView=v;
+  document.getElementById('ss-v-day').classList.toggle('on',v==='day');
+  document.getElementById('ss-v-week').classList.toggle('on',v==='week');
+  drawFullSs();
+}
 // Dashboard mini chart toggles (share same state as detail charts)
 let dbLbShowPasir=true,dbLbShowDebu=true;
 let dbSsShowS5=true,dbSsShowWc=true;
+let dbLbView='day',dbSsView='day';
 
+function dbLbSetView(v,btn){
+  dbLbView=v;
+  document.getElementById('db-lb-v-day').classList.toggle('on',v==='day');
+  document.getElementById('db-lb-v-week').classList.toggle('on',v==='week');
+  renderLbDashChart();
+}
+function dbSsSetView(v,btn){
+  dbSsView=v;
+  document.getElementById('db-ss-v-day').classList.toggle('on',v==='day');
+  document.getElementById('db-ss-v-week').classList.toggle('on',v==='week');
+  renderSsDashChart();
+}
 function dbLbToggle(key,btn){
   if(key==='pasir')dbLbShowPasir=!dbLbShowPasir;
   else dbLbShowDebu=!dbLbShowDebu;
@@ -1960,18 +2150,27 @@ function lbPd(b,p){
   document.getElementById('lb-cust').style.display=p==='cust'?'flex':'none';
   if(p!=='cust')drawFullLb();
 }
-function drawFullLb(){
-  let cf,ct;if(lbPdV==='cust'){cf=document.getElementById('lb-cf').value;ct=document.getElementById('lb-ct').value;if(!cf||!ct)return;}
+function buildLbRaw(cf,ct){
   const{f,t}=dtRange(lbPdV,cf,ct);
-  const data=allDays(f,t).map(date=>({
+  return allDays(f,t).map(date=>({
     date,
     pasir:lbLog.filter(l=>l.date===date&&l.j==='Pasir').reduce((s,x)=>s+x.v,0),
     debu:lbLog.filter(l=>l.date===date&&l.j==='Debu').reduce((s,x)=>s+x.v,0),
   }));
+}
+function drawFullLb(){
+  let cf,ct;
+  if(lbPdV==='cust'){cf=document.getElementById('lb-cf').value;ct=document.getElementById('lb-ct').value;if(!cf||!ct)return;}
+  const daily=buildLbRaw(cf,ct);
+  const data=lbView==='week'?aggregateWeekly(daily,['pasir','debu']):daily;
   const lbSr=[];
   if(lbShowPasir)lbSr.push({k:'pasir',c:'#d97706'});
   if(lbShowDebu)lbSr.push({k:'debu',c:'#0891b2'});
-  if(lbSr.length)drawChart('c-lb-full',data,lbSr,{yLabel:'Trolley',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.pLo,c:'#d9770680'},{v:cfg.dHi,c:'#0891b2'},{v:cfg.dLo,c:'#0891b280'}]});
+  if(lbSr.length)drawChart('c-lb-full',data,lbSr,{
+    yLabel:'Trolley',
+    weekly:lbView==='week',
+    ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.pLo,c:'#d9770680'},{v:cfg.dHi,c:'#0891b2'},{v:cfg.dLo,c:'#0891b280'}]
+  });
 }
 function rLb(){
   const sd=document.getElementById('lb-d');if(!sd.value)sd.value=today();
@@ -2025,18 +2224,27 @@ function ssPd(b,p){
   document.getElementById('ss-cust').style.display=p==='cust'?'flex':'none';
   if(p!=='cust')drawFullSs();
 }
-function drawFullSs(){
-  let cf,ct;if(ssPdV==='cust'){cf=document.getElementById('ss-cf').value;ct=document.getElementById('ss-ct').value;if(!cf||!ct)return;}
+function buildSsRaw(cf,ct){
   const{f,t}=dtRange(ssPdV,cf,ct);
-  const data=allDays(f,t).map(date=>({
+  return allDays(f,t).map(date=>({
     date,
     s5:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.s5||0),0),
     wc:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.wc||0),0),
   }));
+}
+function drawFullSs(){
+  let cf,ct;
+  if(ssPdV==='cust'){cf=document.getElementById('ss-cf').value;ct=document.getElementById('ss-ct').value;if(!cf||!ct)return;}
+  const daily=buildSsRaw(cf,ct);
+  const data=ssView==='week'?aggregateWeekly(daily,['s5','wc']):daily;
   const ssSr=[];
   if(ssShowS5)ssSr.push({k:'s5',c:'#7c3aed'});
   if(ssShowWc)ssSr.push({k:'wc',c:'#059669'});
-  if(ssSr.length)drawChart('c-ss-full',data,ssSr,{yLabel:'Ton',ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed80'}]});
+  if(ssSr.length)drawChart('c-ss-full',data,ssSr,{
+    yLabel:'Ton',
+    weekly:ssView==='week',
+    ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed80'}]
+  });
 }
 function rSs(){
   const sd=document.getElementById('ss-d');if(!sd.value)sd.value=today();
