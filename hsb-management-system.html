@@ -458,6 +458,40 @@ tr:hover td{background:var(--accent-bg);}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA
     </button>
   </div>
+  <!-- GRAFIK TREND AMPERE -->
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📈 Grafik Trend Ampere Harian</div>
+    <!-- Periode -->
+    <div class="chc">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">PERIODE:</span>
+      <button class="chc-b on" onclick="ampPd(this,'cur')">Bulan Ini</button>
+      <button class="chc-b" onclick="ampPd(this,'prev')">Bulan Lalu</button>
+      <button class="chc-b" onclick="ampPd(this,'3m')">3 Bulan</button>
+      <button class="chc-b" onclick="ampPd(this,'cust')">Custom</button>
+      <span id="amp-cust" style="display:none;" class="fg-r">
+        <input type="month" id="amp-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <span style="font-size:.72rem;color:var(--muted);">s/d</span>
+        <input type="month" id="amp-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <button class="btn btn-p btn-s" onclick="drawAmpChart()">Tampilkan</button>
+      </span>
+    </div>
+    <!-- Pilih Impeller -->
+    <div style="margin-bottom:8px;">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;margin-right:8px;">IMPELLER:</span>
+      <button class="chc-b on" onclick="ampSelAll(this)" style="margin-right:4px;">Semua</button>
+      <button class="chc-b" onclick="ampSelNone(this)" style="margin-right:8px;">Clear</button>
+      <div id="amp-imp-sel" style="display:inline-flex;flex-wrap:wrap;gap:4px;margin-top:4px;"></div>
+    </div>
+    <!-- Chart -->
+    <div style="height:280px;position:relative;"><canvas id="c-amp" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
+    <!-- Legend -->
+    <div id="amp-legend" class="lg-r" style="margin-top:8px;flex-wrap:wrap;"></div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:5px;">
+      Range normal: <span id="amp-rg2" style="color:var(--ok);font-weight:700;"></span>
+      &nbsp;— Garis putus-putus merah = batas atas, kuning = batas bawah
+    </div>
+  </div>
+
   <div class="cd">
     <div class="st">📋 Log Ampere</div>
     <div class="tw"><table>
@@ -1568,6 +1602,13 @@ function rAmp(){
   }
   g.innerHTML=h;
   const dt=document.getElementById('amp-dt');if(!dt.value)dt.value=nowL();
+  // Build impeller selector for chart
+  buildAmpImpSel();
+  // Update range label
+  const rgEl=document.getElementById('amp-rg2');
+  if(rgEl)rgEl.textContent=`${cfg.aLo} – ${cfg.aHi} A`;
+  // Draw chart
+  requestAnimationFrame(drawAmpChart);
   const tb=document.getElementById('amp-tb');
   const sr=[...ampLog].sort((a,b)=>(b.dt||'').localeCompare(a.dt||''));
   tb.innerHTML=sr.slice(0,150).map(r=>{
@@ -1600,7 +1641,223 @@ async function saveAmp(){
     pushToSheets('saveAmpere',rows);
     pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
   }
-  showToast(`✅ ${c} data ampere tersimpan!`,'ok');rAmp();rIGrid();rAlerts();
+  showToast(`✅ ${c} data ampere tersimpan!`,'ok');rAmp();rIGrid();rAlerts();requestAnimationFrame(drawAmpChart);
+}
+
+// ============ AMPERE CHART ============
+let ampPdV='cur';
+// Warna per impeller
+const IMP_COLORS=[
+  '#0066cc','#059669','#d97706','#dc2626','#7c3aed','#0891b2',
+  '#be185d','#065f46','#92400e','#1e40af','#166534','#9f1239',
+  '#6d28d9','#0e7490','#b45309','#374151'
+];
+// Selected impellers — default semua aktif
+let ampSel=Array.from({length:16},(_,i)=>i);
+
+function ampPd(btn,p){
+  document.querySelectorAll('#p-amp .chc-b').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');ampPdV=p;
+  document.getElementById('amp-cust').style.display=p==='cust'?'flex':'none';
+  if(p!=='cust')drawAmpChart();
+}
+
+function buildAmpImpSel(){
+  const box=document.getElementById('amp-imp-sel');
+  if(!box)return;
+  box.innerHTML=nms.map((nm,i)=>{
+    const on=ampSel.includes(i);
+    return `<button id="asel-${i}" class="chc-b${on?' on':''}" onclick="ampToggle(${i})" style="font-size:.65rem;padding:3px 8px;">${nm}</button>`;
+  }).join('');
+}
+
+function ampToggle(i){
+  const idx=ampSel.indexOf(i);
+  if(idx>=0) ampSel.splice(idx,1); else ampSel.push(i);
+  // Update button style
+  const btn=document.getElementById('asel-'+i);
+  if(btn) btn.classList.toggle('on', ampSel.includes(i));
+  drawAmpChart();
+}
+
+function ampSelAll(btn){
+  ampSel=Array.from({length:16},(_,i)=>i);
+  buildAmpImpSel();
+  // Reset semua impeller btn jadi on
+  for(let i=0;i<16;i++){
+    const b=document.getElementById('asel-'+i);
+    if(b)b.classList.add('on');
+  }
+  drawAmpChart();
+}
+
+function ampSelNone(btn){
+  ampSel=[];
+  for(let i=0;i<16;i++){
+    const b=document.getElementById('asel-'+i);
+    if(b)b.classList.remove('on');
+  }
+  drawAmpChart();
+}
+
+function buildAmpData(){
+  let cf,ct;
+  if(ampPdV==='cust'){
+    cf=document.getElementById('amp-cf')?.value;
+    ct=document.getElementById('amp-ct')?.value;
+    if(!cf||!ct)return[];
+  }
+  const{f,t}=dtRange(ampPdV,cf,ct);
+  const days=allDays(f,t);
+
+  return days.map(date=>{
+    const obj={date};
+    for(let i=0;i<16;i++){
+      // Get average ampere for this day from ampLog
+      const dayLogs=ampLog.filter(x=>{
+        if(!x.dt)return false;
+        const pd=parseDate(x.dt);
+        return pd && dStr(pd)===date && +x.i===i;
+      });
+      obj['i'+i]=dayLogs.length
+        ? +(dayLogs.reduce((s,x)=>s+(+x.v||0),0)/dayLogs.length).toFixed(1)
+        : null;
+    }
+    return obj;
+  });
+}
+
+function drawAmpChart(){
+  const data=buildAmpData();
+  if(!data.length)return;
+
+  const cv=document.getElementById('c-amp');if(!cv)return;
+  const r=cv.getBoundingClientRect();
+  const W=Math.round(r.width),H=Math.round(r.height);
+  if(W<20||H<20){requestAnimationFrame(drawAmpChart);return;}
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+
+  const isDk=document.documentElement.getAttribute('data-theme')==='dark';
+  const gC=isDk?'rgba(255,255,255,.07)':'rgba(0,0,0,.07)';
+  const tC=isDk?'#7a98b5':'#5a7a90';
+  const lC=isDk?'#a0b6cd':'#2a4560';
+
+  const sm=data.length>0&&data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
+  const showDay=sm&&data.length>1;
+  const pad={t:12,r:10,b:showDay?42:22,l:38};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  if(cW<10||cH<10)return;
+  ctx.clearRect(0,0,W,H);
+
+  // Collect non-null values for scale
+  const allVals=[];
+  ampSel.forEach(i=>{
+    data.forEach(d=>{ if(d['i'+i]!=null) allVals.push(d['i'+i]); });
+  });
+  const rawMax=Math.max(...allVals,cfg.aHi+5,0);
+  const rawMin=Math.max(0,Math.min(...allVals.filter(v=>v>0),cfg.aLo-5,rawMax)-2);
+
+  // Nice scale
+  function niceNum(v,nice){
+    const exp=Math.pow(10,Math.floor(Math.log10(v||1)));
+    const f=v/exp;
+    let n;if(f<=1)n=1;else if(f<=2)n=2;else if(f<=5)n=5;else n=10;
+    return n*exp;
+  }
+  const mxV=niceNum(rawMax*1.1,true)+1;
+  const mnV=Math.floor(rawMin/5)*5;
+  const range=mxV-mnV;
+
+  // Ticks
+  function stepFor(r){ const s=[1,2,5,10];for(const v of s)if(r/v<=7)return v; return Math.ceil(r/6);}
+  const step=stepFor(range);
+  const ticks=[];
+  for(let t=mnV;t<=mxV;t+=step)ticks.push(t);
+
+  const n=data.length;
+  const xOf=i=>pad.l+(n>1?(cW/(n-1))*i:cW/2);
+  const yOf=v=>pad.t+cH*(1-(v-mnV)/(mxV-mnV));
+
+  // Y grid
+  ticks.forEach(t=>{
+    const y=yOf(t);if(y<pad.t-2||y>pad.t+cH+2)return;
+    ctx.strokeStyle=gC;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    ctx.fillStyle=tC;ctx.font='600 10px sans-serif';ctx.textAlign='right';
+    ctx.fillText(t,pad.l-4,y+3.5);
+  });
+
+  // Y label
+  ctx.save();ctx.fillStyle=lC;ctx.font='700 10px sans-serif';ctx.textAlign='center';
+  ctx.translate(11,pad.t+cH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Ampere',0,0);ctx.restore();
+
+  // Range lines: upper=red dash, lower=yellow dash
+  [[cfg.aHi,'rgba(220,38,38,.7)'],[cfg.aLo,'rgba(217,119,6,.7)']].forEach(([v,col])=>{
+    const y=yOf(v);if(y<pad.t-2||y>pad.t+cH+2)return;
+    ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();ctx.restore();
+  });
+
+  // Draw each selected impeller
+  ampSel.forEach(i=>{
+    const color=IMP_COLORS[i];
+    const pts=data.map(d=>d['i'+i]);
+    // Only draw segments where data exists
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=1.8;
+    ctx.lineJoin='round';ctx.lineCap='round';
+    let started=false;
+    pts.forEach((p,xi)=>{
+      if(p==null){started=false;return;}
+      const x=xOf(xi),y=yOf(p);
+      if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    // Dots only if ≤31 points
+    if(n<=31){
+      pts.forEach((p,xi)=>{
+        if(p==null)return;
+        // Color dot red/yellow if out of range
+        const dotC=p>cfg.aHi?'#dc2626':p<cfg.aLo?'#d97706':color;
+        ctx.beginPath();ctx.arc(xOf(xi),yOf(p),2.5,0,Math.PI*2);
+        ctx.fillStyle=dotC;ctx.fill();
+      });
+    }
+  });
+
+  // X axis
+  if(showDay){
+    ctx.font='bold 9px sans-serif';const yB=pad.t+cH+3;
+    data.forEach((d,i)=>{
+      const day=parseInt(d.date.slice(8),10);
+      ctx.save();ctx.fillStyle=tC;ctx.textAlign='right';ctx.textBaseline='top';
+      ctx.translate(xOf(i),yB);ctx.rotate(-Math.PI*55/180);ctx.fillText(day,0,0);ctx.restore();
+    });
+    const [yy,mm]=data[0].date.split('-');
+    ctx.font='bold 11px sans-serif';ctx.fillStyle=lC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText(`${M[+mm-1]} ${yy}`,pad.l+cW/2,H-2);
+  }else{
+    const skip=Math.max(1,Math.ceil(n/10));
+    ctx.font='600 10px sans-serif';ctx.fillStyle=tC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    data.forEach((d,xi)=>{
+      if(xi%skip!==0&&xi!==n-1)return;
+      const [yy,mm,dd]=d.date.split('-');
+      ctx.fillText(`${+dd} ${M[+mm-1]}`,xOf(xi),pad.t+cH+14);
+    });
+  }
+
+  // Update legend
+  const lg=document.getElementById('amp-legend');
+  if(lg)lg.innerHTML=ampSel.map(i=>`
+    <div class="lg-i">
+      <div class="lg-d" style="background:${IMP_COLORS[i]};"></div>
+      ${nms[i]}
+    </div>`).join('');
+
+  // Update range label
+  const rl=document.getElementById('amp-rg2');
+  if(rl)rl.textContent=`${cfg.aLo} – ${cfg.aHi} A`;
 }
 
 // ============ LIMBAH ============
