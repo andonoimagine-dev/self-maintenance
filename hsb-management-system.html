@@ -253,6 +253,13 @@ tr:hover td{background:var(--accent-bg);}
 <!-- ===== DASHBOARD ===== -->
 <div id="p-dash" class="pg on">
   <div id="al-box" class="al"></div>
+  <!-- WA RESUME BUTTON -->
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+    <button class="btn" onclick="waDashboard()" style="background:#25D366;color:#fff;gap:7px;font-size:.82rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Kirim Resume ke WhatsApp
+    </button>
+  </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">⚙ Status Impeller — 16 Unit</div>
     <div class="iac">
@@ -324,6 +331,7 @@ tr:hover td{background:var(--accent-bg);}
     <div id="pv-ck"></div>
     <div class="fr" style="margin-top:10px;"><div class="fg"><label>Catatan Abnormal</label><textarea id="pv-n"></textarea></div></div>
     <button class="btn btn-p" onclick="savePv()">💾 Simpan</button>
+    <button class="btn btn-s" onclick="waPreventive()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd">
     <div class="st">📋 Riwayat Preventive</div>
@@ -374,6 +382,7 @@ tr:hover td{background:var(--accent-bg);}
       <div class="fg"><label>Catatan</label><input type="text" id="sp-no"></div>
     </div>
     <button class="btn btn-p" onclick="saveSp()">💾 Simpan</button>
+    <button class="btn btn-s" onclick="waSparepart()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
 
   <div class="cd" style="margin-bottom:12px;">
@@ -445,6 +454,9 @@ tr:hover td{background:var(--accent-bg);}
     <div class="ig" id="amp-ig"></div>
     <div class="fr" style="margin-top:10px;"><div class="fg"><label>Catatan</label><textarea id="amp-no"></textarea></div></div>
     <button class="btn btn-p" onclick="saveAmp()">💾 Simpan Semua</button>
+    <button class="btn btn-s" onclick="waAmpere()" style="background:#25D366;color:#fff;margin-top:8px;margin-left:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA
+    </button>
   </div>
   <div class="cd">
     <div class="st">📋 Log Ampere</div>
@@ -469,6 +481,7 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="lb-kt"></textarea></div></div>
     <button class="btn btn-p" onclick="saveLb()">💾 Simpan</button>
+    <button class="btn btn-s" onclick="waLimbah()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📈 Grafik Trend Limbah</div>
@@ -519,6 +532,7 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="ss-no"></textarea></div></div>
     <button class="btn btn-p" onclick="saveSs()">💾 Simpan</button>
+    <button class="btn btn-s" onclick="waSteelshot()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📈 Grafik Trend Steelshot</div>
@@ -583,6 +597,15 @@ tr:hover td{background:var(--accent-bg);}
     <div class="st">⚙ Nama Impeller</div>
     <div id="i-nm-rows"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveNm()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📱 WhatsApp Tujuan Laporan</div>
+    <div class="sr">
+      <div class="sl">No. WA (format: 628xxx)</div>
+      <input class="si" type="tel" id="s-wa" placeholder="628xxxxxxxxxx" style="width:180px;text-align:left;font-family:inherit;">
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:6px;">Contoh: 6281234567890 (tanpa + atau spasi). Kosongkan = WhatsApp terbuka tanpa nomor tujuan.</div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveWaNo()">💾 Simpan No. WA</button>
   </div>
   <div class="cd">
     <div class="st">🗃 Data Management</div>
@@ -1503,7 +1526,8 @@ async function saveSs(){
 
 // ============ SETTING ============
 function rSet(){
-  document.getElementById('s-alo').value=cfg.aLo;document.getElementById('s-ahi').value=cfg.aHi;
+  document.getElementById('s-alo').value=cfg.aLo;
+  const waEl=document.getElementById('s-wa');if(waEl)waEl.value=getWaTarget();document.getElementById('s-ahi').value=cfg.aHi;
   document.getElementById('s-plo').value=cfg.pLo;document.getElementById('s-phi').value=cfg.pHi;
   document.getElementById('s-dlo').value=cfg.dLo;document.getElementById('s-dhi').value=cfg.dHi;
   document.getElementById('s-slo').value=cfg.sLo;document.getElementById('s-shi').value=cfg.sHi;
@@ -1522,6 +1546,11 @@ function saveLt(){
   [...SP_PT,'Hanger'].forEach(n=>{const e=document.getElementById('lts-'+n.replace(/ /g,'_'));if(e)ltCfg[n]=+e.value||480;});
   sv('ltCfg',ltCfg);alert('Tersimpan!');
 }
+function saveWaNo(){
+  const no=document.getElementById('s-wa').value.replace(/\D/g,'');
+  localStorage.setItem('hsb9_wa_no',no);
+  showToast('✅ No. WhatsApp tersimpan: '+no,'ok');
+}
 function saveNm(){
   for(let i=0;i<16;i++){const e=document.getElementById('inm-'+i);if(e)nms[i]=e.value||`IMP-${String(i+1).padStart(2,'0')}`;}
   sv('nms',nms);alert('Tersimpan!');rIGrid();
@@ -1531,6 +1560,193 @@ function exp(){
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`hsb-${today()}.json`;a.click();
 }
 function rst(){['cfg','nms','st','ampLog','spLog','pvLog','lbLog','ssLog','ltCfg','hSt','hLog','theme'].forEach(k=>localStorage.removeItem(K+k));location.reload();}
+
+
+// ============================================================
+// WHATSAPP RESUME
+// ============================================================
+// Nomor tujuan default — bisa diubah di Setting
+// Format: 628xxxxxxxxxx (tanpa + atau spasi)
+function getWaTarget(){return localStorage.getItem('hsb9_wa_no')||'';}
+
+function sendWA(text){
+  const no=getWaTarget();
+  const encoded=encodeURIComponent(text);
+  const url=no
+    ? `https://wa.me/${no}?text=${encoded}`
+    : `https://wa.me/?text=${encoded}`;
+  window.open(url,'_blank');
+}
+
+function waAmpere(){
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  // Ambil data ampere terbaru per impeller (dari state)
+  const lines=[];
+  let nOk=0,nLo=0,nHi=0,nOf=0;
+  for(let i=0;i<16;i++){
+    const s=st[i];
+    if(!s.on){nOf++;continue;}
+    const ss=ampS(s.a);
+    if(ss==='ok')nOk++;else if(ss==='lo')nLo++;else if(ss==='hi')nHi++;
+    if(ss!=='ok'&&s.a!=null){
+      lines.push(`  • ${nms[i]}: ${s.a}A ${ss==='hi'?'⬆ OVER':'⬇ UNDER'}`);
+    }
+  }
+  const sh=document.getElementById('amp-sh')?.value||'-';
+  let msg=`🏭 *LAPORAN AMPERE IMPELLER*\n`;
+  msg+=`📅 ${tgl} | Shift ${sh} | ${jam}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`✅ Normal  : ${nOk} unit\n`;
+  msg+=`⬆ Over    : ${nHi} unit\n`;
+  msg+=`⬇ Under   : ${nLo} unit\n`;
+  msg+=`⭕ OFF     : ${nOf} unit\n`;
+  if(lines.length){
+    msg+=`\n⚠ *Impeller Abnormal:*\n${lines.join('\n')}\n`;
+  }
+  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waLimbah(){
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  // Ambil data limbah hari ini
+  const todayStr=dStr(now);
+  const lb=lbLog.filter(l=>l.date===todayStr);
+  const pasirNSP=lb.filter(l=>l.j==='Pasir'&&l.sh==='NSP').reduce((a,x)=>a+x.v,0);
+  const pasirNSM=lb.filter(l=>l.j==='Pasir'&&l.sh==='NSM').reduce((a,x)=>a+x.v,0);
+  const debuNSP=lb.filter(l=>l.j==='Debu'&&l.sh==='NSP').reduce((a,x)=>a+x.v,0);
+  const debuNSM=lb.filter(l=>l.j==='Debu'&&l.sh==='NSM').reduce((a,x)=>a+x.v,0);
+  const totalPasir=pasirNSP+pasirNSM;
+  const totalDebu=debuNSP+debuNSM;
+  const stsPasir=totalPasir>cfg.pHi?'⬆ OVER':totalPasir<cfg.pLo&&totalPasir>0?'⬇ UNDER':'✅ Normal';
+  const stsDebu=totalDebu>cfg.dHi?'⬆ OVER':totalDebu<cfg.dLo&&totalDebu>0?'⬇ UNDER':'✅ Normal';
+  let msg=`🗑 *LAPORAN LIMBAH HARIAN*\n`;
+  msg+=`📅 ${tgl}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`*Pasir (Trolley)*\n`;
+  msg+=`  NSP: ${pasirNSP} | NSM: ${pasirNSM} | Total: ${totalPasir} ${stsPasir}\n`;
+  msg+=`  Range: ${cfg.pLo}–${cfg.pHi} Trolley\n\n`;
+  msg+=`*Debu (Trolley)*\n`;
+  msg+=`  NSP: ${debuNSP} | NSM: ${debuNSM} | Total: ${totalDebu} ${stsDebu}\n`;
+  msg+=`  Range: ${cfg.dLo}–${cfg.dHi} Trolley\n`;
+  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waSteelshot(){
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const todayStr=dStr(now);
+  const ss=ssLog.filter(s=>s.date===todayStr);
+  const ss5NSP=ss.filter(s=>s.sh==='NSP').reduce((a,x)=>a+(+x.s5||0),0);
+  const ss5NSM=ss.filter(s=>s.sh==='NSM').reduce((a,x)=>a+(+x.s5||0),0);
+  const wcNSP=ss.filter(s=>s.sh==='NSP').reduce((a,x)=>a+(+x.wc||0),0);
+  const wcNSM=ss.filter(s=>s.sh==='NSM').reduce((a,x)=>a+(+x.wc||0),0);
+  let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n`;
+  msg+=`📅 ${tgl}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`*SS 550 (baru)*\n`;
+  msg+=`  NSP: ${ss5NSP} karung | NSM: ${ss5NSM} karung\n`;
+  msg+=`  Total: ${ss5NSP+ss5NSM} karung\n\n`;
+  msg+=`*Wire Cut (bekas)*\n`;
+  msg+=`  NSP: ${wcNSP} karung | NSM: ${wcNSM} karung\n`;
+  msg+=`  Total: ${wcNSP+wcNSM} karung\n`;
+  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waSparepart(){
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const todayStr=dStr(now);
+  const sp=spLog.filter(s=>s.date===todayStr);
+  if(!sp.length){showToast('Belum ada penggantian sparepart hari ini','warn');return;}
+  let msg=`🔩 *LAPORAN PENGGANTIAN SPAREPART*\n`;
+  msg+=`📅 ${tgl}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  sp.forEach(s=>{
+    msg+=`• ${nms[s.i]||'Imp '+(+s.i+1)}: ${s.nm}\n`;
+    msg+=`  Jam pakai: ${s.jm}h | Kondisi: ${s.kn}\n`;
+    msg+=`  Jenis: ${s.j==='assy'?'Unit Assy':'Satuan'} | Op: ${s.op}\n`;
+  });
+  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waPreventive(){
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const todayStr=dStr(now);
+  // Ambil preventive hari ini atau terakhir
+  const pv=[...pvLog].sort((a,b)=>(b.td||'').localeCompare(a.td||''))[0];
+  if(!pv){showToast('Belum ada data preventive','warn');return;}
+  const ok=(pv.rs||[]).filter(x=>x.v==='ok').length;
+  const ng=(pv.rs||[]).filter(x=>x.v==='ng').length;
+  const pend=(pv.rs||[]).filter(x=>x.v==='pending').length;
+  const ngItems=(pv.rs||[]).filter(x=>x.v==='ng');
+  let msg=`🔧 *LAPORAN PREVENTIVE CHECK*\n`;
+  msg+=`📅 Periode: ${pv.pr}\n`;
+  msg+=`🗓 Tgl Check: ${fD(pv.td)} | PIC: ${pv.pic}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`✅ OK      : ${ok} item\n`;
+  msg+=`❌ NG      : ${ng} item\n`;
+  msg+=`○  Pending : ${pend} item\n`;
+  if(ngItems.length){
+    msg+=`\n⚠ *Item Abnormal (NG):*\n`;
+    ngItems.slice(0,10).forEach(x=>{
+      msg+=`  • Imp #${+x.i+1} — ${x.it}\n`;
+    });
+  }
+  if(pv.no)msg+=`\n📝 Catatan: ${pv.no}\n`;
+  msg+=`\n_${fD(tgl)} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waDashboard(){
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  // Impeller summary
+  let nOn=0,nOf=0,nOk=0,nLo=0,nHi=0,nAt=0;
+  const abnImp=[];
+  for(let i=0;i<16;i++){
+    const s=st[i];if(!s.on){nOf++;continue;}nOn++;
+    const ss=ampS(s.a);
+    if(ss==='ok')nOk++;else if(ss==='lo'){nLo++;abnImp.push(`${nms[i]}: ${s.a}A ⬇`);}
+    else if(ss==='hi'){nHi++;abnImp.push(`${nms[i]}: ${s.a}A ⬆`);}
+    if(needAttn(i))nAt++;
+  }
+  // Hanger
+  const ngH=hSt.filter(h=>h.s==='ng').length;
+  const wnH=hSt.filter(h=>h.s==='warn').length;
+  // Limbah hari ini
+  const todayStr=dStr(now);
+  const pasirHari=lbLog.filter(l=>l.date===todayStr&&l.j==='Pasir').reduce((a,x)=>a+x.v,0);
+  const debuHari=lbLog.filter(l=>l.date===todayStr&&l.j==='Debu').reduce((a,x)=>a+x.v,0);
+  // Steelshot hari ini
+  const ss5Hari=ssLog.filter(s=>s.date===todayStr).reduce((a,x)=>a+(+x.s5||0),0);
+  const wcHari=ssLog.filter(s=>s.date===todayStr).reduce((a,x)=>a+(+x.wc||0),0);
+
+  let msg=`📊 *RESUME HSB CASTING 2*\n`;
+  msg+=`📅 ${tgl} | ${jam}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`⚙ *IMPELLER (16 unit)*\n`;
+  msg+=`  ON: ${nOn} | OFF: ${nOf}\n`;
+  msg+=`  ✅ Normal: ${nOk} | ⬆ Over: ${nHi} | ⬇ Under: ${nLo}\n`;
+  msg+=`  ⚠ Perlu perhatian: ${nAt} unit\n`;
+  if(abnImp.length)msg+=`  Abnormal: ${abnImp.slice(0,5).join(', ')}\n`;
+  msg+=`\n🪝 *HANGER (60 unit)*\n`;
+  msg+=`  ❌ NG: ${ngH} | ⚠ Warning: ${wnH}\n`;
+  msg+=`\n🗑 *LIMBAH HARI INI*\n`;
+  msg+=`  Pasir: ${pasirHari} Trolley | Debu: ${debuHari} Trolley\n`;
+  msg+=`\n🔮 *STEELSHOT HARI INI*\n`;
+  msg+=`  SS 550: ${ss5Hari} krg | Wire Cut: ${wcHari} krg\n`;
+  msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
 
 // ============ INIT ============
 async function initApp() {
