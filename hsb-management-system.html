@@ -840,79 +840,8 @@ function nowL(){const d=new Date();const off=d.getTimezoneOffset();const lcl=new
 
 // ============ SEED 1-YEAR DEMO ============
 function seed(){
-  if(ampLog.length>0) return;
-  const now=new Date();
-  
-  // === AMPERE: 14 days back, 2 shifts/day, 16 impellers ===
-  for(let dd=13;dd>=0;dd--){
-    ['NSP','NSM'].forEach(sh=>{
-      const dt=new Date(now);dt.setDate(dt.getDate()-dd);dt.setHours(sh==='NSP'?8:20,0,0,0);
-      for(let i=0;i<16;i++){
-        let v=38+Math.random()*4;
-        if(dd===1&&i===3)v=46.5;
-        if(dd===2&&i===7)v=34.5;
-        if(dd===0&&i===11)v=47;
-        if(dd===0&&i===14)v=33;
-        ampLog.push({dt:dt.toISOString(),sh,i,v:+v.toFixed(1),op:'Demo'});
-      }
-    });
-  }
-  for(let i=0;i<16;i++){
-    const ll=ampLog.filter(x=>x.i===i);
-    if(ll.length){const l=ll[ll.length-1];st[i].a=l.v;st[i].dt=l.dt;}
-  }
-
-  // === SPAREPART: 1 year history ===
-  const spDates=[];
-  for(let i=0;i<24;i++){
-    const d=new Date(now);d.setDate(d.getDate()-(15*i+5));
-    spDates.push(dStr(d));
-  }
-  spDates.forEach((d,idx)=>{
-    spLog.push({date:d,i:idx%16,nm:'Impeller Blade',q:1,jm:[460,480,480,500,470,490,480,480][idx%8],kn:'Aus',op:'Demo',no:'',j:'part'});
-  });
-  // Other parts
-  spLog.push({date:dStr(new Date(now.getTime()-86400000*120)),i:0,nm:'V-Belt',q:2,jm:1440,kn:'Aus',op:'Demo',no:'',j:'part'});
-  spLog.push({date:dStr(new Date(now.getTime()-86400000*60)),i:2,nm:'Control Cage',q:1,jm:480,kn:'Pecah',op:'Demo',no:'',j:'part'});
-  spLog.push({date:dStr(new Date(now.getTime()-86400000*180)),i:5,nm:'Distributor',q:1,jm:470,kn:'Aus',op:'Demo',no:'',j:'part'});
-  spLog.push({date:dStr(new Date(now.getTime()-86400000*200)),i:8,nm:'End Liner Atas',q:1,jm:950,kn:'Aus',op:'Demo',no:'',j:'part'});
-  spLog.push({date:dStr(new Date(now.getTime()-86400000*250)),i:0,nm:'Ceiling Liner',q:1,jm:980,kn:'Aus',op:'Demo',no:'',j:'part'});
-
-  // === LIMBAH: full year (365 days) ===
-  for(let dd=365;dd>=0;dd--){
-    const d=new Date(now);d.setDate(d.getDate()-dd);
-    const ds=dStr(d);
-    lbLog.push({date:ds,sh:'NSP',j:'Pasir',v:2+Math.round(Math.random()*2),l:'TPS-1',op:'Demo',k:''});
-    lbLog.push({date:ds,sh:'NSP',j:'Debu',v:2+Math.round(Math.random()*2),l:'TPS-2',op:'Demo',k:''});
-    lbLog.push({date:ds,sh:'NSM',j:'Pasir',v:1+Math.round(Math.random()*2),l:'TPS-1',op:'Demo',k:''});
-    lbLog.push({date:ds,sh:'NSM',j:'Debu',v:1+Math.round(Math.random()*2),l:'TPS-2',op:'Demo',k:''});
-  }
-
-  // === STEELSHOT: full year (365 days) ===
-  for(let dd=365;dd>=0;dd--){
-    const d=new Date(now);d.setDate(d.getDate()-dd);
-    const ds=dStr(d);
-    ssLog.push({date:ds,sh:'NSP',s5:1,wc:Math.floor(Math.random()*3)+1,op:'Demo',n:'SS 550 + WC'});
-  }
-
-  // === HANGER: a few NG/warn ===
-  hSt[4].s='ng';hSt[4].n='Retak';
-  hSt[11].s='ng';hSt[11].n='Deformasi';
-  hSt[22].s='warn';hSt[22].n='Lifetime ≈85%';
-  hSt[37].s='warn';hSt[37].n='Lifetime ≈92%';
-
-  // === HANGER LOG: 1 year ===
-  for(let i=1;i<=20;i++){
-    const d=new Date(now);d.setDate(d.getDate()-(20*i+10));
-    hLog.push({date:dStr(d),id:((i*3)%60)+1,tp:i%3===0?'repair':'baru',jm:900+Math.floor(Math.random()*120),kn:'Aus',op:'Demo',n:''});
-  }
-
-  // === PREVENTIVE: a few entries ===
-  for(let w=0;w<4;w++){
-    const d=new Date(now);d.setDate(d.getDate()-w*7);
-    pvLog.push({pr:`Minggu ${4-w} / ${curMo()}`,td:dStr(d),pic:'Demo',no:w===0?'Normal semua':'',rs:[]});
-  }
-
+  // No dummy data — semua data real dari Google Sheets atau input manual
+  // Hanya inisialisasi state awal jika benar-benar kosong (fresh install offline)
   saveAll();
 }
 function saveAll(){
