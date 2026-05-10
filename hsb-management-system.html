@@ -508,9 +508,9 @@ tr:hover td{background:var(--accent-bg);}
     <div class="fr">
       <div class="fg"><label>Tanggal</label><input type="date" id="lb-d"></div>
       <div class="fg"><label>Shift</label><select id="lb-sh"><option>NSP</option><option>NSM</option></select></div>
-      <div class="fg"><label>Jenis</label><select id="lb-j"><option>Pasir</option><option>Debu</option></select></div>
-      <div class="fg"><label>Volume (Trolley)</label><input type="number" id="lb-v" step="0.5"></div>
-      <div class="fg"><label>Lokasi TPS</label><input type="text" id="lb-l"></div>
+      <div class="fg"><label>Pasir (Trolley)</label><input type="number" id="lb-vp" step="0.5" min="0" placeholder="0"></div>
+      <div class="fg"><label>Debu (Trolley)</label><input type="number" id="lb-vd" step="0.5" min="0" placeholder="0"></div>
+      <div class="fg"><label>Lokasi TPS</label><input type="text" id="lb-l" placeholder="TPS-1"></div>
       <div class="fg"><label>Op</label><input type="text" id="lb-op"></div>
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="lb-kt"></textarea></div></div>
@@ -668,7 +668,7 @@ tr:hover td{background:var(--accent-bg);}
     <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">⚠ Reset Cache Lokal hanya menghapus data di browser ini. <b>Data di Google Sheets tetap aman.</b> Setelah reset, data akan dimuat ulang dari server.</div>
     <div class="fg-r">
       <button class="btn btn-g btn-s" onclick="exp()">📤 Export JSON</button>
-      <button class="btn btn-d btn-s" onclick="showResetModal()">🗑 Reset Cache Lokal</button>
+      <button class="btn btn-d btn-s" id="btn-reset-cache" onclick="showResetModal()">🗑 Reset Cache Lokal</button>
     </div>
   </div>
 </div>
@@ -1880,6 +1880,9 @@ function drawFullLb(){
 }
 function rLb(){
   const sd=document.getElementById('lb-d');if(!sd.value)sd.value=today();
+  // Clear volume fields on render
+  const vp=document.getElementById('lb-vp');if(vp&&!vp.dataset.dirty)vp.value='';
+  const vd=document.getElementById('lb-vd');if(vd&&!vd.dataset.dirty)vd.value='';
   document.getElementById('lb-rp').textContent=`${cfg.pLo}–${cfg.pHi} Trolley`;
   document.getElementById('lb-rd').textContent=`${cfg.dLo}–${cfg.dHi} Trolley`;
   requestAnimationFrame(()=>drawFullLb());
@@ -1893,15 +1896,30 @@ function rLb(){
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
 async function saveLb(){
-  const date=document.getElementById('lb-d').value;const sh=document.getElementById('lb-sh').value;
-  const j=document.getElementById('lb-j').value;const v=+document.getElementById('lb-v').value;
-  const l=document.getElementById('lb-l').value;const op=document.getElementById('lb-op').value||'Op';
+  const date=document.getElementById('lb-d').value;
+  const sh=document.getElementById('lb-sh').value;
+  const vp=+document.getElementById('lb-vp').value||0;
+  const vd=+document.getElementById('lb-vd').value||0;
+  const l=document.getElementById('lb-l').value;
+  const op=document.getElementById('lb-op').value||'Op';
   const k=document.getElementById('lb-kt').value;
-  if(!date||!v){showToast('Tanggal & volume wajib','warn');return;}
-  const row={date,sh,j,v,l,op,k};
-  lbLog.push(row);sv('lbLog',lbLog);
-  pushToSheets('saveLimbah',[{date,shift:sh,jenis:j,volume_trolley:v,lokasi:l,operator:op,keterangan:k}]);
-  rLb();showToast('✅ Data limbah tersimpan!','ok');
+  if(!date){showToast('Tanggal wajib diisi','warn');return;}
+  if(!vp&&!vd){showToast('Isi minimal salah satu volume (Pasir atau Debu)','warn');return;}
+  const rows=[];
+  if(vp>0){
+    lbLog.push({date,sh,j:'Pasir',v:vp,l,op,k});
+    rows.push({date,shift:sh,jenis:'Pasir',volume_trolley:vp,lokasi:l,operator:op,keterangan:k});
+  }
+  if(vd>0){
+    lbLog.push({date,sh,j:'Debu',v:vd,l,op,k});
+    rows.push({date,shift:sh,jenis:'Debu',volume_trolley:vd,lokasi:l,operator:op,keterangan:k});
+  }
+  sv('lbLog',lbLog);
+  if(rows.length) pushToSheets('saveLimbah',rows);
+  // Clear volume fields only
+  document.getElementById('lb-vp').value='';
+  document.getElementById('lb-vd').value='';
+  rLb();showToast(`✅ Limbah tersimpan! Pasir:${vp} Debu:${vd} Trolley`,'ok');
 }
 
 // ============ STEELSHOT ============
@@ -2001,36 +2019,36 @@ function exp(){
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`hsb-${today()}.json`;a.click();
 }
 function showResetModal(){
-  // Buat modal konfirmasi custom (lebih reliable di HP daripada confirm())
-  let m = document.getElementById('m-reset');
-  if(!m){
-    m = document.createElement('div');
-    m.id = 'm-reset';
-    m.className = 'mv';
-    m.innerHTML = `
-      <div class="mw" style="max-width:360px;">
-        <div class="mh">
-          <h3 style="color:var(--danger);">🗑 Reset Cache Lokal</h3>
-          <button class="mx" onclick="document.getElementById('m-reset').classList.remove('on')">×</button>
-        </div>
-        <div class="mb">
-          <div style="background:var(--ok-bg);border:1px solid rgba(5,150,105,.3);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;color:var(--ok);font-weight:600;">
-            ✅ Data di Google Sheets TETAP AMAN
-          </div>
-          <p style="font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:14px;">
-            Yang akan dihapus hanya <b>cache lokal</b> di browser HP ini.<br>
-            Setelah reset, data akan dimuat ulang dari server otomatis.
-          </p>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-g" style="flex:1;" onclick="document.getElementById('m-reset').classList.remove('on')">Batal</button>
-            <button class="btn btn-d" style="flex:1;" onclick="rst()">Ya, Reset</button>
-          </div>
-        </div>
-      </div>`;
-    document.body.appendChild(m);
-    m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('on'); });
-  }
-  m.classList.add('on');
+  // Remove existing to avoid duplicate
+  const old=document.getElementById('m-reset');
+  if(old)old.remove();
+  // Build fresh modal
+  const m=document.createElement('div');
+  m.id='m-reset';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  m.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:340px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.25);">
+    <div style="background:var(--danger);padding:14px 18px;">
+      <div style="font-size:1rem;font-weight:700;color:#fff;">🗑 Reset Cache Lokal</div>
+    </div>
+    <div style="padding:16px 18px;">
+      <div style="background:var(--ok-bg);border:1px solid rgba(5,150,105,.3);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:.82rem;color:var(--ok);font-weight:700;">
+        ✅ Data di Google Sheets TETAP AMAN
+      </div>
+      <p style="font-size:.85rem;color:var(--text2);line-height:1.7;margin-bottom:16px;">
+        Yang dihapus hanya <b>cache lokal</b> di browser ini.<br>
+        Setelah reset, data dimuat ulang dari server.
+      </p>
+      <div style="display:flex;gap:10px;">
+        <button id="rst-cancel" style="flex:1;padding:11px;border-radius:9px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;">Batal</button>
+        <button id="rst-confirm" style="flex:1;padding:11px;border-radius:9px;border:none;background:var(--danger);color:#fff;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;">Ya, Reset</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+  // Use getElementById for bulletproof mobile click
+  document.getElementById('rst-cancel').addEventListener('click',()=>m.remove());
+  document.getElementById('rst-confirm').addEventListener('click',()=>{ m.remove(); rst(); });
+  m.addEventListener('click',e=>{ if(e.target===m)m.remove(); });
 }
 function rst(){
   ['cfg','nms','st','ampLog','spLog','pvLog','lbLog','ssLog','ltCfg','hSt','hLog','theme'].forEach(k=>localStorage.removeItem(K+k));
