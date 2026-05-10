@@ -1234,32 +1234,67 @@ function drawChart(canvasId,data,series,opts){
     }
   });
 
-  // ── Data labels — show on all periods, skip when too dense
+  // ── Data labels — always show, smart position per series
   {
-    const minGapPx=24;
-    const lastX={};
-    const placed=[];
-    const LW=18,LH=13;
-    function olap(a,b){return !(a.x2<b.x1-1||a.x1>b.x2+1||a.y2<b.y1-1||a.y1>b.y2+1);}
-    function tryPl(x,y,dx,dy){
-      const bx={x1:x+dx-LW/2,x2:x+dx+LW/2,y1:y+dy-LH,y2:y+dy};
-      const ok=placed.every(p=>!olap(p,bx))&&bx.x1>=pad.l-2&&bx.x2<=W-2&&bx.y1>=pad.t-4;
-      if(ok)placed.push(bx);
-      return ok;
-    }
-    allLabels.forEach(lb=>{
-      if(!lb.val||lb.val===0)return;
-      const lx=lastX[lb.si]??-999;
-      if(lb.x-lx<minGapPx)return;
-      const offs=[{dx:0,dy:-6},{dx:0,dy:14},{dx:0,dy:-16},{dx:6,dy:-6},{dx:-6,dy:-6},{dx:6,dy:14},{dx:-6,dy:14}];
-      for(const off of offs){
-        if(tryPl(lb.x,lb.y,off.dx,off.dy)){
-          ctx.font='bold 9px sans-serif';
-          ctx.fillStyle=lb.c;ctx.textAlign='center';ctx.textBaseline='alphabetic';
-          ctx.fillText(lb.val,lb.x+off.dx,lb.y+off.dy);
-          lastX[lb.si]=lb.x;break;
-        }
+    // Min horizontal gap between shown labels per series
+    const minGap = Math.max(20, cW / (data.length || 1) * 1.2);
+    // Track last drawn x per series to avoid horizontal crowding
+    const lastDrawnX = {};
+    // Track placed bounding boxes for inter-series collision
+    const boxes = [];
+
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textBaseline = 'alphabetic';
+
+    allLabels.forEach(lb => {
+      if (!lb.val || lb.val === 0) return;
+      const lx = lastDrawnX[lb.si] ?? -9999;
+      // Skip if too close horizontally to last label of same series
+      if (lb.x - lx < minGap) return;
+
+      // Label text
+      const txt = lb.val % 1 === 0 ? lb.val.toString() : lb.val.toFixed(1);
+
+      // Candidate positions: above dot first, then below
+      // Above: ensure we don't go above chart top (pad.t)
+      const aboveY = lb.y - 7;
+      const belowY = lb.y + 13;
+      // Pick above if there's room, else below
+      let labelY = aboveY < pad.t + 8 ? belowY : aboveY;
+
+      // Check against already-placed boxes (rough overlap check)
+      const tw = txt.length * 6;
+      const box = { x1: lb.x - tw/2, x2: lb.x + tw/2, y1: labelY - 10, y2: labelY };
+      const clash = boxes.some(b =>
+        box.x1 < b.x2 + 2 && box.x2 > b.x1 - 2 &&
+        box.y1 < b.y2 + 2 && box.y2 > b.y1 - 2
+      );
+      if (clash) {
+        // Try the other side
+        labelY = labelY === aboveY ? belowY : aboveY;
+        box.y1 = labelY - 10; box.y2 = labelY;
+        // If still clashes, skip this label
+        const clash2 = boxes.some(b =>
+          box.x1 < b.x2 + 2 && box.x2 > b.x1 - 2 &&
+          box.y1 < b.y2 + 2 && box.y2 > b.y1 - 2
+        );
+        if (clash2) return;
       }
+
+      // Clamp within chart bounds
+      labelY = Math.max(pad.t + 10, Math.min(pad.t + cH - 2, labelY));
+
+      boxes.push(box);
+      lastDrawnX[lb.si] = lb.x;
+
+      // Draw label with subtle white bg for readability
+      const padding = 2;
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.fillRect(lb.x - tw/2 - padding, labelY - 9, tw + padding*2, 11);
+
+      ctx.fillStyle = lb.c;
+      ctx.textAlign = 'center';
+      ctx.fillText(txt, lb.x, labelY);
     });
   }
 
