@@ -230,7 +230,7 @@ tr:hover td{background:var(--accent-bg);}
     </div>
   </div>
   <div class="hdr-r">
-    <span id="sync-st" style="font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.5px;"></span>
+    <span id="sync-st" style="font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.5px;cursor:pointer;" onclick="manualSync()" title="Klik untuk sync sekarang"></span>
     <button class="thbtn" id="thbtn" onclick="tgTheme()" title="Toggle tema">🌙</button>
     <div class="live"><span class="live-d"></span>LIVE</div>
     <div id="clk"></div>
@@ -597,6 +597,28 @@ tr:hover td{background:var(--accent-bg);}
     <div class="st">⚙ Nama Impeller</div>
     <div id="i-nm-rows"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveNm()">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">🔄 Interval Auto-Sync ke Google Sheets</div>
+    <div class="sr">
+      <div class="sl">Interval Sync</div>
+      <select class="si" id="s-sync" style="width:160px;text-align:left;font-family:inherit;">
+        <option value="60">1 menit</option>
+        <option value="120">2 menit</option>
+        <option value="300" selected>5 menit (default)</option>
+        <option value="600">10 menit</option>
+        <option value="900">15 menit</option>
+        <option value="1800">30 menit</option>
+        <option value="3600">1 jam</option>
+        <option value="0">Manual saja (nonaktif)</option>
+      </select>
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:6px;">
+      Saat ini: <span id="sync-interval-label" style="font-weight:700;color:var(--accent);"></span>
+      &nbsp;|&nbsp; Terakhir sync: <span id="sync-last-time" style="font-weight:700;color:var(--ok);">-</span>
+    </div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSyncInterval()">💾 Simpan Interval</button>
+    <button class="btn btn-g btn-s" style="margin-top:8px;margin-left:8px;" onclick="manualSync()">🔄 Sync Sekarang</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📱 WhatsApp Tujuan Laporan</div>
@@ -1527,7 +1549,10 @@ async function saveSs(){
 // ============ SETTING ============
 function rSet(){
   document.getElementById('s-alo').value=cfg.aLo;
-  const waEl=document.getElementById('s-wa');if(waEl)waEl.value=getWaTarget();document.getElementById('s-ahi').value=cfg.aHi;
+  const waEl=document.getElementById('s-wa');if(waEl)waEl.value=getWaTarget();
+  updateSyncLabel();
+  const lst=document.getElementById('sync-last-time');
+  if(lst)lst.textContent=lastSyncTime?lastSyncTime.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'-';document.getElementById('s-ahi').value=cfg.aHi;
   document.getElementById('s-plo').value=cfg.pLo;document.getElementById('s-phi').value=cfg.pHi;
   document.getElementById('s-dlo').value=cfg.dLo;document.getElementById('s-dhi').value=cfg.dHi;
   document.getElementById('s-slo').value=cfg.sLo;document.getElementById('s-shi').value=cfg.sHi;
@@ -1545,6 +1570,26 @@ function saveSt(){
 function saveLt(){
   [...SP_PT,'Hanger'].forEach(n=>{const e=document.getElementById('lts-'+n.replace(/ /g,'_'));if(e)ltCfg[n]=+e.value||480;});
   sv('ltCfg',ltCfg);alert('Tersimpan!');
+}
+function saveSyncInterval(){
+  const val = +document.getElementById('s-sync').value;
+  localStorage.setItem('hsb9_sync_interval', val);
+  // Restart sync engine with new interval
+  startSyncEngine(val);
+  const label = val===0?'Nonaktif (manual)': val<60?val+'d': val<3600?(val/60)+'m':'1 jam';
+  showToast('✅ Interval sync: ' + label, 'ok');
+  updateSyncLabel();
+}
+function updateSyncLabel(){
+  const val = +localStorage.getItem('hsb9_sync_interval') || 300;
+  const label = val===0?'Nonaktif (manual)': val<60?val+' detik': val<3600?(val/60)+' menit':'1 jam';
+  const el = document.getElementById('sync-interval-label');
+  if(el) el.textContent = label;
+  // Set select value
+  const sel = document.getElementById('s-sync');
+  if(sel) sel.value = val;
+  // Update countdown max
+  updateSyncDisplay();
 }
 function saveWaNo(){
   const no=document.getElementById('s-wa').value.replace(/\D/g,'');
@@ -1801,15 +1846,102 @@ window.addEventListener('resize',()=>{
   },150);
 });
 // Auto-refresh dashboard every 30s
+// ============================================================
+// AUTO SYNC ENGINE
+// ============================================================
+// Baca interval dari localStorage (default 5 menit = 300 detik)
+function getSyncIntervalSec(){ return +localStorage.getItem('hsb9_sync_interval') || 300; }
+let SYNC_INTERVAL_MS = getSyncIntervalSec() * 1000;
+let lastSyncTime = null;
+let syncCountdown = getSyncIntervalSec();
+let _syncTimer = null; // timer handle untuk bisa di-restart
+
+// Render halaman aktif setelah sync
+function refreshActiveTab(){
+  const tabs = ['dash','prev','sp','amp','lb','ss','set'];
+  const renders = {dash:rDash,prev:rPv,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,set:rSet};
+  for(const t of tabs){
+    const el = document.getElementById('p-'+t);
+    if(el && el.classList.contains('on')){
+      renders[t]?.();
+      break;
+    }
+  }
+}
+
+// Update countdown display di header
+function updateSyncDisplay(){
+  const el = document.getElementById('sync-st');
+  if(!el) return;
+  if(!ONLINE){ el.textContent='⚡ Lokal'; el.style.color='var(--muted)'; return; }
+  if(syncCountdown > 0){
+    const m = Math.floor(syncCountdown/60);
+    const s = syncCountdown % 60;
+    el.textContent = `🔄 ${m>0?m+'m ':' '}${s}d`;
+    el.style.color = 'var(--muted)';
+    el.title = `Auto-sync dalam ${m>0?m+' menit ':''} ${s} detik`;
+  }
+}
+
+// Countdown ticker — setiap detik kurangi 1
+setInterval(()=>{
+  syncCountdown = Math.max(0, syncCountdown - 1);
+  updateSyncDisplay();
+}, 1000);
+
+// Auto-sync utama — setiap 5 menit pull dari Sheets
+async function runAutoSync(){
+  if(!ONLINE) return;
+  setSyncStatus('syncing');
+  const ok = await loadFromSheets();
+  if(ok){
+    lastSyncTime = new Date();
+    showToast(`🔄 Data diperbarui dari server (${lastSyncTime.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})})`, 'ok');
+    refreshActiveTab();
+  } else {
+    setSyncStatus('error');
+  }
+  // Reset countdown
+  syncCountdown = getSyncIntervalSec();
+}
+
+// Sync engine — bisa di-restart saat interval diubah
+function startSyncEngine(intervalSec){
+  // Clear existing timer
+  if(_syncTimer){ clearInterval(_syncTimer); _syncTimer=null; }
+  SYNC_INTERVAL_MS = intervalSec * 1000;
+  syncCountdown = intervalSec;
+  if(!ONLINE || intervalSec === 0) return; // manual only
+  _syncTimer = setInterval(runAutoSync, SYNC_INTERVAL_MS);
+}
+// Start dengan interval dari setting
+if(ONLINE){ startSyncEngine(getSyncIntervalSec()); }
+
+// Juga refresh render dashboard setiap 30 detik (hanya UI, tanpa network call)
 setInterval(()=>{
   if(document.getElementById('p-dash').classList.contains('on')){
-    rIGrid();rAlerts();chkHgLT();
+    rIGrid(); rAlerts(); chkHgLT();
     rHgMini('hg-grid','hg-sum');
     drawDashCharts();
   }
-},30000);
-// Sync setiap 5 menit kalau online
-if(ONLINE){setInterval(async()=>{await loadFromSheets();if(document.getElementById('p-dash').classList.contains('on')){rDash();}},5*60*1000);}
+}, 30000);
+
+// Sync saat tab browser kembali aktif (user switch dari tab lain)
+document.addEventListener('visibilitychange', async()=>{
+  if(!document.hidden && ONLINE && lastSyncTime){
+    const msSinceSync = Date.now() - lastSyncTime.getTime();
+    // Kalau sudah lebih dari 2 menit sejak sync terakhir, sync sekarang
+    if(msSinceSync > 2 * 60 * 1000){
+      await runAutoSync();
+    }
+  }
+});
+
+// Manual sync — tombol di header
+function manualSync(){
+  syncCountdown = 0;
+  runAutoSync();
+}
 </script>
 </body>
 </html>
