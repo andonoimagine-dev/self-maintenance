@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSB — Test Koneksi Google Sheets</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f0f4f8;color:#1a2332;padding:20px;max-width:700px;margin:0 auto;}
+  h2{color:#0066cc;margin-bottom:4px;}
+  .sub{color:#7a93ad;font-size:.85rem;margin-bottom:24px;}
+  .card{background:#fff;border:1px solid #d8dfe9;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  label{display:block;font-size:.75rem;color:#7a93ad;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+  input{width:100%;border:1px solid #d8dfe9;border-radius:7px;padding:10px 12px;font-size:.9rem;color:#1a2332;margin-bottom:12px;box-sizing:border-box;}
+  input:focus{outline:none;border-color:#0066cc;}
+  button{background:#0066cc;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:.9rem;font-weight:700;cursor:pointer;margin-right:8px;margin-bottom:8px;}
+  button:hover{background:#0052a3;}
+  button.sec{background:#f0f4f8;color:#1a2332;border:1px solid #d8dfe9;}
+  button.sec:hover{background:#e0e8f0;}
+  .result{margin-top:14px;padding:14px;border-radius:8px;font-size:.85rem;white-space:pre-wrap;word-break:break-all;display:none;}
+  .ok{background:#ecfdf5;border:1px solid rgba(5,150,105,.3);color:#059669;}
+  .err{background:#fef2f2;border:1px solid rgba(220,38,38,.3);color:#dc2626;}
+  .warn{background:#fffbeb;border:1px solid rgba(217,119,6,.3);color:#d97706;}
+  .step{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+  .num{width:28px;height:28px;border-radius:50%;background:#0066cc;color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .st-ok{background:#059669;} .st-err{background:#dc2626;} .st-pend{background:#d97706;}
+  .log{background:#1a2332;color:#00e5a0;padding:14px;border-radius:8px;font-family:'Courier New',monospace;font-size:.78rem;max-height:260px;overflow-y:auto;margin-top:12px;display:none;}
+  .mono{font-family:'Courier New',monospace;}
+  #progress{height:4px;background:#d8dfe9;border-radius:2px;margin-top:12px;overflow:hidden;display:none;}
+  #progress-bar{height:100%;background:#0066cc;width:0%;transition:width .3s;}
+  .fix-box{background:#fffbeb;border:1px solid rgba(217,119,6,.3);border-radius:8px;padding:14px;margin-top:12px;font-size:.82rem;display:none;}
+  .fix-box h4{color:#d97706;margin-bottom:8px;}
+  code{background:#e8eef5;padding:2px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:.82rem;}
+</style>
+</head>
+<body>
+
+<h2>🔧 HSB Monitor — Test Koneksi</h2>
+<p class="sub">Verifikasi koneksi antara HTML ↔ Google Sheets ↔ Apps Script</p>
+
+<div class="card">
+  <label>Google Apps Script URL</label>
+  <input id="gas-url" type="url" placeholder="https://script.google.com/macros/s/.../exec"
+    value="https://script.google.com/macros/s/AKfycbwXDrhim2_OLNBznufGpk9wDOeYv3aLAOuzMzqYsNFh82zN_UVSeUSbEBzp_l0lfKhplg/exec">
+  <label>Password</label>
+  <input id="gas-pwd" type="text" value="hsb2026">
+  <div>
+    <button onclick="runAllTests()">▶ Jalankan Semua Test</button>
+    <button class="sec" onclick="clearLog()">🗑 Clear</button>
+  </div>
+  <div id="progress"><div id="progress-bar"></div></div>
+</div>
+
+<div class="card" id="test-results" style="display:none;">
+  <h3 style="margin-bottom:16px;">Hasil Diagnosa</h3>
+
+  <div class="step">
+    <div class="num st-pend" id="n1">1</div>
+    <div style="flex:1;">
+      <strong>Koneksi ke Apps Script</strong><br>
+      <span style="font-size:.8rem;color:#7a93ad;">Memastikan URL dapat diakses dari browser</span>
+      <div class="result" id="r1"></div>
+      <div class="fix-box" id="f1"></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num st-pend" id="n2">2</div>
+    <div style="flex:1;">
+      <strong>Autentikasi Password</strong><br>
+      <span style="font-size:.8rem;color:#7a93ad;">Memastikan password cocok dengan Apps Script</span>
+      <div class="result" id="r2"></div>
+      <div class="fix-box" id="f2"></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num st-pend" id="n3">3</div>
+    <div style="flex:1;">
+      <strong>Inisialisasi Sheets</strong><br>
+      <span style="font-size:.8rem;color:#7a93ad;">Memastikan semua sheet sudah dibuat di Spreadsheet</span>
+      <div class="result" id="r3"></div>
+      <div class="fix-box" id="f3"></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num st-pend" id="n4">4</div>
+    <div style="flex:1;">
+      <strong>Read Data (getAll)</strong><br>
+      <span style="font-size:.8rem;color:#7a93ad;">Memastikan data bisa dibaca dari Spreadsheet</span>
+      <div class="result" id="r4"></div>
+      <div class="fix-box" id="f4"></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num st-pend" id="n5">5</div>
+    <div style="flex:1;">
+      <strong>Write Data (simpan test)</strong><br>
+      <span style="font-size:.8rem;color:#7a93ad;">Memastikan data bisa ditulis ke Spreadsheet</span>
+      <div class="result" id="r5"></div>
+      <div class="fix-box" id="f5"></div>
+    </div>
+  </div>
+
+  <div id="summary" style="display:none;margin-top:16px;padding:16px;border-radius:8px;font-weight:600;font-size:.95rem;"></div>
+</div>
+
+<div class="card">
+  <strong>📋 Log Detail</strong>
+  <div class="log" id="log"></div>
+  <button class="sec" style="margin-top:8px;" onclick="copyLog()">📋 Copy Log</button>
+</div>
+
+<div class="card" style="background:#f8fafc;">
+  <strong>💡 Cara Pakai</strong>
+  <ol style="margin-top:10px;padding-left:18px;font-size:.85rem;line-height:1.9;">
+    <li>Buka halaman ini di browser</li>
+    <li>Pastikan URL dan password sudah benar</li>
+    <li>Klik <strong>Jalankan Semua Test</strong></li>
+    <li>Jika ada yang ❌, ikuti petunjuk perbaikan yang muncul</li>
+    <li>Jika semua ✅, koneksi berjalan sempurna</li>
+  </ol>
+</div>
+
+<script>
+const url = () => document.getElementById('gas-url').value.trim();
+const pwd = () => document.getElementById('gas-pwd').value.trim();
+let logContent = '';
+
+function log(msg){
+  logContent += new Date().toLocaleTimeString('id-ID') + ' | ' + msg + '\n';
+  const el = document.getElementById('log');
+  el.style.display = 'block';
+  el.textContent = logContent;
+  el.scrollTop = el.scrollHeight;
+}
+
+function setStep(n, status, msg, fix=''){
+  const num = document.getElementById('n'+n);
+  const res = document.getElementById('r'+n);
+  const fixEl = document.getElementById('f'+n);
+  num.className = 'num ' + (status==='ok'?'st-ok':status==='err'?'st-err':'st-pend');
+  res.className = 'result ' + (status==='ok'?'ok':status==='err'?'err':'warn');
+  res.style.display = 'block';
+  res.textContent = msg;
+  if(fix && status==='err'){
+    fixEl.style.display = 'block';
+    fixEl.innerHTML = '<h4>🔧 Cara Perbaiki:</h4>' + fix;
+  }
+}
+
+function setProgress(pct){
+  document.getElementById('progress').style.display = 'block';
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+async function callGAS(action, extra={}){
+  const gasUrl = url();
+  const password = pwd();
+  if(!gasUrl){ throw new Error('URL kosong'); }
+  const body = { action, pwd: password, ...extra };
+  log(`→ POST ${action}`);
+  const t0 = Date.now();
+  const res = await fetch(gasUrl, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body),
+    redirect: 'follow'
+  });
+  const elapsed = Date.now() - t0;
+  log(`← ${res.status} (${elapsed}ms)`);
+  const text = await res.text();
+  log(`   ${text.slice(0,200)}`);
+  try{ return { data: JSON.parse(text), elapsed }; }
+  catch(e){ return { data: null, raw: text, elapsed }; }
+}
+
+async function runAllTests(){
+  logContent = '';
+  document.getElementById('log').textContent = '';
+  document.getElementById('test-results').style.display = 'block';
+  document.getElementById('summary').style.display = 'none';
+  // Reset all steps
+  for(let i=1;i<=5;i++){
+    document.getElementById('n'+i).className='num st-pend';
+    document.getElementById('r'+i).style.display='none';
+    document.getElementById('f'+i).style.display='none';
+  }
+  setProgress(0);
+
+  let allOk = true;
+
+  // TEST 1: Basic connectivity
+  log('=== TEST 1: Koneksi ===');
+  setProgress(10);
+  try {
+    const {data, elapsed, raw} = await callGAS('ping');
+    // Even wrong password gives a response = connectivity OK
+    if(data || raw){
+      setStep(1,'ok',`✅ Koneksi berhasil (${elapsed}ms)\nServer dapat dijangkau dari browser ini.`);
+    }
+  } catch(e) {
+    setStep(1,'err',`❌ Gagal terhubung ke Apps Script\nError: ${e.message}`,
+      `<ul style="margin:0;padding-left:18px;">
+        <li>Pastikan URL sudah di-deploy sebagai <strong>Web App</strong></li>
+        <li>Buka Apps Script → Deploy → Manage Deployments → copy URL yang aktif</li>
+        <li>Pastikan <em>Who has access</em> diset ke <strong>Anyone</strong></li>
+        <li>Coba buka URL-nya langsung di tab baru browser</li>
+      </ul>`);
+    allOk = false;
+  }
+  setProgress(25);
+
+  // TEST 2: Password
+  log('\n=== TEST 2: Auth ===');
+  try {
+    const {data, elapsed} = await callGAS('getConfig');
+    if(!data){ throw new Error('Response kosong'); }
+    if(!data.ok && data.error === 'Password salah'){
+      setStep(2,'err',`❌ Password salah\nPassword yang diinput: "${pwd()}"`,
+        `Password di Apps Script dan di sini harus sama.<br>
+        Cek baris 8 di Apps Script: <code>const PASSWORD = '...';</code><br>
+        Atau ganti password di kolom di atas sesuai yang ada di Apps Script.`);
+      allOk = false;
+    } else if(data.ok || data.config !== undefined){
+      setStep(2,'ok',`✅ Password benar (${elapsed}ms)`);
+    } else {
+      setStep(2,'warn',`⚠ Response tidak terduga: ${JSON.stringify(data).slice(0,200)}`);
+    }
+  } catch(e){
+    setStep(2,'err',`❌ Error: ${e.message}`,'Pastikan koneksi (Test 1) berhasil dulu.');
+    allOk = false;
+  }
+  setProgress(45);
+
+  // TEST 3: Init sheets
+  log('\n=== TEST 3: Init Sheets ===');
+  try {
+    const {data, elapsed} = await callGAS('init');
+    if(data?.ok){
+      setStep(3,'ok',`✅ Sheets berhasil diinisialisasi (${elapsed}ms)\n${data.msg||''}`);
+    } else {
+      setStep(3,'err',`❌ Init gagal: ${JSON.stringify(data)}`,
+        `Buka Apps Script → pilih fungsi <code>initSheets</code> → klik Run manual.<br>
+        Pastikan spreadsheet ID di baris 7 Apps Script sudah benar: <code>const SHEET_ID = '...';</code>`);
+      allOk = false;
+    }
+  } catch(e){
+    setStep(3,'err',`❌ Error: ${e.message}`,'Pastikan test 1 & 2 berhasil dulu.');
+    allOk = false;
+  }
+  setProgress(65);
+
+  // TEST 4: Read
+  log('\n=== TEST 4: Read Data ===');
+  try {
+    const {data, elapsed} = await callGAS('getAll');
+    if(data?.ok !== false && (data?.config !== undefined || data?.ampere !== undefined)){
+      const sheets = Object.keys(data).filter(k=>k!=='ok');
+      const counts = sheets.map(k=>Array.isArray(data[k])?`${k}:${data[k].length}`:`${k}:✓`).join(', ');
+      setStep(4,'ok',`✅ Read berhasil (${elapsed}ms)\nData tersedia: ${counts}`);
+    } else {
+      setStep(4,'err',`❌ Read gagal: ${JSON.stringify(data).slice(0,300)}`,
+        `Pastikan fungsi <code>initSheets</code> sudah dijalankan (Test 3).<br>
+        Cek apakah Spreadsheet ID di Apps Script sudah benar.`);
+      allOk = false;
+    }
+  } catch(e){
+    setStep(4,'err',`❌ Error: ${e.message}`,'');
+    allOk = false;
+  }
+  setProgress(82);
+
+  // TEST 5: Write
+  log('\n=== TEST 5: Write Data ===');
+  try {
+    const testRow = [{
+      date: new Date().toISOString().slice(0,10),
+      shift: 'TEST',
+      jenis: 'TEST',
+      volume_trolley: 0,
+      lokasi: 'TEST-KONEKSI',
+      operator: 'DiagnosticTest',
+      keterangan: 'Baris ini dibuat oleh test koneksi — aman dihapus'
+    }];
+    const {data, elapsed} = await callGAS('saveLimbah', {rows: JSON.stringify(testRow)});
+    if(data?.ok && data?.appended > 0){
+      setStep(5,'ok',`✅ Write berhasil (${elapsed}ms)\n${data.appended} baris ditulis ke sheet limbah.\n⚠ Silakan hapus baris TEST dari sheet limbah di Spreadsheet Anda.`);
+    } else {
+      setStep(5,'err',`❌ Write gagal: ${JSON.stringify(data).slice(0,300)}`,
+        `Pastikan Apps Script punya akses ke Spreadsheet.<br>
+        Coba jalankan fungsi <code>initSheets</code> manual di Apps Script.`);
+      allOk = false;
+    }
+  } catch(e){
+    setStep(5,'err',`❌ Error: ${e.message}`,'');
+    allOk = false;
+  }
+  setProgress(100);
+
+  // Summary
+  const sumEl = document.getElementById('summary');
+  sumEl.style.display = 'block';
+  if(allOk){
+    sumEl.style.background = '#ecfdf5';
+    sumEl.style.border = '1px solid rgba(5,150,105,.3)';
+    sumEl.style.color = '#059669';
+    sumEl.innerHTML = '✅ Semua test berhasil! Koneksi HTML ↔ Google Sheets berjalan sempurna.<br><span style="font-size:.8rem;font-weight:400;">Data akan tersimpan ke Google Sheets setiap kali user klik Simpan di aplikasi HSB Monitor.</span>';
+  } else {
+    sumEl.style.background = '#fef2f2';
+    sumEl.style.border = '1px solid rgba(220,38,38,.3)';
+    sumEl.style.color = '#dc2626';
+    sumEl.innerHTML = '❌ Ada test yang gagal. Ikuti petunjuk perbaikan di atas untuk setiap langkah yang ❌.';
+  }
+  log('\n=== SELESAI ===');
+}
+
+function clearLog(){
+  logContent = '';
+  document.getElementById('log').textContent = '';
+  document.getElementById('log').style.display = 'none';
+}
+
+function copyLog(){
+  navigator.clipboard.writeText(logContent).then(()=>alert('Log berhasil dicopy!'));
+}
+</script>
+</body>
+</html>
