@@ -487,9 +487,9 @@ tr:hover td{background:var(--accent-bg);}
       <button class="chc-b" onclick="ampPd(this,'3m')">3 Bulan</button>
       <button class="chc-b" onclick="ampPd(this,'cust')">Custom</button>
       <span id="amp-cust" style="display:none;" class="fg-r">
-        <input type="month" id="amp-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <input type="date" id="amp-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;min-width:120px;">
         <span style="font-size:.72rem;color:var(--muted);">s/d</span>
-        <input type="month" id="amp-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <input type="date" id="amp-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
         <button class="btn btn-p btn-s" onclick="drawAmpChart()">Tampilkan</button>
       </span>
     </div>
@@ -551,9 +551,9 @@ tr:hover td{background:var(--accent-bg);}
       <button class="chc-b" data-pd="1y" onclick="lbPd(this,'1y')">1 Tahun</button>
       <button class="chc-b" data-pd="cust" onclick="lbPd(this,'cust')">Custom</button>
       <span id="lb-cust" style="display:none;" class="fg-r">
-        <input type="month" id="lb-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <input type="date" id="lb-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;min-width:120px;">
         <span style="font-size:.72rem;color:var(--muted);">s/d</span>
-        <input type="month" id="lb-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <input type="date" id="lb-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
         <button class="btn btn-p btn-s" onclick="drawFullLb()">Tampilkan</button>
       </span>
     </div>
@@ -610,9 +610,9 @@ tr:hover td{background:var(--accent-bg);}
       <button class="chc-b" data-pd="1y" onclick="ssPd(this,'1y')">1 Tahun</button>
       <button class="chc-b" data-pd="cust" onclick="ssPd(this,'cust')">Custom</button>
       <span id="ss-cust" style="display:none;" class="fg-r">
-        <input type="month" id="ss-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <input type="date" id="ss-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;min-width:120px;">
         <span style="font-size:.72rem;color:var(--muted);">s/d</span>
-        <input type="month" id="ss-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
+        <input type="date" id="ss-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
         <button class="btn btn-p btn-s" onclick="drawFullSs()">Tampilkan</button>
       </span>
     </div>
@@ -1091,8 +1091,11 @@ function dtRange(p,cf,ct){
   if(p==='6m')return{f:dStr(new Date(y,m-5,1)),t:dStr(new Date(y,m+1,0))};
   if(p==='1y')return{f:dStr(new Date(y-1,m+1,1)),t:dStr(new Date(y,m+1,0))};
   if(p==='cust'&&cf&&ct){
-    const [fy,fm]=cf.split('-');const [ty,tm]=ct.split('-');
-    return{f:`${fy}-${fm}-01`,t:dStr(new Date(+ty,+tm,0))};
+    // date input gives YYYY-MM-DD directly — use as-is
+    // month input gives YYYY-MM — expand to first/last day
+    const from = cf.length===10 ? cf : `${cf}-01`;
+    const to   = ct.length===10 ? ct : dStr(new Date(+ct.slice(0,4),+ct.slice(5,7),0));
+    return{f:from, t:to};
   }
   return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};
 }
