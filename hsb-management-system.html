@@ -699,18 +699,31 @@ const ONLINE = GAS_URL.length > 0;
 async function api(action, data={}) {
   if (!ONLINE) return { ok: true, offline: true };
   const pwd = sessionStorage.getItem('hsb_pwd') || '';
-  const payload = { action, pwd, ...data };
   try {
-    // Google Apps Script hanya bisa POST via URL params karena CORS
-    const url = GAS_URL + '?action=' + action + '&pwd=' + encodeURIComponent(pwd);
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+    // Google Apps Script CORS fix:
+    // Kirim sebagai GET request dengan semua data di URL params
+    // GAS mendukung GET dengan redirect follow tanpa CORS issue
+    const params = new URLSearchParams();
+    params.set('action', action);
+    params.set('pwd', pwd);
+    // Untuk data tambahan, encode sebagai JSON di param 'body'
+    if (Object.keys(data).length > 0) {
+      Object.entries(data).forEach(([k,v]) => params.set(k, typeof v === 'object' ? JSON.stringify(v) : v));
+    }
+    const fullUrl = GAS_URL + '?' + params.toString();
+    const res = await fetch(fullUrl, {
+      method: 'GET',
+      redirect: 'follow',
     });
-    const json = await res.json();
-    if (!json.ok && json.error) console.warn('API error:', json.error);
-    return json;
+    const text = await res.text();
+    try {
+      const json = JSON.parse(text);
+      if (!json.ok && json.error) console.warn('API error:', json.error);
+      return json;
+    } catch(e) {
+      console.warn('API parse error, raw:', text.slice(0,200));
+      return { ok: false, error: 'Parse error: ' + text.slice(0,100) };
+    }
   } catch(e) {
     console.warn('API fetch error:', e);
     showToast('⚠ Gagal sync ke server — disimpan lokal', 'warn');
