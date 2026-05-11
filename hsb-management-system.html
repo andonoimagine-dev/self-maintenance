@@ -950,6 +950,25 @@ async function loadFromSheets() {
   
   if (r.impeller_state?.length) { st = r.impeller_state; sv('st',st); }
   if (r.hanger_state?.length)   { hSt = r.hanger_state; sv('hSt',hSt); }
+
+  // ── Reconcile impeller ampere dari ampLog terbaru ──────────────
+  // Ini memastikan nilai ampere di dashboard selalu sinkron
+  // meskipun impeller_state sheet belum terupdate dari device lain
+  if (ampLog.length) {
+    for (let i = 0; i < 16; i++) {
+      const logs = ampLog.filter(x => +x.i === i && x.dt);
+      if (!logs.length) continue;
+      // Ambil log terbaru berdasarkan datetime
+      logs.sort((a,b) => (b.dt||'').localeCompare(a.dt||''));
+      const latest = logs[0];
+      if (latest.v != null && latest.v !== '') {
+        if (!st[i]) st[i] = {on:true,a:null,dt:null,n:'',cf:false};
+        st[i].a  = +latest.v;
+        st[i].dt = latest.dt;
+      }
+    }
+    sv('st', st);
+  }
   
   // Config
   if (r.config) {
@@ -972,11 +991,12 @@ async function loadFromSheets() {
 // SAVE WRAPPERS — save local + push to sheets
 // ============================================================
 async function pushToSheets(action, rows) {
-  if (!ONLINE) return;
+  if (!ONLINE) return false;
   setSyncStatus('syncing');
   const r = await api(action, { rows: JSON.stringify(rows) });
   setSyncStatus(r.ok ? 'ok' : 'error');
   if (!r.ok) queueSync(action, { rows: JSON.stringify(rows) });
+  return r.ok;
 }
 
 // ============ STORAGE ============
@@ -1854,8 +1874,9 @@ async function saveAmp(){
   }
   sv('ampLog',ampLog);sv('st',st);
   if(rows.length){
-    pushToSheets('saveAmpere',rows);
-    pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
+    // Save ampere log first, then update impeller state
+    await pushToSheets('saveAmpere',rows);
+    await pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
   }
   showToast(`✅ ${c} data ampere tersimpan!`,'ok');rAmp();rIGrid();rAlerts();requestAnimationFrame(drawAmpChart);
 }
@@ -2702,12 +2723,14 @@ async function runAutoSync(){
   const ok = await loadFromSheets();
   if(ok){
     lastSyncTime = new Date();
-    showToast(`🔄 Data diperbarui dari server (${lastSyncTime.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})})`, 'ok');
+    // Always refresh dashboard to show latest ampere
+    rIGrid();
+    rAlerts();
     refreshActiveTab();
+    showToast(`🔄 Data diperbarui (${lastSyncTime.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})})`, 'ok');
   } else {
     setSyncStatus('error');
   }
-  // Reset countdown
   syncCountdown = getSyncIntervalSec();
 }
 
