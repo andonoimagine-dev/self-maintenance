@@ -1227,11 +1227,12 @@ function drawChart(canvasId,data,series,opts){
   const MOC  =dk?'#c0d4e8':'#1a3350';
 
   const N=data.length;
+  const NS=series.length; // number of series
   const isWeekly=!!opts.weekly;
-  const singleMonth=!isWeekly&&N>0&&data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
+  const singleMonth=!isWeekly&&N>0&&
+    data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
   const yLab=opts.yLabel||'';
 
-  // Padding — enough room for labels
   const PAD={t:22,r:12,b:44,l:yLab?46:38};
   const CW=W-PAD.l-PAD.r, CH=H-PAD.t-PAD.b;
   if(CW<20||CH<20)return;
@@ -1247,7 +1248,7 @@ function drawChart(canvasId,data,series,opts){
     if(v<=0)return 5;
     const e=Math.pow(10,Math.floor(Math.log10(v)));
     const f=v/e;
-    return (f<=1?1:f<=2?2:f<=3?3:f<=5?5:10)*e;
+    return(f<=1?1:f<=2?2:f<=3?3:f<=5?5:10)*e;
   }
   function niceStep(top){
     for(const s of [1,2,5,10,20,25,50,100,200,500])if(top/s<=7)return s;
@@ -1321,74 +1322,59 @@ function drawChart(canvasId,data,series,opts){
   }
 
   // ── Data labels ──────────────────────────────────────────
-  // Pixel distance between consecutive points
+  // pxPt = pixels between consecutive data points
   const pxPt=N>1?CW/(N-1):CW;
-  // Minimum horizontal gap before placing next label for same series
-  // Use 85% of point spacing so adjacent points can both get labels
-  const minGap=Math.max(pxPt*0.85,22);
 
-  // Collect all non-zero points, sort highest value first
-  // so important values always get a label
-  const cands=[];
-  series.forEach((s,si)=>{
-    data.forEach((d,i)=>{
-      const v=+(d[s.k]||0);
-      if(v===0)return;
-      cands.push({x:xOf(i),y:yOf(v),v,si,c:s.c,
-        txt:v%1===0?String(v):v.toFixed(1)});
-    });
-  });
-  cands.sort((a,b)=>b.v-a.v);
+  // When many series (e.g. 16 impellers), labels get very crowded.
+  // Strategy: per-series, only place a label if horizontally spaced
+  // enough from the PREVIOUS label of that SAME series.
+  // minGapSeries: tighter for many series so more labels show
+  const minGapSeries=NS>4?Math.max(pxPt*0.5,16):Math.max(pxPt*0.8,20);
 
+  // Global placed boxes — only check same-series boxes to avoid
+  // inter-series collision blocking ALL labels at same x position
   const lastLX={}; // last placed x per series
-  const boxes=[];  // placed bounding boxes
-
-  function hasClash(bx){
-    return boxes.some(b=>
-      bx.x1<b.x2+2&&bx.x2>b.x1-2&&
-      bx.y1<b.y2+2&&bx.y2>b.y1-2);
-  }
 
   ctx.font='bold 9px sans-serif';ctx.textBaseline='alphabetic';
 
-  cands.forEach(lb=>{
-    // Per-series horizontal gap check
-    if(lb.x-(lastLX[lb.si]??-9999)<minGap)return;
+  // Draw per series, per point (NOT sorted by value — draw in series order)
+  series.forEach((s,si)=>{
+    data.forEach((d,i)=>{
+      const v=+(d[s.k]||0);if(!v)return;
+      const x=xOf(i),y=yOf(v);
 
-    const tw=lb.txt.length*5.5+4;
-    const BH=12; // box height
+      // Per-series horizontal gap check
+      if(x-(lastLX[si]??-9999)<minGapSeries)return;
 
-    // Try 4 positions: above, below, further above, further below
-    const tries=[-9, 14, -18, 23];
-    for(const dy of tries){
-      const ly=lb.y+dy;
-      // Stay inside chart drawing area (with a little margin)
-      if(ly<PAD.t+4||ly>PAD.t+CH+20)continue;
-      const bx={x1:lb.x-tw/2-1,x2:lb.x+tw/2+1,y1:ly-BH,y2:ly+2};
-      if(hasClash(bx))continue;
-      // Place it
-      boxes.push(bx);
-      lastLX[lb.si]=lb.x;
-      // White/dark bg pill for readability
-      ctx.fillStyle=dk?'rgba(14,22,38,.80)':'rgba(255,255,255,.84)';
-      ctx.beginPath();
+      const txt=v%1===0?String(v):v.toFixed(1);
+      const tw=txt.length*5.5+4;
+
+      // Choose vertical position: above dot preferred, below if too close to top
+      const aboveY=y-9;
+      const belowY=y+13;
+      const labelY=aboveY<PAD.t+6?belowY:aboveY;
+
+      // Clamp within chart
+      const ly=Math.max(PAD.t+8,Math.min(PAD.t+CH+18,labelY));
+
+      // Draw bg pill
+      const bx={x1:x-tw/2-1,y1:ly-10,w:tw+2,h:12};
+      ctx.fillStyle=dk?'rgba(14,22,38,.78)':'rgba(255,255,255,.82)';
       if(ctx.roundRect){
-        ctx.roundRect(bx.x1,bx.y1,bx.x2-bx.x1,bx.y2-bx.y1,3);
+        ctx.beginPath();ctx.roundRect(bx.x1,bx.y1,bx.w,bx.h,2);ctx.fill();
       }else{
-        ctx.rect(bx.x1,bx.y1,bx.x2-bx.x1,bx.y2-bx.y1);
+        ctx.fillRect(bx.x1,bx.y1,bx.w,bx.h);
       }
-      ctx.fill();
-      ctx.fillStyle=lb.c;
-      ctx.textAlign='center';
-      ctx.fillText(lb.txt,lb.x,ly);
-      break;
-    }
+      // Draw text
+      ctx.fillStyle=s.c;ctx.textAlign='center';
+      ctx.fillText(txt,x,ly);
+      lastLX[si]=x;
+    });
   });
 
   // ── X axis ───────────────────────────────────────────────
   const yB=PAD.t+CH+4;
 
-  // Helper: draw rotated text label at (x, yB)
   function xLbl(x,txt){
     ctx.save();
     ctx.font='600 9px sans-serif';ctx.fillStyle=TICKC;
@@ -1398,7 +1384,6 @@ function drawChart(canvasId,data,series,opts){
     ctx.restore();
   }
 
-  // Helper: draw month separator line + top label
   function moSep(x,lbl,first){
     ctx.setLineDash([]);
     if(!first){
@@ -1411,8 +1396,7 @@ function drawChart(canvasId,data,series,opts){
     ctx.setLineDash([]);
     ctx.font='bold 10px sans-serif';ctx.fillStyle=MOC;
     ctx.textAlign='left';ctx.textBaseline='top';
-    const lx=Math.min(x+(first?0:3),PAD.l+CW-42);
-    ctx.fillText(lbl,lx,PAD.t+3);
+    ctx.fillText(lbl,Math.min(x+(first?0:3),PAD.l+CW-42),PAD.t+3);
   }
 
   if(isWeekly){
@@ -1420,25 +1404,19 @@ function drawChart(canvasId,data,series,opts){
     data.forEach((d,i)=>{
       const raw=d.label||d.date||'';
       const sp=raw.indexOf(' ');
-      const wTag=sp>=0?raw.slice(0,sp):raw;    // "W1"
-      const moTag=sp>=0?raw.slice(sp+1):'';   // "Apr'26"
+      const wTag=sp>=0?raw.slice(0,sp):raw;
+      const moTag=sp>=0?raw.slice(sp+1):'';
       const x=xOf(i);
-      if(moTag&&moTag!==lastMo){
-        moSep(x,moTag,lastMo==='');
-        lastMo=moTag;
-      }
+      if(moTag&&moTag!==lastMo){moSep(x,moTag,lastMo==='');lastMo=moTag;}
       xLbl(x,wTag);
     });
-
   }else if(singleMonth){
     data.forEach((d,i)=>xLbl(xOf(i),''+parseInt(d.date.slice(8),10)));
     const [yy,mm]=data[0].date.split('-');
     ctx.font='bold 11px sans-serif';ctx.fillStyle=MOC;
     ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.setLineDash([]);
     ctx.fillText(`${M[+mm-1]} ${yy}`,PAD.l+CW/2,H-4);
-
   }else{
-    // Multi-month daily
     const minPx=32;
     const evN=Math.max(1,Math.ceil(minPx/Math.max(pxPt,1)));
     let lastMo='';
@@ -1448,16 +1426,12 @@ function drawChart(canvasId,data,series,opts){
       const [yy,mm,dd]=p;
       const mk=yy+'-'+mm;
       const x=xOf(i);
-      if(mk!==lastMo){
-        moSep(x,`${M[+mm-1]} '${yy.slice(2)}`,lastMo==='');
-        lastMo=mk;
-      }
-      if(i===0||i===N-1||i%evN===0){
-        xLbl(x,`${+dd}/${+mm}`);
-      }
+      if(mk!==lastMo){moSep(x,`${M[+mm-1]} '${yy.slice(2)}`,lastMo==='');lastMo=mk;}
+      if(i===0||i===N-1||i%evN===0)xLbl(x,`${+dd}/${+mm}`);
     });
   }
 }
+
 
 
 
