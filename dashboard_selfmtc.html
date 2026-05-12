@@ -163,8 +163,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .kat-bar-track{height:12px;background:var(--surf2);border-radius:2px;overflow:hidden;display:flex}
 .kat-ct{font-size:10px;font-family:'DM Mono',monospace;color:var(--txt3);width:26px;text-align:right;flex-shrink:0}
 
-/* Date filter */
-.td-date{font-size:13px;padding:6px 10px;border-radius:7px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit}
+/* Date filter — legacy, tidak dipakai */
 /* WA share button */
 .wa-btn{
   display:flex;align-items:center;gap:7px;
@@ -211,10 +210,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .gp-pa{color:var(--txt2);font-weight:500}
 
 /* TABLE */
-.tbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-.tb{font-size:13px;font-weight:500;padding:6px 14px;border-radius:7px;border:1px solid var(--bord);background:var(--surf);color:var(--txt2);cursor:pointer;font-family:inherit;transition:.12s}
-.tb:hover{background:var(--surf2)}.tb.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.ta{font-size:13px;padding:6px 10px;border-radius:7px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit;margin-left:auto}
+.tbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tf-sel{font-size:13px;font-weight:500;padding:7px 10px;border-radius:8px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit;cursor:pointer;flex:1;min-width:100px;max-width:160px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;transition:.12s}
+.tf-sel:focus{outline:none;border-color:var(--acc)}
+.tf-sel.active{border-color:var(--navy);background-color:var(--navy);color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ffffff'/%3E%3C/svg%3E")}
 .twrap{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rlg);overflow:hidden}
 table.tbl{width:100%;border-collapse:collapse;table-layout:fixed}
 table.tbl thead th{background:var(--surf2);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);padding:10px 12px;text-align:left;border-bottom:1px solid var(--bord);white-space:nowrap}
@@ -341,8 +340,8 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
   .sb-d,.sb-c{flex:1;text-align:center}
 
   /* Filter bar wrap */
-  .tbar{gap:5px}
-  .tb{font-size:10px;padding:4px 9px}
+  .tbar{gap:6px}
+  .tf-sel{font-size:12px;padding:6px 28px 6px 9px;min-width:80px}
 
   /* Floating filter button */
   .filter-fab{
@@ -558,24 +557,23 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 
   <div class="sec">Daftar Temuan — Follow Up &amp; Update Status</div>
   <div class="tbar">
-    <button class="tb on" onclick="setF(this,'all')">Semua</button>
-    <button class="tb" onclick="setF(this,'A')">Prioritas A</button>
-    <button class="tb" onclick="setF(this,'B')">Prioritas B</button>
-    <button class="tb" onclick="setF(this,'C')">Prioritas C</button>
-    <button class="tb" onclick="setF(this,'Open')">Open</button>
-    <button class="tb" onclick="setF(this,'Temporary')">Temporary</button>
-    <button class="tb" onclick="setF(this,'Close')">Close</button>
-    <div style="display:flex;align-items:center;gap:4px;margin-left:4px">
-      <input type="date" class="td-date" id="fDari" onchange="renderTable()" title="Dari tanggal">
-      <span style="font-size:11px;color:var(--txt3)">—</span>
-      <input type="date" class="td-date" id="fSampai" onchange="renderTable()" title="Sampai tanggal">
-      <button class="tb" onclick="clearDateFilter()" title="Reset tanggal" style="padding:5px 8px">✕</button>
-    </div>
-    <select class="ta" id="aFlt" onchange="renderTable()">
+    <select class="tf-sel" id="fPrioritas" onchange="applyFilters()" title="Filter Prioritas">
+      <option value="">Semua Prioritas</option>
+      <option value="A">Prioritas A</option>
+      <option value="B">Prioritas B</option>
+      <option value="C">Prioritas C</option>
+    </select>
+    <select class="tf-sel" id="fStatus" onchange="applyFilters()" title="Filter Status">
+      <option value="">Semua Status</option>
+      <option value="Open">Open</option>
+      <option value="Temporary">Temporary</option>
+      <option value="Close">Close</option>
+    </select>
+    <select class="tf-sel" id="fArea" onchange="applyFilters()" title="Filter Area">
       <option value="">Semua Area</option>
       <option>Ace-1</option><option>Ace-2</option><option>Melting</option><option>Die Making</option>
     </select>
-    <button class="wa-btn" onclick="shareToWA()" title="Kirim resume ke WhatsApp">
+    <button class="wa-btn" onclick="shareToWA()" title="Kirim resume ke WhatsApp" style="margin-left:auto">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Kirim ke WA
     </button>
@@ -735,18 +733,16 @@ function toggleSlicer(){
 
 /* ═══ SHARE TO WHATSAPP ═══ */
 function shareToWA(){
-  const aF    = document.getElementById('aFlt').value;
-  const fDari = document.getElementById('fDari').value;
-  const fSamp = document.getElementById('fSampai').value;
+  const aF   = document.getElementById('fArea').value;
+  const priF = document.getElementById('fPrioritas').value;
+  const stF  = document.getElementById('fStatus').value;
 
   /* Ambil rows yang sedang ditampilkan (sama persis dengan renderTable) */
   const priO={A:0,B:1,C:2}, stO={Open:0,Temporary:1,Close:2};
   let rows=[...slicedData()].sort((a,b)=>{const p=priO[a.priority]-priO[b.priority];return p||stO[gS(a)]-stO[gS(b)]});
-  if(aF)    rows=rows.filter(r=>r.area===aF);
-  if(fDari) rows=rows.filter(r=>r.tanggal>=fDari);
-  if(fSamp) rows=rows.filter(r=>r.tanggal<=fSamp);
-  if(['A','B','C'].includes(activeFlt))             rows=rows.filter(r=>r.priority===activeFlt);
-  else if(['Open','Temporary','Close'].includes(activeFlt)) rows=rows.filter(r=>gS(r)===activeFlt);
+  if(aF)   rows=rows.filter(r=>r.area===aF);
+  if(priF) rows=rows.filter(r=>r.priority===priF);
+  if(stF)  rows=rows.filter(r=>gS(r)===stF);
 
   if(!rows.length){
     alert('Tidak ada temuan yang sesuai filter untuk dilaporkan.');
@@ -756,10 +752,7 @@ function shareToWA(){
   /* Susun header */
   const today = new Date().toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   const areaLabel = aF || 'Semua Area';
-  let periodeLabel = '';
-  if(fDari && fSamp) periodeLabel = '\n📅 Periode: '+fmtDate(fDari)+' s/d '+fmtDate(fSamp);
-  else if(fDari)     periodeLabel = '\n📅 Dari: '+fmtDate(fDari);
-  else if(fSamp)     periodeLabel = '\n📅 Sampai: '+fmtDate(fSamp);
+  const filterLabel = [priF?'Prioritas '+priF:'', stF||''].filter(Boolean).join(' · ');
 
   /* Pisah per status */
   const openRows = rows.filter(r=>gS(r)==='Open');
@@ -775,7 +768,7 @@ function shareToWA(){
 
   let msg = '';
   msg += '🔧 *LAPORAN SELF MAINTENANCE*\n';
-  msg += '📍 Area: *'+areaLabel+'*'+periodeLabel+'\n';
+  msg += '📍 Area: *'+areaLabel+'*'+(filterLabel?'\n🔎 Filter: '+filterLabel:'')+'\\n';
   msg += '🕐 Dilaporkan: '+today+'\n';
   msg += '─────────────────────\n\n';
 
@@ -1200,26 +1193,25 @@ function clearHL(){
 }
 
 /* ═══ TABLE ═══ */
-function setF(btn,f){
-  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on'); activeFlt=f; renderTable();
-}
-function clearDateFilter(){
-  document.getElementById('fDari').value='';
-  document.getElementById('fSampai').value='';
+function applyFilters(){
+  /* Tandai dropdown aktif (ada filter terpilih) */
+  ['fPrioritas','fStatus','fArea'].forEach(function(id){
+    const el=document.getElementById(id);
+    el.classList.toggle('active', el.value!=='');
+  });
   renderTable();
 }
+function setF(btn,f){ /* legacy — tidak dipakai lagi */ }
+function clearDateFilter(){ renderTable(); }
 function renderTable(){
-  const aF    = document.getElementById('aFlt').value;
-  const fDari = document.getElementById('fDari').value;    /* YYYY-MM-DD */
-  const fSamp = document.getElementById('fSampai').value;
+  const aF      = document.getElementById('fArea').value;
+  const priF    = document.getElementById('fPrioritas').value;
+  const stF     = document.getElementById('fStatus').value;
   const priO={A:0,B:1,C:2}, stO={Open:0,Temporary:1,Close:2};
   let rows=[...slicedData()].sort((a,b)=>{const p=priO[a.priority]-priO[b.priority];return p||stO[gS(a)]-stO[gS(b)]});
-  if(aF)    rows=rows.filter(r=>r.area===aF);
-  if(fDari) rows=rows.filter(r=>r.tanggal>=fDari);
-  if(fSamp) rows=rows.filter(r=>r.tanggal<=fSamp);
-  if(['A','B','C'].includes(activeFlt)) rows=rows.filter(r=>r.priority===activeFlt);
-  else if(['Open','Temporary','Close'].includes(activeFlt)) rows=rows.filter(r=>gS(r)===activeFlt);
+  if(aF)   rows=rows.filter(r=>r.area===aF);
+  if(priF) rows=rows.filter(r=>r.priority===priF);
+  if(stF)  rows=rows.filter(r=>gS(r)===stF);
   const tb=document.getElementById('tBody');
   if(!rows.length){tb.innerHTML='<tr class="emp"><td colspan="11">Tidak ada temuan sesuai filter</td></tr>';return}
   tb.innerHTML=rows.map(function(r){
@@ -1322,7 +1314,7 @@ function openM(id){
   const fotoSrc=hasFoto?driveThumbnail(r.foto):'';
   document.getElementById('mFotoBefore').innerHTML=hasFoto
     ?('<img src="'+fotoSrc+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);display:block" onerror="this.style.display=\'none\'">'+
-      '<div style="margin-top:6px"><a href="'+r.foto+'" target="_blank" style="color:var(--acc);font-size:11px">Buka di Google Drive ↗</a></div>')
+      '<div style="margin-top:6px"><a href="'+r.foto+'" target="_blank" style="color:var(--acc);font-size:11px">Lihat foto ukuran penuh ↗</a></div>')
     :'<div style="background:var(--surf2);border:1.5px dashed var(--bord2);border-radius:8px;height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt3);font-size:13px;gap:8px"><span style="font-size:28px">📷</span><span>Belum ada foto temuan</span></div>';
 
   /* ── AFTER foto — tampilkan jika sudah ada di kolom foto_after ── */
@@ -1332,7 +1324,7 @@ function openM(id){
 
   document.getElementById('afterPreviewWrap').innerHTML = hasAfter
     ? '<img src="'+afterSrc+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--bord);margin-bottom:6px">'+
-      '<div><a href="'+r.foto_after+'" target="_blank" style="color:var(--grn);font-size:11px">Buka di Google Drive ↗</a></div>'
+      '<div><a href="'+r.foto_after+'" target="_blank" style="color:var(--grn);font-size:11px">Lihat foto ukuran penuh ↗</a></div>'
     : '';
 
   /* Reset upload area & edit btn */
