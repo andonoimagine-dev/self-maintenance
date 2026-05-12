@@ -928,53 +928,61 @@ async function loadFromSheets() {
   setSyncStatus('syncing');
   const r = await api('getAll');
   if (!r.ok) { setSyncStatus('error'); return false; }
-  
-  // Map sheets data to local state
-  if (r.ampere?.length)     {
-    ampLog = r.ampere.map(x=>{
-      // datetime keep as ISO string for fDt()
-      const pd=parseDate(x.datetime);
-      return { dt:pd?pd.toISOString():x.datetime, sh:x.shift, i:+x.impeller_idx, v:+x.ampere, op:x.operator, status:x.status };
-    });
-    sv('ampLog',ampLog);
+
+  // ── PENTING: Selalu replace localStorage dengan data dari Sheets ──
+  // Termasuk saat data kosong (misal setelah hapus di Sheets)
+  // Gunakan Array.isArray check, bukan .length check
+  // Ini mencegah data lama di localStorage tetap tampil
+
+  // ampere_log
+  ampLog = Array.isArray(r.ampere) ? r.ampere.map(x=>{
+    const pd=parseDT(x.datetime);
+    return { dt:pd?pd.toISOString():x.datetime, sh:x.shift, i:+x.impeller_idx, v:+x.ampere, op:x.operator, status:x.status };
+  }) : ampLog;
+  sv('ampLog',ampLog);
+
+  // sparepart
+  spLog = Array.isArray(r.sparepart) ? r.sparepart.map(x=>{
+    const pd=parseDate(x.date);
+    const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
+    return { date:ds, i:+x.impeller_idx, nm:x.nama_part, jm:+x.jam_pakai, q:+x.qty, kn:x.kondisi, j:x.jenis, op:x.operator, no:x.catatan };
+  }) : spLog;
+  sv('spLog',spLog);
+
+  // preventive
+  if (Array.isArray(r.preventive)) { pvLog = r.preventive; sv('pvLog',pvLog); }
+
+  // limbah
+  lbLog = Array.isArray(r.limbah) ? r.limbah.map(x=>{
+    const pd=parseDate(x.date);
+    const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
+    return { date:ds, sh:x.shift, j:x.jenis, v:+x.volume_trolley, l:x.lokasi, op:x.operator, k:x.keterangan };
+  }) : lbLog;
+  sv('lbLog',lbLog);
+
+  // steelshot
+  ssLog = Array.isArray(r.steelshot) ? r.steelshot.map(x=>{
+    const pd=parseDate(x.date);
+    const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
+    return { date:ds, sh:x.shift, s5:+x.ss550_karung, wc:+x.wirecut_karung, op:x.operator, n:x.keterangan };
+  }) : ssLog;
+  sv('ssLog',ssLog);
+
+  // hanger_log
+  hLog = Array.isArray(r.hanger) ? r.hanger.map(x=>{
+    const pd=parseDate(x.date);
+    const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
+    return { date:ds, id:+x.hanger_id, tp:x.tipe, jm:+x.jam_pakai, kn:x.kondisi, op:x.operator, n:x.catatan };
+  }) : hLog;
+  sv('hLog',hLog);
+
+  // impeller & hanger state
+  if (Array.isArray(r.impeller_state) && r.impeller_state.length) {
+    st = r.impeller_state; sv('st',st);
   }
-  if (r.sparepart?.length)  {
-    spLog = r.sparepart.map(x=>{
-      const pd=parseDate(x.date);
-      const dateStr=pd?dStr(pd):(x.date||'').toString().slice(0,10);
-      return { date:dateStr, i:+x.impeller_idx, nm:x.nama_part, jm:+x.jam_pakai, q:+x.qty, kn:x.kondisi, j:x.jenis, op:x.operator, no:x.catatan };
-    });
-    sv('spLog',spLog);
+  if (Array.isArray(r.hanger_state) && r.hanger_state.length) {
+    hSt = r.hanger_state; sv('hSt',hSt);
   }
-  if (r.preventive?.length) { pvLog = r.preventive; sv('pvLog',pvLog); }
-  if (r.limbah?.length)     {
-    lbLog = r.limbah.map(x=>{
-      // Normalize date to YYYY-MM-DD regardless of what Sheets returns
-      const pd=parseDate(x.date);
-      const dateStr=pd?dStr(pd):(x.date||'').toString().slice(0,10);
-      return { date:dateStr, sh:x.shift, j:x.jenis, v:+x.volume_trolley, l:x.lokasi, op:x.operator, k:x.keterangan };
-    });
-    sv('lbLog',lbLog);
-  }
-  if (r.steelshot?.length)  {
-    ssLog = r.steelshot.map(x=>{
-      const pd=parseDate(x.date);
-      const dateStr=pd?dStr(pd):(x.date||'').toString().slice(0,10);
-      return { date:dateStr, sh:x.shift, s5:+x.ss550_karung, wc:+x.wirecut_karung, op:x.operator, n:x.keterangan };
-    });
-    sv('ssLog',ssLog);
-  }
-  if (r.hanger?.length)     {
-    hLog = r.hanger.map(x=>{
-      const pd=parseDate(x.date);
-      const dateStr=pd?dStr(pd):(x.date||'').toString().slice(0,10);
-      return { date:dateStr, id:+x.hanger_id, tp:x.tipe, jm:+x.jam_pakai, kn:x.kondisi, op:x.operator, n:x.catatan };
-    });
-    sv('hLog',hLog);
-  }
-  
-  if (r.impeller_state?.length) { st = r.impeller_state; sv('st',st); }
-  if (r.hanger_state?.length)   { hSt = r.hanger_state; sv('hSt',hSt); }
 
   // ── Reconcile impeller ampere dari ampLog terbaru ──────────────
   // Ini memastikan nilai ampere di dashboard selalu sinkron
@@ -983,7 +991,7 @@ async function loadFromSheets() {
     for (let i = 0; i < 16; i++) {
       const logs = ampLog.filter(x => +x.i === i && x.dt);
       if (!logs.length) continue;
-      // Ambil log terbaru berdasarkan datetime
+      // Sort by datetime descending (ISO sort works for both date and datetime strings)
       logs.sort((a,b) => (b.dt||'').localeCompare(a.dt||''));
       const latest = logs[0];
       if (latest.v != null && latest.v !== '') {
@@ -1047,26 +1055,38 @@ const M=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'
 function dStr(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function parseDate(s){
   // Handle multiple formats from Google Sheets:
-  // "2026-05-06", "May 06 2026 00:00:00 GMT+0700", "06/05/2026", Date object
+  // "2026-05-06"             → date only
+  // "2026-05-09T07:47:00.000Z" → ISO datetime (from Apps Script)
+  // "May 06 2026 00:00:00 GMT+0700" → verbose date
+  // Date object
   if(!s) return null;
   if(s instanceof Date) return isNaN(s)?null:s;
   const str = s.toString().trim();
-  // Already YYYY-MM-DD
+  // ISO datetime or date: starts with YYYY-MM-DD
   if(/^\d{4}-\d{2}-\d{2}/.test(str)){
+    // Parse just the date part to avoid timezone shift
     const [y,mo,d]=str.slice(0,10).split('-');
     return new Date(+y,+mo-1,+d);
   }
-  // Try native parse (handles "May 06 2026...", ISO strings, etc)
+  // Try native parse as fallback
   const d=new Date(str);
   if(!isNaN(d)) return d;
   return null;
+}
+
+// Parse ISO datetime string preserving full datetime (for ampere log)
+function parseDT(s){
+  if(!s)return null;
+  if(s instanceof Date)return isNaN(s)?null:s;
+  const d=new Date(s.toString().trim());
+  return isNaN(d)?null:d;
 }
 function fD(s){
   const d=parseDate(s);
   if(!d) return s||'-';
   return `${d.getDate()}-${M[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`;
 }
-function fDt(s){if(!s)return'-';const d=parseDate(s)||new Date(s);if(isNaN(d))return s;return`${d.getDate()}-${M[d.getMonth()]}-${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+function fDt(s){if(!s)return'-';const d=parseDT(s)||parseDate(s);if(!d||isNaN(d))return s;return`${d.getDate()}-${M[d.getMonth()]}-${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 const today=()=>dStr(new Date());
 const curMo=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
 function nowL(){const d=new Date();const off=d.getTimezoneOffset();const lcl=new Date(d.getTime()-off*60000);return lcl.toISOString().slice(0,16);}
@@ -1990,7 +2010,7 @@ function buildAmpDataDaily(){
     for(let i=0;i<16;i++){
       const dayLogs=ampLog.filter(x=>{
         if(!x.dt)return false;
-        const pd=parseDate(x.dt);
+        const pd=parseDT(x.dt)||parseDate(x.dt);
         return pd && dStr(pd)===date && +x.i===i;
       });
       obj['i'+i]=dayLogs.length
