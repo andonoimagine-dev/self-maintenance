@@ -668,7 +668,7 @@
       submitBtn.disabled = true;
       submitBtn.classList.add('loading');
       alertBox.style.display = 'none';
-      showOverlay('Mengirim data temuan ke spreadsheet…');
+      showOverlay('Mengirim data temuan…');
 
       fetch(API_URL, {
         method: 'POST',
@@ -697,7 +697,7 @@
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(data)
           }).then(function () {
-            showAlert('success', '📤 <b>Data terkirim (fallback).</b> Cek spreadsheet untuk konfirmasi.');
+            showAlert('success', '📤 <b>Data terkirim (fallback).</b> Cek kembali untuk konfirmasi.');
             resetForm();
           });
         } else {
