@@ -420,6 +420,16 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
   <div class="sl-sec"><div class="sl-ttl">Bulan</div><div id="slM"></div></div>
   <div class="sl-div"></div>
   <div class="sl-sec"><div class="sl-ttl">Minggu</div><div id="slW"></div></div>
+  <div class="sl-div"></div>
+  <div class="sl-sec">
+    <div class="sl-ttl">Harian</div>
+    <div style="display:flex;gap:4px;margin-bottom:6px">
+      <input type="date" id="slDari" style="flex:1;font-size:10px;padding:4px 6px;border-radius:5px;border:1px solid var(--bord);background:var(--surf2);color:var(--txt);font-family:inherit" onchange="setSlHarian()">
+      <input type="date" id="slSampai" style="flex:1;font-size:10px;padding:4px 6px;border-radius:5px;border:1px solid var(--bord);background:var(--surf2);color:var(--txt);font-family:inherit" onchange="setSlHarian()">
+    </div>
+    <button class="sl-btn" id="slHarianReset" onclick="resetSlHarian()" style="font-size:10px;color:var(--txt3);display:none">✕ Reset harian</button>
+    <div id="slHarianInfo" style="font-size:10px;color:var(--acc);padding:2px 4px;display:none"></div>
+  </div>
 </div>
 
 <div class="main" id="main">
@@ -559,7 +569,7 @@ const DCOLS    = ['#276040','#C97F1A','#B52E2E'];
 let DATA = []; /* diisi dari spreadsheet saat load */
 
 let pending={}, activeFlt='all', activeHL=null;
-let slY='all', slM='all', slW='all';
+let slY='all', slM='all', slW='all', slDari='', slSampai='';
 let donutCharts={};
 
 /* ═══ UTILS ═══ */
@@ -587,6 +597,8 @@ function slicedData(){
     if(slY!=='all'&&yearOf(r.tanggal)!==slY) return false;
     if(slM!=='all'&&monthOf(r.tanggal)!==slM) return false;
     if(slW!=='all'&&weekOf(r.tanggal)!==slW) return false;
+    if(slDari&&r.tanggal<slDari) return false;
+    if(slSampai&&r.tanggal>slSampai) return false;
     return true;
   });
 }
@@ -775,17 +787,52 @@ function buildSlicer(){
   weeksSorted.forEach(w=>{wc.innerHTML+='<button class="sl-btn" onclick="setSl(this,\'week\',\''+w+'\')">'+w+'</button>'});
 }
 
+function setSlHarian(){
+  slDari   = document.getElementById('slDari').value;
+  slSampai = document.getElementById('slSampai').value;
+  const hasFilter = slDari||slSampai;
+  const resetBtn  = document.getElementById('slHarianReset');
+  const info      = document.getElementById('slHarianInfo');
+  resetBtn.style.display = hasFilter ? 'block' : 'none';
+  if(hasFilter){
+    let txt = '';
+    if(slDari&&slSampai) txt=fmtDate(slDari)+' — '+fmtDate(slSampai);
+    else if(slDari)  txt='Dari '+fmtDate(slDari);
+    else             txt='Sampai '+fmtDate(slSampai);
+    info.textContent=txt; info.style.display='block';
+  } else {
+    info.style.display='none';
+  }
+  updateSecPeriod(); renderAll();
+}
+
+function resetSlHarian(){
+  slDari=''; slSampai='';
+  document.getElementById('slDari').value='';
+  document.getElementById('slSampai').value='';
+  document.getElementById('slHarianReset').style.display='none';
+  document.getElementById('slHarianInfo').style.display='none';
+  updateSecPeriod(); renderAll();
+}
+
+function updateSecPeriod(){
+  let p=[];
+  if(slY!=='all') p.push(slY);
+  if(slM!=='all') p.push(slM);
+  if(slW!=='all') p.push(slW);
+  if(slDari&&slSampai) p.push(fmtDate(slDari)+'–'+fmtDate(slSampai));
+  else if(slDari)  p.push('dari '+fmtDate(slDari));
+  else if(slSampai) p.push('s/d '+fmtDate(slSampai));
+  document.getElementById('secPer').textContent=p.length?'— '+p.join(', '):'— Semua Periode';
+}
+
 function setSl(btn,type,val){
   if(type==='year') slY=val;
   else if(type==='month') slM=val;
   else slW=val;
   btn.closest('[id]').querySelectorAll('.sl-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  let p=[];
-  if(slY!=='all')p.push(slY);
-  if(slM!=='all')p.push(slM);
-  if(slW!=='all')p.push(slW);
-  document.getElementById('secPer').textContent=p.length?'— '+p.join(', '):'— Semua Periode';
+  updateSecPeriod();
   renderAll();
 }
 
