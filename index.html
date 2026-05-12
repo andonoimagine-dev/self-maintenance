@@ -35,6 +35,53 @@
     color: var(--text);
   }
 
+  /* --- TOMBOL DASHBOARD ELEGANT --- */
+  .btn-dashboard {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(30, 45, 61, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .btn-dashboard:hover {
+    background: var(--surface2);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .btn-dashboard svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--accent);
+  }
+
+  /* Penyesuaian Mobile agar tidak menabrak judul jika layar sangat kecil */
+  @media (max-width: 480px) {
+    .btn-dashboard {
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      font-size: 10px;
+    }
+  }
+  /* ------------------------------- */
+
   .container { max-width: 580px; margin: 0 auto; }
 
   .header {
@@ -304,6 +351,14 @@
 </style>
 </head>
 <body>
+
+<a href="https://andonoimagine-dev.github.io/self-maintenance/dashboard_selfmtc" class="btn-dashboard">
+    <svg viewBox="0 0 24 24">
+        <path d="M13,3V9H21V3H13M13,21H21V11H13V21M3,21H11V15H3V21M3,13H11V3H3V13Z" />
+    </svg>
+    DASHBOARD
+</a>
+
 <div class="container">
 
   <div class="header">
@@ -316,7 +371,6 @@
 
   <form id="formTemuan" novalidate>
 
-    <!-- 01 Waktu & Lokasi -->
     <div class="card">
       <div class="card-title">01 — Waktu &amp; Lokasi</div>
       <div class="row">
@@ -348,7 +402,6 @@
       </div>
     </div>
 
-    <!-- 02 Mesin & Komponen -->
     <div class="card">
       <div class="card-title">02 — Mesin &amp; Komponen</div>
       <div class="row">
@@ -363,7 +416,6 @@
       </div>
     </div>
 
-    <!-- 03 Detail Temuan -->
     <div class="card">
       <div class="card-title">03 — Detail Temuan</div>
       <div class="form-group">
@@ -392,7 +444,6 @@
       </div>
     </div>
 
-    <!-- 04 Prioritas -->
     <div class="card">
       <div class="card-title">04 — Prioritas</div>
       <div class="form-group">
@@ -419,7 +470,6 @@
       </div>
     </div>
 
-    <!-- 05 PIC & Foto -->
     <div class="card">
       <div class="card-title">05 — PIC &amp; Dokumentasi</div>
 
@@ -431,9 +481,7 @@
       <div class="form-group">
         <label>Foto Temuan</label>
 
-        <!-- Input kamera (dengan capture) -->
         <input type="file" id="fotoCamera" accept="image/*" capture="environment">
-        <!-- Input galeri (TANPA capture) -->
         <input type="file" id="fotoGaleri" accept="image/*">
 
         <div class="photo-btn-group">
