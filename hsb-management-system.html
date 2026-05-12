@@ -210,6 +210,13 @@ tr:hover td{background:var(--accent-bg);}
 .sl{flex:1;font-weight:500;}
 .si{width:110px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;color:var(--text);font-family:'Courier New',monospace;font-size:.82rem;text-align:right;}
 
+/* LOADING SPINNER */
+.spinner-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9997;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;backdrop-filter:blur(2px);}
+.spinner-ov.on{display:flex;}
+.spinner-ring{width:52px;height:52px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-msg{color:#fff;font-size:.9rem;font-weight:700;letter-spacing:.5px;}
+
 /* MISC */
 .fb{display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .fg-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
@@ -751,8 +758,26 @@ tr:hover td{background:var(--accent-bg);}
   </div>
 </div>
 
+<!-- LOADING SPINNER OVERLAY -->
+<div class="spinner-ov" id="spinner-ov">
+  <div class="spinner-ring"></div>
+  <div class="spinner-msg" id="spinner-msg">Menyimpan...</div>
+</div>
+
 <script>
 'use strict';
+
+// ── Spinner helpers ──────────────────────────────────────
+function showSpinner(msg='Menyimpan data...'){
+  const el=document.getElementById('spinner-ov');
+  const mg=document.getElementById('spinner-msg');
+  if(el){el.classList.add('on');}
+  if(mg)mg.textContent=msg;
+}
+function hideSpinner(){
+  const el=document.getElementById('spinner-ov');
+  if(el)el.classList.remove('on');
+}
 
 // ============================================================
 // CONFIGURATION — GANTI SESUAI SETUP ANDA
@@ -1075,10 +1100,19 @@ function daysSP(i,nm){
 }
 const estJ=d=>d*16;
 function needAttn(i){
+  if(!st[i])return false;
   if(st[i].cf)return false;
+  // 1. Cek lifetime sparepart (jika ada history penggantian)
   for(const nm of Object.keys(ltCfg).filter(n=>n!=='Hanger')){
     const d=daysSP(i,nm);if(d==null)continue;
     if(estJ(d)/modus(nm)>=0.8)return true;
+  }
+  // 2. Cek jika impeller punya catatan problem (diisi di modal)
+  if(st[i].n && st[i].n.trim().length>0)return true;
+  // 3. Cek ampere abnormal
+  if(st[i].on && st[i].a!=null){
+    const s=ampS(st[i].a);
+    if(s==='hi'||s==='lo')return true;
   }
   return false;
 }
@@ -1157,271 +1191,256 @@ document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab
 function readVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 
 function drawChart(canvasId,data,series,opts){
-  const cv=document.getElementById(canvasId);if(!cv)return;
-  const r=cv.getBoundingClientRect();
-  const W=Math.round(r.width),H=Math.round(r.height);
-  if(W<20||H<20){ requestAnimationFrame(()=>drawChart(canvasId,data,series,opts)); return; }
+  const cv=document.getElementById(canvasId);
+  if(!cv||!data||!data.length)return;
+  const rect=cv.getBoundingClientRect();
+  const W=Math.round(rect.width),H=Math.round(rect.height);
+  if(W<30||H<30){requestAnimationFrame(()=>drawChart(canvasId,data,series,opts));return;}
+
   const dpr=Math.min(window.devicePixelRatio||1,2);
   cv.width=W*dpr;cv.height=H*dpr;
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
 
-  const isDk=document.documentElement.getAttribute('data-theme')==='dark';
-  const gC=isDk?'rgba(255,255,255,.07)':'rgba(0,0,0,.07)';
-  const tC=isDk?'#7a98b5':'#5a7a90';
-  const lC=isDk?'#a0b6cd':'#2a4560';
+  const dk=document.documentElement.getAttribute('data-theme')==='dark';
+  const GRIDC=dk?'rgba(255,255,255,.08)':'rgba(0,0,0,.08)';
+  const TICKC=dk?'#8aa4bc':'#4a6a85';
+  const MOC  =dk?'#c0d4e8':'#1a3350';
 
-  // Single-month detection
-  const sm=data.length>0&&data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
-  const showDay=sm&&data.length>1;
-  const yLb=opts.yLabel||'';
-  const pad={t:18,r:10,b:showDay?40:36,l:yLb?40:32};
-  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
-  if(cW<10||cH<10)return;
+  const N=data.length;
+  const isWeekly=!!opts.weekly;
+  const singleMonth=!isWeekly&&N>0&&data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
+  const yLab=opts.yLabel||'';
+
+  // Padding — enough room for labels
+  const PAD={t:22,r:12,b:44,l:yLab?46:38};
+  const CW=W-PAD.l-PAD.r, CH=H-PAD.t-PAD.b;
+  if(CW<20||CH<20)return;
   ctx.clearRect(0,0,W,H);
 
-  const allV=data.flatMap(d=>series.map(s=>+(d[s.k]||0)));
-  const dMax=Math.max(...allV,0);
-  const rMax=Math.max(...(opts.ranges||[]).map(r=>+r.v||0),0);
-  const rawMax=Math.max(dMax,rMax,1);
+  // ── Scale ────────────────────────────────────────────────
+  const allV=[];
+  series.forEach(s=>data.forEach(d=>{const v=+(d[s.k]||0);if(v>0)allV.push(v);}));
+  const rngV=(opts.ranges||[]).map(r=>+(r.v)||0).filter(v=>v>0);
+  const rawMax=Math.max(...allV,...rngV,1);
 
-  // ── Y axis: nice integer ticks ───────────────────────────
-  // Find a "nice" max that's a round number above rawMax
-  function niceMax(v){
+  function niceUp(v){
     if(v<=0)return 5;
-    const exp=Math.pow(10,Math.floor(Math.log10(v)));
-    const f=v/exp;
-    let nice;
-    if(f<=1)nice=1;
-    else if(f<=2)nice=2;
-    else if(f<=5)nice=5;
-    else nice=10;
-    return nice*exp;
+    const e=Math.pow(10,Math.floor(Math.log10(v)));
+    const f=v/e;
+    return (f<=1?1:f<=2?2:f<=3?3:f<=5?5:10)*e;
   }
-  const mxV=niceMax(rawMax*1.15);
-  // Choose tick step so we get 4-6 integer ticks
-  function niceStep(max){
-    const steps=[1,2,5,10,20,50,100];
-    for(const s of steps){ if(max/s<=6) return s; }
-    return Math.ceil(max/5);
+  function niceStep(top){
+    for(const s of [1,2,5,10,20,25,50,100,200,500])if(top/s<=7)return s;
+    return Math.ceil(top/6);
   }
-  const tickStep=niceStep(mxV);
+  const YMAX=niceUp(rawMax*1.18);
+  const STEP=niceStep(YMAX);
   const ticks=[];
-  for(let t=0;t<=mxV;t+=tickStep) ticks.push(t);
+  for(let t=0;t<=YMAX;t+=STEP)ticks.push(t);
 
-  const xOf=i=>pad.l+(data.length>1?(cW/(data.length-1))*i:cW/2);
-  const yOf=v=>pad.t+cH*(1-Math.min(v,mxV)/mxV);
+  const xOf=i=>PAD.l+(N>1?(CW/(N-1))*i:CW/2);
+  const yOf=v=>PAD.t+CH*(1-Math.min(Math.max(v,0),YMAX)/YMAX);
 
-  // Y grid + integer tick labels
+  // ── Y grid + tick labels ─────────────────────────────────
+  ctx.setLineDash([]);
   ticks.forEach(t=>{
     const y=yOf(t);
-    ctx.strokeStyle=gC;ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
-    ctx.fillStyle=tC;ctx.font='600 10px sans-serif';ctx.textAlign='right';
-    ctx.fillText(t,pad.l-4,y+3.5);
+    ctx.strokeStyle=GRIDC;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.fillStyle=TICKC;ctx.font='600 10px sans-serif';
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(t,PAD.l-5,y);
   });
 
-  // Y axis unit label
-  if(yLb){
+  // ── Y unit label ─────────────────────────────────────────
+  if(yLab){
     ctx.save();
-    ctx.fillStyle=lC;ctx.font='700 10px sans-serif';ctx.textAlign='center';
-    ctx.translate(11,pad.t+cH/2);ctx.rotate(-Math.PI/2);
-    ctx.fillText(yLb,0,0);
+    ctx.fillStyle=MOC;ctx.font='bold 10px sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.translate(13,PAD.t+CH/2);ctx.rotate(-Math.PI/2);
+    ctx.fillText(yLab,0,0);
     ctx.restore();
   }
 
-  // Range dashed lines
+  // ── Range dashed lines ───────────────────────────────────
   (opts.ranges||[]).forEach(r=>{
     if(r.v==null)return;
-    const y=yOf(r.v);
-    if(y<pad.t-2||y>pad.t+cH+2)return;
-    ctx.save();ctx.strokeStyle=r.c;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
-    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();ctx.restore();
+    const y=yOf(+r.v);
+    if(y<PAD.t-2||y>PAD.t+CH+2)return;
+    ctx.save();ctx.strokeStyle=r.c;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.restore();
+    ctx.setLineDash([]);
   });
 
-  // ── Series: fill + line + dots + data labels ─────────────
-  // First pass: collect all point positions for label collision detection
-  const allLabels=[]; // {x, y, val, color, seriesIdx}
-  series.forEach((s,si)=>{
-    const pts=data.map(d=>+(d[s.k]||0));
-    pts.forEach((p,i)=>{
-      if(p>0) allLabels.push({x:xOf(i),y:yOf(p),val:p,c:s.c,si,i});
-    });
-  });
-
-  // Draw fills and lines
+  // ── Series: fill + line ──────────────────────────────────
   series.forEach(s=>{
     const pts=data.map(d=>+(d[s.k]||0));
-    const n=data.length;
-    // Gradient fill
+    const grd=ctx.createLinearGradient(0,PAD.t,0,PAD.t+CH);
+    grd.addColorStop(0,s.c+'40');grd.addColorStop(1,s.c+'05');
     ctx.beginPath();
-    pts.forEach((p,i)=>{i?ctx.lineTo(xOf(i),yOf(p)):ctx.moveTo(xOf(i),yOf(p));});
-    ctx.lineTo(xOf(n-1),pad.t+cH);ctx.lineTo(xOf(0),pad.t+cH);ctx.closePath();
-    const g=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
-    g.addColorStop(0,s.c+'38');g.addColorStop(1,s.c+'04');
-    ctx.fillStyle=g;ctx.fill();
-    // Line
+    pts.forEach((v,i)=>i?ctx.lineTo(xOf(i),yOf(v)):ctx.moveTo(xOf(i),yOf(v)));
+    ctx.lineTo(xOf(N-1),PAD.t+CH);ctx.lineTo(xOf(0),PAD.t+CH);ctx.closePath();
+    ctx.fillStyle=grd;ctx.fill();
     ctx.beginPath();ctx.strokeStyle=s.c;ctx.lineWidth=2;
-    ctx.lineJoin='round';ctx.lineCap='round';
-    pts.forEach((p,i)=>{i?ctx.lineTo(xOf(i),yOf(p)):ctx.moveTo(xOf(i),yOf(p));});
+    ctx.lineJoin='round';ctx.lineCap='round';ctx.setLineDash([]);
+    pts.forEach((v,i)=>i?ctx.lineTo(xOf(i),yOf(v)):ctx.moveTo(xOf(i),yOf(v)));
     ctx.stroke();
-    // Dots
-    if(n<=31){
-      pts.forEach((p,i)=>{
-        if(p===0)return;
-        ctx.beginPath();ctx.arc(xOf(i),yOf(p),2.5,0,Math.PI*2);
-        ctx.fillStyle=s.c;ctx.fill();
-      });
-    }
   });
 
-  // ── Data labels — always show, smart position per series
-  {
-    // Min horizontal gap between shown labels per series
-    const minGap = Math.max(20, cW / (data.length || 1) * 1.2);
-    // Track last drawn x per series to avoid horizontal crowding
-    const lastDrawnX = {};
-    // Track placed bounding boxes for inter-series collision
-    const boxes = [];
-
-    ctx.font = 'bold 9px sans-serif';
-    ctx.textBaseline = 'alphabetic';
-
-    allLabels.forEach(lb => {
-      if (!lb.val || lb.val === 0) return;
-      const lx = lastDrawnX[lb.si] ?? -9999;
-      // Skip if too close horizontally to last label of same series
-      if (lb.x - lx < minGap) return;
-
-      // Label text
-      const txt = lb.val % 1 === 0 ? lb.val.toString() : lb.val.toFixed(1);
-
-      // Candidate positions: above dot first, then below
-      // Above: ensure we don't go above chart top (pad.t)
-      const aboveY = lb.y - 7;
-      const belowY = lb.y + 13;
-      // Pick above if there's room, else below
-      let labelY = aboveY < pad.t + 8 ? belowY : aboveY;
-
-      // Check against already-placed boxes (rough overlap check)
-      const tw = txt.length * 6;
-      const box = { x1: lb.x - tw/2, x2: lb.x + tw/2, y1: labelY - 10, y2: labelY };
-      const clash = boxes.some(b =>
-        box.x1 < b.x2 + 2 && box.x2 > b.x1 - 2 &&
-        box.y1 < b.y2 + 2 && box.y2 > b.y1 - 2
-      );
-      if (clash) {
-        // Try the other side
-        labelY = labelY === aboveY ? belowY : aboveY;
-        box.y1 = labelY - 10; box.y2 = labelY;
-        // If still clashes, skip this label
-        const clash2 = boxes.some(b =>
-          box.x1 < b.x2 + 2 && box.x2 > b.x1 - 2 &&
-          box.y1 < b.y2 + 2 && box.y2 > b.y1 - 2
-        );
-        if (clash2) return;
-      }
-
-      // Clamp within chart bounds
-      labelY = Math.max(pad.t + 10, Math.min(pad.t + cH - 2, labelY));
-
-      boxes.push(box);
-      lastDrawnX[lb.si] = lb.x;
-
-      // Draw label with subtle white bg for readability
-      const padding = 2;
-      ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.fillRect(lb.x - tw/2 - padding, labelY - 9, tw + padding*2, 11);
-
-      ctx.fillStyle = lb.c;
-      ctx.textAlign = 'center';
-      ctx.fillText(txt, lb.x, labelY);
+  // ── Dots ─────────────────────────────────────────────────
+  const dotR=N<=31?2.5:N<=62?2:N<=90?1.4:0;
+  if(dotR>0){
+    series.forEach(s=>{
+      data.forEach((d,i)=>{
+        const v=+(d[s.k]||0);if(!v)return;
+        ctx.beginPath();ctx.arc(xOf(i),yOf(v),dotR,0,Math.PI*2);
+        ctx.fillStyle=s.c;ctx.fill();
+      });
     });
   }
 
+  // ── Data labels ──────────────────────────────────────────
+  // Pixel distance between consecutive points
+  const pxPt=N>1?CW/(N-1):CW;
+  // Minimum horizontal gap before placing next label for same series
+  // Use 85% of point spacing so adjacent points can both get labels
+  const minGap=Math.max(pxPt*0.85,22);
+
+  // Collect all non-zero points, sort highest value first
+  // so important values always get a label
+  const cands=[];
+  series.forEach((s,si)=>{
+    data.forEach((d,i)=>{
+      const v=+(d[s.k]||0);
+      if(v===0)return;
+      cands.push({x:xOf(i),y:yOf(v),v,si,c:s.c,
+        txt:v%1===0?String(v):v.toFixed(1)});
+    });
+  });
+  cands.sort((a,b)=>b.v-a.v);
+
+  const lastLX={}; // last placed x per series
+  const boxes=[];  // placed bounding boxes
+
+  function hasClash(bx){
+    return boxes.some(b=>
+      bx.x1<b.x2+2&&bx.x2>b.x1-2&&
+      bx.y1<b.y2+2&&bx.y2>b.y1-2);
+  }
+
+  ctx.font='bold 9px sans-serif';ctx.textBaseline='alphabetic';
+
+  cands.forEach(lb=>{
+    // Per-series horizontal gap check
+    if(lb.x-(lastLX[lb.si]??-9999)<minGap)return;
+
+    const tw=lb.txt.length*5.5+4;
+    const BH=12; // box height
+
+    // Try 4 positions: above, below, further above, further below
+    const tries=[-9, 14, -18, 23];
+    for(const dy of tries){
+      const ly=lb.y+dy;
+      // Stay inside chart drawing area (with a little margin)
+      if(ly<PAD.t+4||ly>PAD.t+CH+20)continue;
+      const bx={x1:lb.x-tw/2-1,x2:lb.x+tw/2+1,y1:ly-BH,y2:ly+2};
+      if(hasClash(bx))continue;
+      // Place it
+      boxes.push(bx);
+      lastLX[lb.si]=lb.x;
+      // White/dark bg pill for readability
+      ctx.fillStyle=dk?'rgba(14,22,38,.80)':'rgba(255,255,255,.84)';
+      ctx.beginPath();
+      if(ctx.roundRect){
+        ctx.roundRect(bx.x1,bx.y1,bx.x2-bx.x1,bx.y2-bx.y1,3);
+      }else{
+        ctx.rect(bx.x1,bx.y1,bx.x2-bx.x1,bx.y2-bx.y1);
+      }
+      ctx.fill();
+      ctx.fillStyle=lb.c;
+      ctx.textAlign='center';
+      ctx.fillText(lb.txt,lb.x,ly);
+      break;
+    }
+  });
+
   // ── X axis ───────────────────────────────────────────────
-  if(showDay){
-    // Single month: rotated day numbers 1-31 + month label at bottom
-    ctx.font='bold 9px sans-serif';
-    const yB=pad.t+cH+3;
-    data.forEach((d,i)=>{
-      const day=parseInt(d.date.slice(8),10);
+  const yB=PAD.t+CH+4;
+
+  // Helper: draw rotated text label at (x, yB)
+  function xLbl(x,txt){
+    ctx.save();
+    ctx.font='600 9px sans-serif';ctx.fillStyle=TICKC;
+    ctx.textAlign='right';ctx.textBaseline='top';
+    ctx.translate(x,yB);ctx.rotate(-Math.PI*52/180);
+    ctx.fillText(txt,0,0);
+    ctx.restore();
+  }
+
+  // Helper: draw month separator line + top label
+  function moSep(x,lbl,first){
+    ctx.setLineDash([]);
+    if(!first){
       ctx.save();
-      ctx.fillStyle=tC;ctx.textAlign='right';ctx.textBaseline='top';
-      ctx.translate(xOf(i),yB);ctx.rotate(-Math.PI*55/180);
-      ctx.fillText(day,0,0);
+      ctx.strokeStyle=dk?'rgba(255,255,255,.13)':'rgba(0,0,0,.11)';
+      ctx.lineWidth=1;ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(x,PAD.t+20);ctx.lineTo(x,PAD.t+CH);ctx.stroke();
       ctx.restore();
+    }
+    ctx.setLineDash([]);
+    ctx.font='bold 10px sans-serif';ctx.fillStyle=MOC;
+    ctx.textAlign='left';ctx.textBaseline='top';
+    const lx=Math.min(x+(first?0:3),PAD.l+CW-42);
+    ctx.fillText(lbl,lx,PAD.t+3);
+  }
+
+  if(isWeekly){
+    let lastMo='';
+    data.forEach((d,i)=>{
+      const raw=d.label||d.date||'';
+      const sp=raw.indexOf(' ');
+      const wTag=sp>=0?raw.slice(0,sp):raw;    // "W1"
+      const moTag=sp>=0?raw.slice(sp+1):'';   // "Apr'26"
+      const x=xOf(i);
+      if(moTag&&moTag!==lastMo){
+        moSep(x,moTag,lastMo==='');
+        lastMo=moTag;
+      }
+      xLbl(x,wTag);
     });
+
+  }else if(singleMonth){
+    data.forEach((d,i)=>xLbl(xOf(i),''+parseInt(d.date.slice(8),10)));
     const [yy,mm]=data[0].date.split('-');
-    ctx.font='bold 11px sans-serif';
-    ctx.fillStyle=lC;ctx.textAlign='center';ctx.textBaseline='alphabetic';
-    ctx.fillText(`${M[+mm-1]} ${yy}`,pad.l+cW/2,H-2);
-  } else if(opts.weekly){
-    // Weekly mode: show "W1 Apr'26" labels, month separator
-    const yBase = pad.t+cH+3;
-    let lastMonth='';
+    ctx.font='bold 11px sans-serif';ctx.fillStyle=MOC;
+    ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.setLineDash([]);
+    ctx.fillText(`${M[+mm-1]} ${yy}`,PAD.l+CW/2,H-4);
+
+  }else{
+    // Multi-month daily
+    const minPx=32;
+    const evN=Math.max(1,Math.ceil(minPx/Math.max(pxPt,1)));
+    let lastMo='';
     data.forEach((d,i)=>{
+      const p=d.date?d.date.split('-'):[];
+      if(p.length<3)return;
+      const [yy,mm,dd]=p;
+      const mk=yy+'-'+mm;
       const x=xOf(i);
-      const lbl=d.label||d.date;
-      // Month separator when month changes
-      const mo=lbl.slice(lbl.indexOf(' ')+1);
-      if(mo!==lastMonth){
-        lastMonth=mo;
-        if(i>0){
-          ctx.save();
-          ctx.strokeStyle=isDk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
-          ctx.lineWidth=1;ctx.setLineDash([3,3]);
-          ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+cH);ctx.stroke();
-          ctx.restore();
-        }
-        ctx.font='bold 10px sans-serif';ctx.fillStyle=lC;
-        ctx.textAlign='left';ctx.textBaseline='top';
-        const mlx=Math.min(x+2,pad.l+cW-40);
-        ctx.fillText(mo,mlx,pad.t+2);
+      if(mk!==lastMo){
+        moSep(x,`${M[+mm-1]} '${yy.slice(2)}`,lastMo==='');
+        lastMo=mk;
       }
-      // Week label rotated
-      ctx.save();
-      ctx.font='bold 9px sans-serif';ctx.fillStyle=tC;
-      ctx.textAlign='right';ctx.textBaseline='top';
-      ctx.translate(x,yBase);ctx.rotate(-Math.PI*50/180);
-      ctx.fillText(lbl.split(' ')[0],0,0); // just "W1","W2",...
-      ctx.restore();
-    });
-  } else {
-    // Multi-month daily: show day+month rotated, month separator + label at top
-    const pxPerPt = n > 1 ? cW/(n-1) : cW;
-    const minLabelGap = 28;
-    const labelEvery = Math.max(1, Math.ceil(minLabelGap / pxPerPt));
-    const yBase = pad.t+cH+3;
-    let lastMonth = '';
-    data.forEach((d,i)=>{
-      const [yy,mm,dd]=d.date.split('-');
-      const monthKey=`${yy}-${mm}`;
-      const x=xOf(i);
-      if(monthKey !== lastMonth){
-        lastMonth = monthKey;
-        if(i > 0){
-          ctx.save();
-          ctx.strokeStyle = isDk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
-          ctx.lineWidth=1;ctx.setLineDash([3,3]);
-          ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+cH);ctx.stroke();
-          ctx.restore();
-        }
-        ctx.font='bold 10px sans-serif';ctx.fillStyle=lC;
-        ctx.textAlign='left';ctx.textBaseline='top';
-        const mlx=Math.min(x+2,pad.l+cW-30);
-        ctx.fillText(`${M[+mm-1]} '${yy.slice(2)}`,mlx,pad.t+2);
-      }
-      if(i % labelEvery === 0 || i === n-1){
-        ctx.save();
-        ctx.font='600 9px sans-serif';ctx.fillStyle=tC;
-        ctx.textAlign='right';ctx.textBaseline='top';
-        ctx.translate(x,yBase);ctx.rotate(-Math.PI*50/180);
-        ctx.fillText(`${+dd}/${+mm}`,0,0);
-        ctx.restore();
+      if(i===0||i===N-1||i%evN===0){
+        xLbl(x,`${+dd}/${+mm}`);
       }
     });
   }
 }
+
+
+
 
 
 
@@ -1581,7 +1600,16 @@ function rIGrid(){
     const d=document.createElement('div');
     d.className='ic '+cl+(at?' ic-attn-flag':'');
     d.onclick=()=>oM(i);
-    d.innerHTML=`<div class="ic-n">#${String(i+1).padStart(2,'0')}</div><div class="ic-nm">${nms[i]}</div><div class="ic-a">${aS}</div><div class="ic-f">${f}</div><div class="ic-s">${on?'ON':'OFF'}</div>${at&&!x.cf?'<div class="ic-attn">⚠ Perlu Cek</div>':''}${x.cf?'<div class="ic-attn" style="color:var(--ok);">✔ Confirmed</div>':''}`;
+    // Build attn reason
+let attnReason='';
+if(at&&!x.cf){
+  const s=ampS(x.a);
+  if(s==='hi')attnReason='⚠ Ampere OVER';
+  else if(s==='lo')attnReason='⚠ Ampere UNDER';
+  else if(x.n&&x.n.trim())attnReason='⚠ Ada catatan';
+  else attnReason='⚠ Cek Lifetime';
+}
+d.innerHTML=`<div class="ic-n">#${String(i+1).padStart(2,'0')}</div><div class="ic-nm">${nms[i]}</div><div class="ic-a">${aS}</div><div class="ic-f">${f}</div><div class="ic-s">${on?'ON':'OFF'}</div>${at&&!x.cf?`<div class="ic-attn">${attnReason}</div>`:''}${x.cf?'<div class="ic-attn" style="color:var(--ok);">✔ Confirmed</div>':''}`;
     g.appendChild(d);
   }
   document.getElementById('i-sum').innerHTML=`<div class="cp ok"><span class="v">${nOn}</span>ON</div><div class="cp mu"><span class="v">${nOf}</span>OFF</div><div class="cp ok"><span class="v">${nOk}</span>Normal</div><div class="cp wn"><span class="v">${nLo}</span>Under</div><div class="cp dg"><span class="v">${nHi}</span>Over</div><div class="cp wn"><span class="v">${nAt}</span>Perlu Perhatian</div>`;
@@ -1615,6 +1643,7 @@ document.getElementById('mi-a').addEventListener('input',e=>upMiAf(e.target.valu
 function setOn(on){if(activeI==null)return;st[activeI].on=on;if(!on){st[activeI].a=null;st[activeI].cf=false;}sv('st',st);rIGrid();rAlerts();}
 async function saveMi(){
   if(activeI==null)return;
+  showSpinner('Menyimpan...');
   const a=parseFloat(document.getElementById('mi-a').value);const n=document.getElementById('mi-n').value;
   if(!isNaN(a)){st[activeI].a=a;st[activeI].dt=new Date().toISOString();
     const row={datetime:new Date().toISOString(),shift:'Manual',impeller_idx:activeI,impeller_name:nms[activeI],ampere:a,status:ampS(a),operator:'Manual',catatan:n};
@@ -1623,7 +1652,7 @@ async function saveMi(){
   }
   st[activeI].n=n;sv('st',st);
   pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
-  cM('m-i');rIGrid();rAlerts();
+  hideSpinner();cM('m-i');rIGrid();rAlerts();
 }
 async function confI(){if(activeI==null)return;st[activeI].cf=true;sv('st',st);pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));cM('m-i');rIGrid();rAlerts();showToast('✅ Impeller dikonfirmasi OK','ok');}
 function allOn(){st.forEach(s=>s.on=true);sv('st',st);rIGrid();rAlerts();}
@@ -1725,6 +1754,7 @@ function upPv(k,v){
   document.getElementById('pvg-'+k).className='pv-b'+(v==='ng'?' ng':'');
 }
 async function savePv(){
+  showSpinner('Menyimpan preventive check...');
   const w=document.getElementById('pv-w').value;const m=document.getElementById('pv-m').value;
   const td=document.getElementById('pv-d').value;const pic=document.getElementById('pv-p').value||'PIC';
   const no=document.getElementById('pv-n').value;
@@ -1737,7 +1767,7 @@ async function savePv(){
   pvLog.push({pr:`Minggu ${w} / ${m}`,td,pic,no,rs});
   sv('pvLog',pvLog);pvR={};
   pushToSheets('savePrev',rows);
-  rPv();rAlerts();showToast('✅ Check sheet tersimpan!','ok');
+  hideSpinner();rPv();rAlerts();showToast('✅ Check sheet tersimpan!','ok');
 }
 
 // ============ SPAREPART ============
@@ -1782,10 +1812,11 @@ function rSp(){
   ht.innerHTML=hsr.map(r=>`<tr><td>${fD(r.date)}</td><td>Hanger #${r.id}</td><td><span class="bd ${r.tp==='repair'?'bd-wn':'bd-ok'}">${r.tp==='repair'?'Repair':'Baru'}</span></td><td class="mn">${r.jm}h</td><td>${r.kn}</td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
 }
 async function saveSp(){
+  showSpinner('Menyimpan sparepart...');
   const date=document.getElementById('sp-d').value;const i=+document.getElementById('sp-i').value;
   const j=document.getElementById('sp-j').value;const op=document.getElementById('sp-op').value||'Op';
   const no=document.getElementById('sp-no').value;
-  if(!date){showToast('Tanggal wajib','warn');return;}
+  if(!date){hideSpinner();showToast('Tanggal wajib','warn');return;}
   const rows=[];
   if(j==='assy'){
     const jm=+document.getElementById('sp-aj').value||0;
@@ -1805,9 +1836,10 @@ async function saveSp(){
   }
   sv('spLog',spLog);sv('st',st);
   pushToSheets('saveSparepart',rows);
-  rSp();rAlerts();showToast('✅ Sparepart tersimpan!','ok');
+  hideSpinner();rSp();rAlerts();showToast('✅ Sparepart tersimpan!','ok');
 }
 async function saveHg(){
+  showSpinner('Menyimpan data hanger...');
   const date=document.getElementById('hg-d').value;const id=+document.getElementById('hg-n').value;
   const tp=document.getElementById('hg-tp').value;const jm=+document.getElementById('hg-jm').value;
   const kn=document.getElementById('hg-k').value;const op=document.getElementById('hg-op').value||'Op';
@@ -1817,7 +1849,7 @@ async function saveHg(){
   sv('hLog',hLog);sv('hSt',hSt);
   pushToSheets('saveHanger',[{date,hanger_id:id,tipe:tp,jam_pakai:jm,kondisi:kn,operator:op,catatan:n}]);
   pushToSheets('updateHangerState',hSt.map(h=>({id:h.id,s:h.s,n:h.n||'',cf:h.cf||false})));
-  rSp();rAlerts();showToast('✅ Hanger tersimpan!','ok');
+  hideSpinner();rSp();rAlerts();showToast('✅ Hanger tersimpan!','ok');
 }
 async function setHgSt(){
   const id=+document.getElementById('hg-sn').value;const s=document.getElementById('hg-ss').value;
@@ -1862,6 +1894,7 @@ function hl(i,v){
   else if(s==='hi'){f.innerHTML='🔺';inp.style.borderColor='var(--danger)';}
 }
 async function saveAmp(){
+  showSpinner('Menyimpan ampere...');
   const dt=document.getElementById('amp-dt').value;const sh=document.getElementById('amp-sh').value;const op=document.getElementById('amp-op').value||'Op';
   let c=0;const rows=[];
   for(let i=0;i<16;i++){
@@ -1878,7 +1911,7 @@ async function saveAmp(){
     await pushToSheets('saveAmpere',rows);
     await pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
   }
-  showToast(`✅ ${c} data ampere tersimpan!`,'ok');rAmp();rIGrid();rAlerts();requestAnimationFrame(drawAmpChart);
+  hideSpinner();showToast(`✅ ${c} data ampere tersimpan!`,'ok');rAmp();rIGrid();rAlerts();requestAnimationFrame(drawAmpChart);
 }
 
 // ============ AMPERE CHART ============
@@ -2261,6 +2294,7 @@ function rLb(){
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
 async function saveLb(){
+  showSpinner('Menyimpan data limbah...');
   const date=document.getElementById('lb-d').value;
   const sh=document.getElementById('lb-sh').value;
   const vp=+document.getElementById('lb-vp').value||0;
@@ -2268,8 +2302,8 @@ async function saveLb(){
   const l=document.getElementById('lb-l').value;
   const op=document.getElementById('lb-op').value||'Op';
   const k=document.getElementById('lb-kt').value;
-  if(!date){showToast('Tanggal wajib diisi','warn');return;}
-  if(!vp&&!vd){showToast('Isi minimal salah satu volume (Pasir atau Debu)','warn');return;}
+  if(!date){hideSpinner();showToast('Tanggal wajib diisi','warn');return;}
+  if(!vp&&!vd){hideSpinner();showToast('Isi minimal salah satu volume (Pasir atau Debu)','warn');return;}
   const rows=[];
   if(vp>0){
     lbLog.push({date,sh,j:'Pasir',v:vp,l,op,k});
@@ -2284,7 +2318,7 @@ async function saveLb(){
   // Clear volume fields only
   document.getElementById('lb-vp').value='';
   document.getElementById('lb-vd').value='';
-  rLb();showToast(`✅ Limbah tersimpan! Pasir:${vp} Debu:${vd} Trolley`,'ok');
+  hideSpinner();rLb();showToast(`✅ Limbah tersimpan! Pasir:${vp} Debu:${vd} Trolley`,'ok');
 }
 
 // ============ STEELSHOT ============
@@ -2328,13 +2362,14 @@ function rSs(){
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
 async function saveSs(){
+  showSpinner('Menyimpan data steelshot...');
   const date=document.getElementById('ss-d').value;const sh=document.getElementById('ss-sh').value;
   const s5=+document.getElementById('ss-50').value||0;const wc=+document.getElementById('ss-wc').value||0;
   const op=document.getElementById('ss-op').value||'Op';const n=document.getElementById('ss-no').value;
-  if(!date){showToast('Tanggal wajib','warn');return;}
+  if(!date){hideSpinner();showToast('Tanggal wajib','warn');return;}
   ssLog.push({date,sh,s5,wc,op,n});sv('ssLog',ssLog);
   pushToSheets('saveSteelshot',[{date,shift:sh,ss550_karung:s5,wirecut_karung:wc,total:s5+wc,operator:op,keterangan:n}]);
-  rSs();showToast('✅ Data steelshot tersimpan!','ok');
+  hideSpinner();rSs();showToast('✅ Data steelshot tersimpan!','ok');
 }
 
 // ============ SETTING ============
