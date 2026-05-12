@@ -8,51 +8,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
-  /* --- TOMBOL FORM TEMUAN ELEGANT (TAB BARU) --- */
-.btn-form temuan {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(30, 45, 61, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-radius: 50px;
-  color: var(--text);
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: 'IBM Plex Mono', monospace;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.btn-form temuan:hover {
-  background: var(--surface2);
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  color: #fff;
-}
-
-.btn-form temuan svg {
-  width: 16px;
-  height: 16px;
-  fill: var(--accent);
-}
-
-@media (max-width: 480px) {
-  .btn-form temuan {
-    top: 12px;
-    right: 12px;
-    padding: 6px 12px;
-    font-size: 10px;
-  }
-}
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#EFECEA;--surf:#FFF;--surf2:#F6F4F0;--surf3:#EDEBE6;
@@ -79,6 +34,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font
 .nv-ts{color:rgba(255,255,255,.3);font-size:12px;font-family:'DM Mono',monospace}
 .nv-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:13px;font-weight:600;font-family:inherit;padding:7px 16px;border-radius:8px;cursor:pointer}
 .nv-btn:hover{background:rgba(255,255,255,.2)}
+/* FORM TEMUAN button — pill style matching index.html */
+.form-temuan-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:50px;
+  color:rgba(255,255,255,.85);
+  text-decoration:none;
+  font-size:11px;font-weight:700;
+  font-family:'DM Mono',monospace;
+  letter-spacing:.06em;
+  transition:all .2s ease;
+  white-space:nowrap;
+}
+.form-temuan-btn:hover{
+  background:rgba(59,130,246,.25);
+  border-color:rgba(59,130,246,.6);
+  color:#fff;
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
+.form-temuan-btn svg{flex-shrink:0;opacity:.8}
 
 /* HL BAR */
 .hl-bar{position:fixed;top:var(--NH);left:var(--SW);right:0;z-index:200;background:var(--hl2);border-bottom:2px solid var(--hl3);padding:9px 24px;display:none;align-items:center;justify-content:space-between}
@@ -425,12 +404,6 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 </style>
 </head>
 <body>
-  <a href="https://andonoimagine-dev.github.io/self-maintenance/" class="btn-form temuan" target="_blank" rel="noopener noreferrer">
-    <svg viewBox="0 0 24 24">
-        <path d="M13,3V9H21V3H13M13,21H21V11H13V21M3,21H11V15H3V21M3,13H11V3H3V13Z" />
-    </svg>
-    FORM TEMUAN
-</a>
 
 <nav class="nav">
   <div class="nv-brand">
@@ -450,6 +423,10 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
         <option value="0">Manual</option>
       </select>
       <button class="nv-btn" id="syncBtn" onclick="syncData()">↻ Sync</button>
+      <a href="https://andonoimagine-dev.github.io/self-maintenance/" target="_blank" class="form-temuan-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        FORM TEMUAN
+      </a>
     </div>
   </div>
 </nav>
@@ -474,12 +451,22 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
   <div class="sl-div"></div>
   <div class="sl-sec">
     <div class="sl-ttl">Harian</div>
-    <div style="display:flex;gap:4px;margin-bottom:6px">
-      <input type="date" id="slDari" style="flex:1;font-size:10px;padding:4px 6px;border-radius:5px;border:1px solid var(--bord);background:var(--surf2);color:var(--txt);font-family:inherit" onchange="setSlHarian()">
-      <input type="date" id="slSampai" style="flex:1;font-size:10px;padding:4px 6px;border-radius:5px;border:1px solid var(--bord);background:var(--surf2);color:var(--txt);font-family:inherit" onchange="setSlHarian()">
+    <div style="display:flex;flex-direction:column;gap:6px;padding:0 2px">
+      <div>
+        <div style="font-size:9px;color:var(--txt3);font-weight:700;letter-spacing:.06em;margin-bottom:3px">DARI</div>
+        <input type="date" id="slDari"
+          style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit;cursor:pointer"
+          onchange="setSlHarian()">
+      </div>
+      <div>
+        <div style="font-size:9px;color:var(--txt3);font-weight:700;letter-spacing:.06em;margin-bottom:3px">SAMPAI</div>
+        <input type="date" id="slSampai"
+          style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit;cursor:pointer"
+          onchange="setSlHarian()">
+      </div>
     </div>
-    <button class="sl-btn" id="slHarianReset" onclick="resetSlHarian()" style="font-size:10px;color:var(--txt3);display:none">✕ Reset harian</button>
-    <div id="slHarianInfo" style="font-size:10px;color:var(--acc);padding:2px 4px;display:none"></div>
+    <button class="sl-btn" id="slHarianReset" onclick="resetSlHarian()" style="font-size:11px;color:var(--red);margin-top:4px;display:none">✕ Reset harian</button>
+    <div id="slHarianInfo" style="font-size:10px;color:var(--acc);padding:2px 4px;margin-top:2px;display:none"></div>
   </div>
 </div>
 
