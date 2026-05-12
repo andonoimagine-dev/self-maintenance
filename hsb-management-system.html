@@ -2102,6 +2102,42 @@ function drawAmpChart(){
     }
   });
 
+  // ── Data labels per impeller series ──────────────────────
+  // Only show if ≤31 data points (daily view, not too crowded)
+  {
+    const dk=document.documentElement.getAttribute('data-theme')==='dark';
+    // minGap: tighter for 16 series so more labels show
+    const pxPt2=n>1?cW/(n-1):cW;
+    const minG=Math.max(pxPt2*0.5,18);
+    const lastLX={};
+    ctx.font='bold 9px sans-serif';
+    ctx.textBaseline='alphabetic';
+    ampSel.forEach(idx=>{
+      const color=IMP_COLORS[idx];
+      const pts=data.map(d=>d['i'+idx]);
+      pts.forEach((p,i)=>{
+        if(p==null||p===0)return;
+        const x=xOf(i),y=yOf(p);
+        if(x-(lastLX[idx]??-9999)<minG)return;
+        const txt=p%1===0?String(p):p.toFixed(1);
+        const tw=txt.length*5.5+4;
+        // Position: above dot, or below if near top
+        const aboveY=y-9;
+        const belowY=y+13;
+        const ly=Math.max(pad.t+8,Math.min(pad.t+cH+18,
+          aboveY<pad.t+6?belowY:aboveY));
+        // Background pill
+        ctx.fillStyle=dk?'rgba(14,22,38,.78)':'rgba(255,255,255,.82)';
+        ctx.fillRect(x-tw/2-1,ly-10,tw+2,12);
+        // Text
+        ctx.fillStyle=color;
+        ctx.textAlign='center';
+        ctx.fillText(txt,x,ly);
+        lastLX[idx]=x;
+      });
+    });
+  }
+
   // X axis
   const yBase=pad.t+cH+3;
   if(ampView==='week'){
