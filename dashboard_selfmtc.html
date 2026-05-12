@@ -244,7 +244,10 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 .sb-d{font-size:13px;padding:7px 16px;border-radius:7px;background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit}
 .sb-c{font-size:13px;font-weight:700;padding:7px 20px;border-radius:7px;background:#fff;border:none;color:var(--navy);cursor:pointer;font-family:inherit}
 
-/* ══ AUTO SYNC INDICATOR ══ */
+#slIntervalSec{display:none} /* Desktop: interval ada di nav bar */
+@media(max-width:768px){
+  #slIntervalSec{display:block} /* Mobile: tampil di slicer drawer */
+}
 .sync-ring{display:inline-block;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.3);margin-right:5px;transition:background .3s}
 .sync-ring.active{background:#4ADE80;box-shadow:0 0 6px #4ADE80}
 .sync-ring.error{background:#F87171}
@@ -255,9 +258,24 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 @media(max-width:768px){
   :root{--SW:0px;--NH:52px}
 
-  /* Nav mobile */
+  /* Nav mobile — compact */
   .nv-sub{display:none}
   .nv-ts{display:none}
+  .nv-icon{width:28px;height:28px;font-size:13px}
+  .nv-name{font-size:13px}
+  .nav{padding:0 14px}
+  .nv-right{gap:6px}
+
+  /* Sembunyikan teks di tombol sync, tampilkan ikon saja */
+  #syncBtn{font-size:12px;padding:6px 10px}
+
+  /* Sembunyikan dropdown interval di mobile — pindah ke slicer */
+  #syncIntervalSel{display:none}
+
+  /* FORM TEMUAN — ikon saja di mobile */
+  .form-temuan-btn{padding:6px 10px;font-size:0;gap:0;letter-spacing:0}
+  .form-temuan-btn svg{width:15px;height:15px}
+  .form-temuan-btn::after{content:'FORM';font-size:10px;font-weight:700;font-family:'DM Mono',monospace;margin-left:5px}
 
   /* Slicer jadi bottom drawer */
   .slicer{
@@ -467,6 +485,18 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
     </div>
     <button class="sl-btn" id="slHarianReset" onclick="resetSlHarian()" style="font-size:11px;color:var(--red);margin-top:4px;display:none">✕ Reset harian</button>
     <div id="slHarianInfo" style="font-size:10px;color:var(--acc);padding:2px 4px;margin-top:2px;display:none"></div>
+  </div>
+  <div class="sl-div"></div>
+  <div class="sl-sec" id="slIntervalSec">
+    <div class="sl-ttl">Auto Sync</div>
+    <select onchange="changeInterval(this.value)" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-family:inherit">
+      <option value="60">Setiap 1 menit</option>
+      <option value="120">Setiap 2 menit</option>
+      <option value="300" selected>Setiap 5 menit</option>
+      <option value="600">Setiap 10 menit</option>
+      <option value="1800">Setiap 30 menit</option>
+      <option value="0">Manual saja</option>
+    </select>
   </div>
 </div>
 
