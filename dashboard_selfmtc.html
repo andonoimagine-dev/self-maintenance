@@ -419,9 +419,37 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 
 /* hidden file inputs */
 #afterCamera,#afterGaleri{display:none}
+
+/* ── LOADING OVERLAY ── */
+#loadingOverlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.68);
+  backdrop-filter:blur(3px);
+  z-index:99999;
+  flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+#loadingOverlay.active{display:flex}
+.lov-spinner{
+  width:54px;height:54px;
+  border:4px solid rgba(255,255,255,0.15);
+  border-top-color:#4ea8de;
+  border-radius:50%;
+  animation:lov-spin .85s linear infinite;
+}
+@keyframes lov-spin{to{transform:rotate(360deg)}}
+.lov-msg{
+  color:#fff;font-size:14px;font-weight:500;
+  letter-spacing:.01em;text-align:center;
+  max-width:240px;line-height:1.55;
+}
 </style>
 </head>
 <body>
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay">
+  <div class="lov-spinner"></div>
+  <div class="lov-msg" id="loadingMsg">Memproses…</div>
+</div>
 
 <nav class="nav">
   <div class="nv-brand">
@@ -628,6 +656,15 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 <script>
 /* ═══ CONFIG ═══ */
 const APPS_URL = 'https://script.google.com/macros/s/AKfycbx2fNrDD7-GZM3wDw8WWi6w8EEg9emQYWSRQdHZrBSHIXn_Ni6efkSY-iPyrHU7Bovb/exec';
+
+/* ── Loading overlay helpers ── */
+function showOverlay(msg){
+  document.getElementById('loadingMsg').textContent = msg||'Memproses…';
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideOverlay(){
+  document.getElementById('loadingOverlay').classList.remove('active');
+}
 const AREAS    = ['Ace-1','Ace-2','Melting','Die Making'];
 const DEPT     = ['','Produksi','Maintenance','Kaizen/PE','Lainnya'];
 const STAT     = ['Open','Temporary','Close'];
@@ -1225,6 +1262,7 @@ function commitAll(){
   const changes=Object.entries(pending).map(e=>Object.assign({id:e[0]},e[1]));
   const btn=document.querySelector('.sb-c');
   btn.disabled=true; btn.textContent='Menyimpan...';
+  showOverlay('Menyimpan perubahan ke spreadsheet…');
 
   /* Apps Script dari GitHub Pages kena CORS block pada POST+read-response.
      Solusi: kirim dengan no-cors (fire-and-forget), lalu tunggu sebentar
@@ -1240,6 +1278,7 @@ function commitAll(){
     DATA=DATA.map(r=>pending[r.id]?Object.assign({},r,pending[r.id]):r);
     pending={}; updateSaveBar(); renderAll();
     btn.textContent='Tersimpan ✓';
+    hideOverlay();
 
     /* Auto sync setelah 2 detik untuk konfirmasi dari spreadsheet */
     setTimeout(function(){
@@ -1249,6 +1288,7 @@ function commitAll(){
     }, 2000);
   })
   .catch(function(err){
+    hideOverlay();
     btn.textContent='Simpan ke Spreadsheet';
     btn.disabled=false;
     alert('Gagal: '+err.message);
@@ -1353,6 +1393,7 @@ function saveModalChanges(){
   const newDept=document.getElementById('mDeptSel').value;
   const newStatus=document.getElementById('mStatusSel').value;
   btn.disabled=true; btn.textContent='Menyimpan...';
+  showOverlay('Menyimpan Dept &amp; Status ke spreadsheet…');
 
   fetch(APPS_URL,{
     method:'POST',
@@ -1366,6 +1407,7 @@ function saveModalChanges(){
     updateSaveBar();
     renderSummary(); renderAreaMatrix(); renderGlobalPareto(); renderTable();
     btn.textContent='✓ Tersimpan!';
+    hideOverlay();
     setTimeout(function(){
       btn.disabled=false;
       btn.textContent='💾 Simpan Dept & Status';
@@ -1374,6 +1416,7 @@ function saveModalChanges(){
     },1500);
   })
   .catch(function(err){
+    hideOverlay();
     btn.disabled=false;
     btn.textContent='💾 Simpan Dept & Status';
     alert('Gagal: '+err.message);
@@ -1455,6 +1498,7 @@ function saveAfterPhoto(){
     return;
   }
   btn.disabled=true; btn.textContent='Menyimpan...';
+  showOverlay('Mengunggah foto perbaikan ke Drive…');
 
   fetch(APPS_URL,{
     method:'POST',
@@ -1479,6 +1523,7 @@ function saveAfterPhoto(){
     const picDisp=document.getElementById('picPerbaikanDisplay');
     if(picDisp) picDisp.textContent=picPerbaikan||'—';
     btn.textContent='✓ Tersimpan!';
+    hideOverlay();
     setTimeout(function(){
       btn.disabled=false;
       btn.textContent='💾 Simpan ke Spreadsheet';
@@ -1487,6 +1532,7 @@ function saveAfterPhoto(){
     },1500);
   })
   .catch(function(err){
+    hideOverlay();
     btn.disabled=false;
     btn.textContent='💾 Simpan ke Spreadsheet';
     alert('Gagal: '+err.message);
@@ -1504,13 +1550,13 @@ function closeMBg(e){if(e.target===document.getElementById('mbg'))closeM()}
 function syncData(isAuto){
   const btn=document.getElementById('syncBtn');
   const ring=document.getElementById('syncRing');
-  if(!isAuto){btn.textContent='⏳';btn.disabled=true}
+  if(!isAuto){btn.textContent='⏳';btn.disabled=true;showOverlay('Mengambil data terbaru dari spreadsheet…')}
   ring.classList.add('active');
   fetch(APPS_URL+'?action=getData')
     .then(r=>r.json())
     .then(function(res){
       if(res.data&&Array.isArray(res.data)){
-        DATA=res.data; if(!isAuto) pending={};
+        DATA=res.data; if(!isAuto) pending=[];
         buildSlicer(); renderAll(); setTs();
         ring.classList.remove('active');
         ring.classList.remove('error');
@@ -1523,7 +1569,7 @@ function syncData(isAuto){
       console.error('Sync error:',err.message);
     })
     .finally(function(){
-      if(!isAuto){btn.textContent='↻ Sync';btn.disabled=false}
+      if(!isAuto){btn.textContent='↻ Sync';btn.disabled=false;hideOverlay();}
     });
 }
 </script>
