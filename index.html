@@ -35,7 +35,7 @@
     color: var(--text);
   }
 
-  /* --- TOMBOL DASHBOARD ELEGANT --- */
+  /* --- TOMBOL DASHBOARD ELEGANT (TAB BARU) --- */
   .btn-dashboard {
     position: fixed;
     top: 20px;
@@ -63,6 +63,7 @@
     background: var(--surface2);
     border-color: var(--accent);
     transform: translateY(-2px);
+    color: #fff;
   }
 
   .btn-dashboard svg {
@@ -71,7 +72,6 @@
     fill: var(--accent);
   }
 
-  /* Penyesuaian Mobile agar tidak menabrak judul jika layar sangat kecil */
   @media (max-width: 480px) {
     .btn-dashboard {
       top: 12px;
@@ -80,7 +80,7 @@
       font-size: 10px;
     }
   }
-  /* ------------------------------- */
+  /* ------------------------------------------ */
 
   .container { max-width: 580px; margin: 0 auto; }
 
@@ -352,7 +352,7 @@
 </head>
 <body>
 
-<a href="https://andonoimagine-dev.github.io/self-maintenance/dashboard_selfmtc" class="btn-dashboard">
+<a href="https://andonoimagine-dev.github.io/self-maintenance/dashboard_selfmtc" class="btn-dashboard" target="_blank" rel="noopener noreferrer">
     <svg viewBox="0 0 24 24">
         <path d="M13,3V9H21V3H13M13,21H21V11H13V21M3,21H11V15H3V21M3,13H11V3H3V13Z" />
     </svg>
