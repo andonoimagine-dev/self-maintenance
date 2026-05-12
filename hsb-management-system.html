@@ -593,13 +593,13 @@ tr:hover td{background:var(--accent-bg);}
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">🔮 Input Steelshot Harian</div>
     <div style="font-size:.75rem;color:var(--info);background:var(--info-bg);border:1px solid rgba(8,145,178,.25);border-radius:8px;padding:8px 12px;margin-bottom:10px;">
-      ℹ SS 550 = 1 karung = 1 Ton (baru) &nbsp;|&nbsp; Wire Cut = bekas, biasanya 2–4 karung/hari
+      ℹ SS 550 &nbsp;|&nbsp; Wire Cut
     </div>
     <div class="fr">
       <div class="fg"><label>Tanggal</label><input type="date" id="ss-d"></div>
       <div class="fg"><label>Shift</label><select id="ss-sh"><option>NSP</option><option>NSM</option></select></div>
-      <div class="fg"><label>SS 550 (karung)</label><input type="number" id="ss-50" min="0"></div>
-      <div class="fg"><label>Wire Cut (karung)</label><input type="number" id="ss-wc" min="0"></div>
+      <div class="fg"><label>SS 550 (Ton)</label><input type="number" id="ss-50" min="0"></div>
+      <div class="fg"><label>Wire Cut (Ton)</label><input type="number" id="ss-wc" min="0"></div>
       <div class="fg"><label>Op</label><input type="text" id="ss-op"></div>
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="ss-no"></textarea></div></div>
@@ -633,8 +633,8 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div style="height:260px;position:relative;"><canvas id="c-ss-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
-      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (karung)</div>
-      <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (karung)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (Ton)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (Ton)</div>
     </div>
   </div>
   <div class="cd">
@@ -664,8 +664,8 @@ tr:hover td{background:var(--accent-bg);}
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">🔮 Range Steelshot</div>
-    <div class="sr"><div class="sl">SS 550 — Bawah (karung/hari)</div><input class="si" type="number" id="s-slo"></div>
-    <div class="sr"><div class="sl">SS 550 — Atas (karung/hari)</div><input class="si" type="number" id="s-shi"></div>
+    <div class="sr"><div class="sl">SS 550 — Bawah (Ton/hari)</div><input class="si" type="number" id="s-slo"></div>
+    <div class="sr"><div class="sl">SS 550 — Atas (Ton/hari)</div><input class="si" type="number" id="s-shi"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
@@ -2585,12 +2585,12 @@ function waSteelshot(){
   let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n`;
   msg+=`📅 ${tgl}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`*SS 550 (baru)*\n`;
-  msg+=`  NSP: ${ss5NSP} karung | NSM: ${ss5NSM} karung\n`;
-  msg+=`  Total: ${ss5NSP+ss5NSM} karung\n\n`;
-  msg+=`*Wire Cut (bekas)*\n`;
-  msg+=`  NSP: ${wcNSP} karung | NSM: ${wcNSM} karung\n`;
-  msg+=`  Total: ${wcNSP+wcNSM} karung\n`;
+  msg+=`*SS 550*\n`;
+  msg+=`  NSP: ${ss5NSP} Ton | NSM: ${ss5NSM} Ton\n`;
+  msg+=`  Total: ${ss5NSP+ss5NSM} Ton\n\n`;
+  msg+=`*Wire Cut*\n`;
+  msg+=`  NSP: ${wcNSP} Ton | NSM: ${wcNSM} Ton\n`;
+  msg+=`  Total: ${wcNSP+wcNSM} Ton\n`;
   msg+=`\n_${tgl} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
@@ -2680,7 +2680,7 @@ function waDashboard(){
   msg+=`\n🗑 *LIMBAH HARI INI*\n`;
   msg+=`  Pasir: ${pasirHari} Trolley | Debu: ${debuHari} Trolley\n`;
   msg+=`\n🔮 *STEELSHOT HARI INI*\n`;
-  msg+=`  SS 550: ${ss5Hari} krg | Wire Cut: ${wcHari} krg\n`;
+  msg+=`  SS 550: ${ss5Hari} Ton | Wire Cut: ${wcHari} Ton\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
