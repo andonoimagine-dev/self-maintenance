@@ -8,6 +8,51 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
+  /* --- TOMBOL FORM TEMUAN ELEGANT (TAB BARU) --- */
+.btn-form temuan {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(30, 45, 61, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-form temuan:hover {
+  background: var(--surface2);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.btn-form temuan svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--accent);
+}
+
+@media (max-width: 480px) {
+  .btn-form temuan {
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+}
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#EFECEA;--surf:#FFF;--surf2:#F6F4F0;--surf3:#EDEBE6;
