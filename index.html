@@ -696,18 +696,34 @@
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(data)
-          }).then(function () {
+          })
+          .then(function () {
             showAlert('success', '📤 <b>Data terkirim (fallback).</b> Cek kembali untuk konfirmasi.');
             resetForm();
+          })
+          .catch(function () {
+            showAlert('error', '&#10060; <b>Gagal terkirim:</b> Tidak ada koneksi.');
+          })
+          .finally(function () {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+            hideOverlay();
           });
+          return; /* stop — outer finally tidak boleh hide overlay */
         } else {
-          showAlert('error', '❌ <b>Gagal terkirim:</b> ' + err.message);
+          showAlert('error', '&#10060; <b>Gagal terkirim:</b> ' + err.message);
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
+          hideOverlay();
         }
       })
       .finally(function () {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('loading');
-        hideOverlay();
+        /* hanya aktif untuk path sukses; path error sudah handle sendiri */
+        if (submitBtn.disabled) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
+          hideOverlay();
+        }
       });
     });
 
