@@ -682,6 +682,7 @@
       .then(function (result) {
         if (result.status === 'ok' || result.result === 'success') {
           showAlert('success', '✅ <b>Data berhasil terkirim!</b> ID: ' + (result.id || '-'));
+          hideOverlay();
           resetForm();
         } else {
           throw new Error(result.message || 'Response tidak valid dari server.');
@@ -698,31 +699,30 @@
             body: JSON.stringify(data)
           })
           .then(function () {
-            showAlert('success', '📤 <b>Data terkirim (fallback).</b> Cek kembali untuk konfirmasi.');
+            showAlert('success', '✅ <b>Data terkirim.</b>');
+            hideOverlay();
             resetForm();
           })
           .catch(function () {
-            showAlert('error', '&#10060; <b>Gagal terkirim:</b> Tidak ada koneksi.');
+            showAlert('error', '❌ <b>Gagal terkirim:</b> Tidak ada koneksi.');
+            hideOverlay();
           })
           .finally(function () {
             submitBtn.disabled = false;
             submitBtn.classList.remove('loading');
-            hideOverlay();
           });
-          return; /* stop — outer finally tidak boleh hide overlay */
+          return;
         } else {
-          showAlert('error', '&#10060; <b>Gagal terkirim:</b> ' + err.message);
+          showAlert('error', '❌ <b>Gagal terkirim:</b> ' + err.message);
+          hideOverlay();
           submitBtn.disabled = false;
           submitBtn.classList.remove('loading');
-          hideOverlay();
         }
       })
       .finally(function () {
-        /* hanya aktif untuk path sukses; path error sudah handle sendiri */
         if (submitBtn.disabled) {
           submitBtn.disabled = false;
           submitBtn.classList.remove('loading');
-          hideOverlay();
         }
       });
     });
