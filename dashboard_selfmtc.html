@@ -1212,17 +1212,17 @@ function renderTable(){
   if(aF)   rows=rows.filter(r=>r.area===aF);
   if(priF) rows=rows.filter(r=>r.priority===priF);
   if(stF)  rows=rows.filter(r=>gS(r)===stF);
+  /* Filter berdasarkan activeHL dari Analisis Temuan */
+  if(activeHL) rows=rows.filter(r=>r[activeHL.f]===activeHL.v);
   const tb=document.getElementById('tBody');
   if(!rows.length){tb.innerHTML='<tr class="emp"><td colspan="11">Tidak ada temuan sesuai filter</td></tr>';return}
   tb.innerHTML=rows.map(function(r){
     const st=gS(r),dept=gD(r);
     const sc=st==='Close'?'sb-C':st==='Temporary'?'sb-T':'sb-O';
     const hasFoto=r.foto&&r.foto.length>5;
-    const isMatch=activeHL&&r[activeHL.f]===activeHL.v;
-    const isDim=activeHL&&!isMatch;
     const dOpts=DEPT.map(d=>'<option value="'+d+'"'+(dept===d?' selected':'')+'>'+(d||'-- Pilih --')+'</option>').join('');
     const sOpts=STAT.map(s=>'<option value="'+s+'"'+(st===s?' selected':'')+'>'+s+'</option>').join('');
-    return '<tr class="'+(isMatch?'hl-r':isDim?'hl-d':'')+'" onclick="openM(\''+r.id+'\')">' +
+    return '<tr class="'+(activeHL?'hl-r':'')+'" onclick="openM(\''+r.id+'\')">' +
       '<td class="td-mono">'+r.id+'</td>' +
       '<td class="td-m">'+fmtDate(r.tanggal)+'</td>' +
       '<td>'+r.area+'</td>' +
