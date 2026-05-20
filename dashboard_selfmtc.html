@@ -971,10 +971,12 @@ function renderAreaMatrix(){
     const arows=sd.filter(r=>r.area===area);
     if(!arows.length) return;
     const frows=fd.filter(r=>r.area===area);
-    const tot=arows.length,
-          opn=arows.filter(r=>gS(r)==='Open').length,
-          tmp=arows.filter(r=>gS(r)==='Temporary').length,
-          cls=arows.filter(r=>gS(r)==='Close').length,
+    /* Gunakan frows (filtered) saat activeHL aktif, arows untuk tampilan normal */
+    const srows=activeHL?frows:arows;
+    const tot=srows.length,
+          opn=srows.filter(r=>gS(r)==='Open').length,
+          tmp=srows.filter(r=>gS(r)==='Temporary').length,
+          cls=srows.filter(r=>gS(r)==='Close').length,
           remain=opn+tmp;
     const pgG=tot?Math.round(cls/tot*100):0,
           pgA=tot?Math.round(tmp/tot*100):0,
@@ -982,10 +984,10 @@ function renderAreaMatrix(){
     const isHlDim=activeHL&&frows.length===0;
     const isHlAct=activeHL&&frows.length>0;
 
-    /* group by key for pareto */
+    /* group by key for pareto — gunakan srows (filtered saat activeHL aktif) */
     function grpArea(key){
       const m={};
-      arows.forEach(r=>{
+      srows.forEach(r=>{
         const k=r[key]||'—';
         if(!m[k]) m[k]={t:0,d:0,a:0,o:0};
         m[k].t++;
