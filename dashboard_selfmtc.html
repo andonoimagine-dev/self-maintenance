@@ -737,12 +737,14 @@ function shareToWA(){
   const priF = document.getElementById('fPrioritas').value;
   const stF  = document.getElementById('fStatus').value;
 
-  /* Ambil rows yang sedang ditampilkan (sama persis dengan renderTable) */
+  /* Ambil rows yang sedang ditampilkan — sama persis dengan renderTable (termasuk activeHL) */
   const priO={A:0,B:1,C:2}, stO={Open:0,Temporary:1,Close:2};
   let rows=[...slicedData()].sort((a,b)=>{const p=priO[a.priority]-priO[b.priority];return p||stO[gS(a)]-stO[gS(b)]});
   if(aF)   rows=rows.filter(r=>r.area===aF);
   if(priF) rows=rows.filter(r=>r.priority===priF);
   if(stF)  rows=rows.filter(r=>gS(r)===stF);
+  /* Ikuti filter activeHL dari Analisis Temuan */
+  if(activeHL) rows=rows.filter(r=>r[activeHL.f]===activeHL.v);
 
   if(!rows.length){
     alert('Tidak ada temuan yang sesuai filter untuk dilaporkan.');
@@ -752,7 +754,8 @@ function shareToWA(){
   /* Susun header */
   const today = new Date().toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   const areaLabel = aF || 'Semua Area';
-  const filterLabel = [priF?'Prioritas '+priF:'', stF||''].filter(Boolean).join(' · ');
+  const hlLabel = activeHL ? activeHL.f.charAt(0).toUpperCase()+activeHL.f.slice(1)+': '+activeHL.v : '';
+  const filterLabel = [priF?'Prioritas '+priF:'', stF||'', hlLabel].filter(Boolean).join(' · ');
 
   /* Pisah per status */
   const openRows = rows.filter(r=>gS(r)==='Open');
