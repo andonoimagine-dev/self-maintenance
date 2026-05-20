@@ -706,9 +706,17 @@ function slicedData(){
   });
 }
 function visData(){
-  const sd=slicedData();
-  if(!activeHL) return sd;
-  return sd.filter(r=>r[activeHL.f]===activeHL.v);
+  let sd=slicedData();
+  /* Terapkan filter dropdown */
+  const aF  = document.getElementById('fArea')      ? document.getElementById('fArea').value      : '';
+  const priF= document.getElementById('fPrioritas') ? document.getElementById('fPrioritas').value : '';
+  const stF = document.getElementById('fStatus')    ? document.getElementById('fStatus').value    : '';
+  if(aF)   sd=sd.filter(r=>r.area===aF);
+  if(priF) sd=sd.filter(r=>r.priority===priF);
+  if(stF)  sd=sd.filter(r=>gS(r)===stF);
+  /* Terapkan filter activeHL (klik Analisis Temuan) */
+  if(activeHL) sd=sd.filter(r=>r[activeHL.f]===activeHL.v);
+  return sd;
 }
 function grpBy(arr,key){
   const m={};
@@ -974,8 +982,10 @@ function renderAreaMatrix(){
     const arows=sd.filter(r=>r.area===area);
     if(!arows.length) return;
     const frows=fd.filter(r=>r.area===area);
-    /* Gunakan frows (filtered) saat activeHL aktif, arows untuk tampilan normal */
-    const srows=activeHL?frows:arows;
+    /* Sembunyikan area card jika tidak ada data setelah semua filter */
+    if(!frows.length) return;
+    /* srows = data yang sudah difilter semua (dropdown + activeHL) */
+    const srows=frows;
     const tot=srows.length,
           opn=srows.filter(r=>gS(r)==='Open').length,
           tmp=srows.filter(r=>gS(r)==='Temporary').length,
@@ -1204,6 +1214,10 @@ function applyFilters(){
     const el=document.getElementById(id);
     el.classList.toggle('active', el.value!=='');
   });
+  /* Update semua komponen dashboard sesuai filter aktif */
+  renderSummary();
+  renderAreaMatrix();
+  renderGlobalPareto();
   renderTable();
 }
 function setF(btn,f){ /* legacy — tidak dipakai lagi */ }
