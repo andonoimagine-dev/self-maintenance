@@ -211,11 +211,65 @@ tr:hover td{background:var(--accent-bg);}
 .si{width:110px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;color:var(--text);font-family:'Courier New',monospace;font-size:.82rem;text-align:right;}
 
 /* LOADING SPINNER */
-.spinner-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9997;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;backdrop-filter:blur(2px);}
+/* ── LOADING OVERLAY ── */
+.spinner-ov{
+  position:fixed;inset:0;z-index:9997;
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+  background:rgba(15,25,45,.62);
+  backdrop-filter:blur(4px);
+  pointer-events:all; /* block ALL clicks underneath */
+  transition:opacity .15s;
+}
 .spinner-ov.on{display:flex;}
-.spinner-ring{width:52px;height:52px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite;}
+.spinner-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px 36px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  box-shadow:0 8px 40px rgba(0,0,0,.35);
+  min-width:220px;
+}
+.spinner-ring{
+  width:48px;height:48px;
+  border:4px solid var(--border);
+  border-top-color:var(--accent);
+  border-right-color:var(--accent);
+  border-radius:50%;
+  animation:spin .65s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner-msg{color:#fff;font-size:.9rem;font-weight:700;letter-spacing:.5px;}
+.spinner-msg{
+  font-size:.9rem;font-weight:700;color:var(--text);
+  text-align:center;letter-spacing:.3px;
+}
+.spinner-sub{
+  font-size:.75rem;color:var(--muted);
+  text-align:center;margin-top:-8px;
+}
+/* ── BUTTON SAVING STATE ── */
+.btn-saving{
+  opacity:.65;cursor:not-allowed!important;
+  pointer-events:none;
+  position:relative;
+}
+.btn-saving::after{
+  content:'';
+  display:inline-block;width:12px;height:12px;
+  border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin .65s linear infinite;
+  margin-left:7px;vertical-align:middle;
+}
+/* ── TOAST NOTIFICATION ── */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  padding:11px 22px;border-radius:10px;font-size:.85rem;font-weight:700;
+  z-index:9999;transition:opacity .3s,transform .3s;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  white-space:nowrap;
+}
 
 /* MISC */
 .fb{display:flex;align-items:center;justify-content:space-between;gap:8px;}
@@ -357,7 +411,7 @@ tr:hover td{background:var(--accent-bg);}
     <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">○ = Planning &nbsp;● = Sudah dicek &nbsp;√ = Sesuai Standard &nbsp;X = Abnormal</div>
     <div id="pv-ck"></div>
     <div class="fr" style="margin-top:10px;"><div class="fg"><label>Catatan Abnormal</label><textarea id="pv-n"></textarea></div></div>
-    <button class="btn btn-p" onclick="savePv()">💾 Simpan</button>
+    <button class="btn btn-p" onclick="savePv(event)">💾 Simpan</button>
     <button class="btn btn-s" onclick="waPreventive()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd">
@@ -408,7 +462,7 @@ tr:hover td{background:var(--accent-bg);}
       <div class="fg"><label>Operator</label><input type="text" id="sp-op" placeholder="Nama..."></div>
       <div class="fg"><label>Catatan</label><input type="text" id="sp-no"></div>
     </div>
-    <button class="btn btn-p" onclick="saveSp()">💾 Simpan</button>
+    <button class="btn btn-p" onclick="saveSp(event)">💾 Simpan</button>
     <button class="btn btn-s" onclick="waSparepart()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
 
@@ -444,7 +498,7 @@ tr:hover td{background:var(--accent-bg);}
       <div class="fg"><label>Op</label><input type="text" id="hg-op"></div>
     </div>
     <div class="fr"><div class="fg"><label>Catatan</label><textarea id="hg-no"></textarea></div></div>
-    <button class="btn btn-p" onclick="saveHg()">💾 Simpan</button>
+    <button class="btn btn-p" onclick="saveHg(event)">💾 Simpan</button>
   </div>
 
   <div class="cd" style="margin-bottom:12px;">
@@ -480,7 +534,7 @@ tr:hover td{background:var(--accent-bg);}
     <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">Range normal: <span id="amp-rg" class="mn t-ok" style="font-weight:700;"></span></div>
     <div class="ig" id="amp-ig"></div>
     <div class="fr" style="margin-top:10px;"><div class="fg"><label>Catatan</label><textarea id="amp-no"></textarea></div></div>
-    <button class="btn btn-p" onclick="saveAmp()">💾 Simpan Semua</button>
+    <button class="btn btn-p" onclick="saveAmp(event)">💾 Simpan Semua</button>
     <button class="btn btn-s" onclick="waAmpere()" style="background:#25D366;color:#fff;margin-top:8px;margin-left:8px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA
     </button>
@@ -546,7 +600,7 @@ tr:hover td{background:var(--accent-bg);}
       <div class="fg"><label>Op</label><input type="text" id="lb-op"></div>
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="lb-kt"></textarea></div></div>
-    <button class="btn btn-p" onclick="saveLb()">💾 Simpan</button>
+    <button class="btn btn-p" onclick="saveLb(event)">💾 Simpan</button>
     <button class="btn btn-s" onclick="waLimbah()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
@@ -606,7 +660,7 @@ tr:hover td{background:var(--accent-bg);}
       <div class="fg"><label>Op</label><input type="text" id="ss-op"></div>
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="ss-no"></textarea></div></div>
-    <button class="btn btn-p" onclick="saveSs()">💾 Simpan</button>
+    <button class="btn btn-p" onclick="saveSs(event)">💾 Simpan</button>
     <button class="btn btn-s" onclick="waSteelshot()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
@@ -656,7 +710,7 @@ tr:hover td{background:var(--accent-bg);}
     <div class="st">⚡ Range Ampere Impeller</div>
     <div class="sr"><div class="sl">Batas Bawah (A)</div><input class="si" type="number" id="s-alo" step="0.1"></div>
     <div class="sr"><div class="sl">Batas Atas (A)</div><input class="si" type="number" id="s-ahi" step="0.1"></div>
-    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt(event)">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">🗑 Range Limbah</div>
@@ -664,23 +718,27 @@ tr:hover td{background:var(--accent-bg);}
     <div class="sr"><div class="sl">Pasir — Atas (Trolley)</div><input class="si" type="number" id="s-phi" step="0.5"></div>
     <div class="sr"><div class="sl">Debu — Bawah (Trolley)</div><input class="si" type="number" id="s-dlo" step="0.5"></div>
     <div class="sr"><div class="sl">Debu — Atas (Trolley)</div><input class="si" type="number" id="s-dhi" step="0.5"></div>
-    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt(event)">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">🔮 Range Steelshot</div>
     <div class="sr"><div class="sl">SS 550 — Bawah (Kg/hari)</div><input class="si" type="number" id="s-slo"></div>
     <div class="sr"><div class="sl">SS 550 — Atas (Kg/hari)</div><input class="si" type="number" id="s-shi"></div>
-    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
+    <div class="sr"><div class="sl">Wire Cut — Bawah (Kg/hari)</div><input class="si" type="number" id="s-wlo"></div>
+    <div class="sr"><div class="sl">Wire Cut — Atas (Kg/hari)</div><input class="si" type="number" id="s-whi"></div>
+    <div class="sr"><div class="sl">Limbah SS — Bawah (Kg/hari)</div><input class="si" type="number" id="s-lslo"></div>
+    <div class="sr"><div class="sl">Limbah SS — Atas (Kg/hari)</div><input class="si" type="number" id="s-lshi"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt(event)">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">🔩 Lifetime Default Sparepart (jam)</div>
     <div id="lt-set"></div>
-    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveLt()">💾 Simpan</button>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveLt(event)">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">⚙ Nama Impeller</div>
     <div id="i-nm-rows"></div>
-    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveNm()">💾 Simpan</button>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveNm(event)">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">🔄 Interval Auto-Sync ke Google Sheets</div>
@@ -741,7 +799,7 @@ tr:hover td{background:var(--accent-bg);}
       <textarea id="mi-n"></textarea>
       <div id="mi-lt"></div>
       <div class="ma">
-        <button class="btn btn-p" style="flex:1;" onclick="saveMi()">💾 Simpan</button>
+        <button class="btn btn-p" style="flex:1;" onclick="saveMi(event)">💾 Simpan</button>
         <button class="btn btn-w btn-s" onclick="confI()">✔ Konfirmasi OK</button>
       </div>
     </div>
@@ -764,23 +822,43 @@ tr:hover td{background:var(--accent-bg);}
 
 <!-- LOADING SPINNER OVERLAY -->
 <div class="spinner-ov" id="spinner-ov">
-  <div class="spinner-ring"></div>
-  <div class="spinner-msg" id="spinner-msg">Menyimpan...</div>
+  <div class="spinner-card">
+    <div class="spinner-ring"></div>
+    <div class="spinner-msg" id="spinner-msg">Menyimpan...</div>
+    <div class="spinner-sub" id="spinner-sub">Mohon tunggu, jangan tutup halaman</div>
+  </div>
 </div>
 
 <script>
 'use strict';
 
 // ── Spinner helpers ──────────────────────────────────────
-function showSpinner(msg='Menyimpan data...'){
+let _spinnerBtn=null; // track which button triggered spinner
+
+function showSpinner(msg='Menyimpan data...', btn=null){
   const el=document.getElementById('spinner-ov');
   const mg=document.getElementById('spinner-msg');
-  if(el){el.classList.add('on');}
-  if(mg)mg.textContent=msg;
+  const sb=document.getElementById('spinner-sub');
+  if(el) el.classList.add('on');
+  if(mg) mg.textContent=msg;
+  if(sb) sb.textContent='Mohon tunggu, jangan tutup halaman';
+  // Disable the trigger button visually
+  if(btn && btn instanceof Element){
+    _spinnerBtn=btn;
+    btn.classList.add('btn-saving');
+    btn.setAttribute('disabled','');
+  }
+  // Also disable ALL save buttons to prevent double-click on other forms
+  document.querySelectorAll('.btn.btn-p').forEach(b=>{
+    if(b!==btn){ b.setAttribute('disabled',''); b.style.opacity='.55'; }
+  });
 }
 function hideSpinner(){
   const el=document.getElementById('spinner-ov');
-  if(el)el.classList.remove('on');
+  if(el) el.classList.remove('on');
+  // Re-enable all save buttons
+  if(_spinnerBtn){ _spinnerBtn.classList.remove('btn-saving'); _spinnerBtn.removeAttribute('disabled'); _spinnerBtn=null; }
+  document.querySelectorAll('.btn.btn-p').forEach(b=>{ b.removeAttribute('disabled'); b.style.opacity=''; });
 }
 
 // ============================================================
@@ -1015,13 +1093,23 @@ async function loadFromSheets() {
   if (r.config) {
     const c = r.config;
     cfg = {
-      aLo: +c.amp_low||37.5, aHi: +c.amp_high||42.5,
-      pLo: +c.pasir_low||2,  pHi: +c.pasir_high||4,
-      dLo: +c.debu_low||2,   dHi: +c.debu_high||4,
-      sLo: +c.ss_low||1,     sHi: +c.ss_high||1,
+      aLo: +c.amp_low||37.5,  aHi: +c.amp_high||42.5,
+      pLo: +c.pasir_low||2,   pHi: +c.pasir_high||4,
+      dLo: +c.debu_low||2,    dHi: +c.debu_high||4,
+      sLo: +c.ss_low||0,      sHi: +c.ss_high||1000,
+      wLo: +c.wc_low||0,      wHi: +c.wc_high||1000,
+      lsLo:+c.ls_low||0,      lsHi:+c.ls_high||500,
     };
-    if (c.imp_names) nms = c.imp_names.split(',');
-    sv('cfg',cfg);sv('nms',nms);
+    if (c.imp_names) nms = c.imp_names.split(',').map(s=>s.trim()).filter(Boolean);
+    // Load lifetime config from lt_ keys
+    const ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage',
+      'lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas',
+      'lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner',
+      'lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor','lt_Hanger':'Hanger'};
+    Object.entries(ltKeys).forEach(([cfgKey,ltKey])=>{
+      if(c[cfgKey]) ltCfg[ltKey]=+c[cfgKey]||ltCfg[ltKey];
+    });
+    sv('cfg',cfg);sv('nms',nms);sv('ltCfg',ltCfg);
   }
   
   setSyncStatus('ok');
@@ -1046,7 +1134,7 @@ const ld=k=>{try{return JSON.parse(localStorage.getItem(K+k))}catch{return null}
 const sv=(k,v)=>localStorage.setItem(K+k,JSON.stringify(v));
 
 // ============ STATE ============
-let cfg=ld('cfg')||{aLo:37.5,aHi:42.5,pLo:2,pHi:4,dLo:2,dHi:4,sLo:1,sHi:1};
+let cfg=ld('cfg')||{aLo:37.5,aHi:42.5,pLo:2,pHi:4,dLo:2,dHi:4,sLo:1000,sHi:1000,wLo:0,wHi:1000,lsLo:0,lsHi:500};
 let nms=ld('nms')||Array.from({length:16},(_,i)=>`IMP-${String(i+1).padStart(2,'0')}`);
 let st=ld('st')||Array.from({length:16},()=>({on:true,a:null,dt:null,n:'',cf:false}));
 let ampLog=ld('ampLog')||[];
@@ -1553,7 +1641,7 @@ function renderSsDashChart(){
   if(dbSsShowS5)sr.push({k:'s5',c:'#7c3aed'});
   if(dbSsShowWc)sr.push({k:'wc',c:'#059669'});
   if(dbSsShowLb)sr.push({k:'lb',c:'#b45309'});
-  if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Kg',weekly:dbSsView==='week',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
+  if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Kg',weekly:dbSsView==='week',ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.wHi,c:'#059669'},{v:cfg.lsHi,c:'#b45309'}]});
 }
 function renderLbDashChart(){
   const daily=buildLbDashData();
@@ -1649,9 +1737,9 @@ function upMiAf(v){
 }
 document.getElementById('mi-a').addEventListener('input',e=>upMiAf(e.target.value));
 function setOn(on){if(activeI==null)return;st[activeI].on=on;if(!on){st[activeI].a=null;st[activeI].cf=false;}sv('st',st);rIGrid();rAlerts();}
-async function saveMi(){
+async function saveMi(ev){
   if(activeI==null)return;
-  showSpinner('Menyimpan...');
+  showSpinner('Menyimpan...',ev?.currentTarget);
   const a=parseFloat(document.getElementById('mi-a').value);const n=document.getElementById('mi-n').value;
   if(!isNaN(a)){st[activeI].a=a;st[activeI].dt=new Date().toISOString();
     const row={datetime:new Date().toISOString(),shift:'Manual',impeller_idx:activeI,impeller_name:nms[activeI],ampere:a,status:ampS(a),operator:'Manual',catatan:n};
@@ -1761,8 +1849,8 @@ function upPv(k,v){
   document.getElementById('pvk-'+k).className='pv-b'+(v==='ok'?' ok':'');
   document.getElementById('pvg-'+k).className='pv-b'+(v==='ng'?' ng':'');
 }
-async function savePv(){
-  showSpinner('Menyimpan preventive check...');
+async function savePv(ev){
+  showSpinner('Menyimpan preventive check...',ev?.currentTarget);
   const w=document.getElementById('pv-w').value;const m=document.getElementById('pv-m').value;
   const td=document.getElementById('pv-d').value;const pic=document.getElementById('pv-p').value||'PIC';
   const no=document.getElementById('pv-n').value;
@@ -1819,8 +1907,8 @@ function rSp(){
   const hsr=[...hLog].sort((a,b)=>b.date.localeCompare(a.date));
   ht.innerHTML=hsr.map(r=>`<tr><td>${fD(r.date)}</td><td>Hanger #${r.id}</td><td><span class="bd ${r.tp==='repair'?'bd-wn':'bd-ok'}">${r.tp==='repair'?'Repair':'Baru'}</span></td><td class="mn">${r.jm}h</td><td>${r.kn}</td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
 }
-async function saveSp(){
-  showSpinner('Menyimpan sparepart...');
+async function saveSp(ev){
+  showSpinner('Menyimpan sparepart...',ev?.currentTarget);
   const date=document.getElementById('sp-d').value;const i=+document.getElementById('sp-i').value;
   const j=document.getElementById('sp-j').value;const op=document.getElementById('sp-op').value||'Op';
   const no=document.getElementById('sp-no').value;
@@ -1846,8 +1934,8 @@ async function saveSp(){
   pushToSheets('saveSparepart',rows);
   hideSpinner();rSp();rAlerts();showToast('✅ Sparepart tersimpan!','ok');
 }
-async function saveHg(){
-  showSpinner('Menyimpan data hanger...');
+async function saveHg(ev){
+  showSpinner('Menyimpan data hanger...',ev?.currentTarget);
   const date=document.getElementById('hg-d').value;const id=+document.getElementById('hg-n').value;
   const tp=document.getElementById('hg-tp').value;const jm=+document.getElementById('hg-jm').value;
   const kn=document.getElementById('hg-k').value;const op=document.getElementById('hg-op').value||'Op';
@@ -1901,8 +1989,8 @@ function hl(i,v){
   else if(s==='lo'){f.innerHTML='⬇️';inp.style.borderColor='var(--warn)';}
   else if(s==='hi'){f.innerHTML='🔺';inp.style.borderColor='var(--danger)';}
 }
-async function saveAmp(){
-  showSpinner('Menyimpan ampere...');
+async function saveAmp(ev){
+  showSpinner('Menyimpan ampere...',ev?.currentTarget);
   const dt=document.getElementById('amp-dt').value;const sh=document.getElementById('amp-sh').value;const op=document.getElementById('amp-op').value||'Op';
   let c=0;const rows=[];
   for(let i=0;i<16;i++){
@@ -2340,8 +2428,8 @@ function rLb(){
     return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td>${r.j}</td><td class="mn">${r.v}</td><td><span class="bd ${cl}">${s}</span></td><td>${r.l||'-'}</td><td>${r.op}</td></tr>`;
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
-async function saveLb(){
-  showSpinner('Menyimpan data limbah...');
+async function saveLb(ev){
+  showSpinner('Menyimpan data limbah...',ev?.currentTarget);
   const date=document.getElementById('lb-d').value;
   const sh=document.getElementById('lb-sh').value;
   const vp=+document.getElementById('lb-vp').value||0;
@@ -2397,7 +2485,7 @@ function drawFullSs(){
   if(ssSr.length)drawChart('c-ss-full',data,ssSr,{
     yLabel:'Kg',
     weekly:ssView==='week',
-    ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed80'}]
+    ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed55'},{v:cfg.wHi,c:'#059669'},{v:cfg.wLo,c:'#05966955'},{v:cfg.lsHi,c:'#b45309'},{v:cfg.lsLo,c:'#b4530955'}]
   });
 }
 function rSs(){
@@ -2410,8 +2498,8 @@ function rSs(){
     return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${r.s5||0}</td><td class="mn">${r.wc||0}</td><td class="mn">${r.lb||0}</td><td class="mn">${tot}</td><td>${r.op}</td><td>${r.n||'-'}</td></tr>`;
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
-async function saveSs(){
-  showSpinner('Menyimpan data steelshot...');
+async function saveSs(ev){
+  showSpinner('Menyimpan data steelshot...',ev?.currentTarget);
   const date=document.getElementById('ss-d').value;const sh=document.getElementById('ss-sh').value;
   const s5=+document.getElementById('ss-50').value||0;const wc=+document.getElementById('ss-wc').value||0;
   const op=document.getElementById('ss-op').value||'Op';const n=document.getElementById('ss-no').value;
@@ -2431,20 +2519,64 @@ function rSet(){
   document.getElementById('s-plo').value=cfg.pLo;document.getElementById('s-phi').value=cfg.pHi;
   document.getElementById('s-dlo').value=cfg.dLo;document.getElementById('s-dhi').value=cfg.dHi;
   document.getElementById('s-slo').value=cfg.sLo;document.getElementById('s-shi').value=cfg.sHi;
+  const wloEl=document.getElementById('s-wlo');if(wloEl)wloEl.value=cfg.wLo||0;
+  const whiEl=document.getElementById('s-whi');if(whiEl)whiEl.value=cfg.wHi||1000;
+  const lsloEl=document.getElementById('s-lslo');if(lsloEl)lsloEl.value=cfg.lsLo||0;
+  const lshiEl=document.getElementById('s-lshi');if(lshiEl)lshiEl.value=cfg.lsHi||500;
   const ALL=[...SP_PT,'Hanger'];
   document.getElementById('lt-set').innerHTML=ALL.map(n=>`<div class="sr"><div class="sl">${n}</div><input class="si" type="number" id="lts-${n.replace(/ /g,'_')}" value="${ltCfg[n]||480}"> jam</div>`).join('');
   document.getElementById('i-nm-rows').innerHTML=Array.from({length:16},(_,i)=>`<div class="sr"><div class="sl">#${String(i+1).padStart(2,'0')}</div><input class="si" type="text" id="inm-${i}" value="${nms[i]}" style="width:160px;text-align:left;font-family:inherit;"></div>`).join('');
 }
-function saveSt(){
-  cfg.aLo=+document.getElementById('s-alo').value||37.5;cfg.aHi=+document.getElementById('s-ahi').value||42.5;
-  cfg.pLo=+document.getElementById('s-plo').value||2;cfg.pHi=+document.getElementById('s-phi').value||4;
-  cfg.dLo=+document.getElementById('s-dlo').value||2;cfg.dHi=+document.getElementById('s-dhi').value||4;
-  cfg.sLo=+document.getElementById('s-slo').value||1;cfg.sHi=+document.getElementById('s-shi').value||1;
-  sv('cfg',cfg);alert('Tersimpan!');rAlerts();rIGrid();
+async function saveSt(ev){
+  showSpinner('Menyimpan pengaturan...',ev?.currentTarget);
+  cfg.aLo=+document.getElementById('s-alo').value||37.5;
+  cfg.aHi=+document.getElementById('s-ahi').value||42.5;
+  cfg.pLo=+document.getElementById('s-plo').value||2;
+  cfg.pHi=+document.getElementById('s-phi').value||4;
+  cfg.dLo=+document.getElementById('s-dlo').value||2;
+  cfg.dHi=+document.getElementById('s-dhi').value||4;
+  cfg.sLo=+document.getElementById('s-slo').value||0;
+  cfg.sHi=+document.getElementById('s-shi').value||1000;
+  cfg.wLo=+document.getElementById('s-wlo').value||0;
+  cfg.wHi=+document.getElementById('s-whi').value||1000;
+  cfg.lsLo=+document.getElementById('s-lslo').value||0;
+  cfg.lsHi=+document.getElementById('s-lshi').value||500;
+  sv('cfg',cfg);
+  // Push config to Google Sheets
+  if(ONLINE){
+    const cfgData={
+      amp_low:cfg.aLo, amp_high:cfg.aHi,
+      pasir_low:cfg.pLo, pasir_high:cfg.pHi,
+      debu_low:cfg.dLo, debu_high:cfg.dHi,
+      ss_low:cfg.sLo, ss_high:cfg.sHi,
+      wc_low:cfg.wLo, wc_high:cfg.wHi,
+      ls_low:cfg.lsLo, ls_high:cfg.lsHi,
+      imp_names:nms.join(','),
+    };
+    // Merge lifetime config into same save
+    Object.entries(ltCfg).forEach(([k,v])=>{ cfgData['lt_'+k.replace(/ /g,'_')]=v; });
+    await api('saveConfig',{data:JSON.stringify(cfgData)});
+    hideSpinner();showToast('✅ Pengaturan tersimpan ke server!','ok');
+  } else {
+    hideSpinner();showToast('✅ Pengaturan tersimpan (lokal)','ok');
+  }
+  rAlerts();rIGrid();
 }
-function saveLt(){
+async function saveLt(ev){
+  showSpinner('Menyimpan lifetime...',ev?.currentTarget);
   [...SP_PT,'Hanger'].forEach(n=>{const e=document.getElementById('lts-'+n.replace(/ /g,'_'));if(e)ltCfg[n]=+e.value||480;});
-  sv('ltCfg',ltCfg);alert('Tersimpan!');
+  sv('ltCfg',ltCfg);
+  if(ONLINE){
+    // Simpan lifetime ke config sheet dengan prefix lt_
+    const ltData={};
+    Object.entries(ltCfg).forEach(([k,v])=>{
+      ltData['lt_'+k.replace(/ /g,'_')]=v;
+    });
+    await api('saveConfig',{data:JSON.stringify(ltData)});
+    hideSpinner();showToast('✅ Lifetime tersimpan ke server!','ok');
+  } else {
+    hideSpinner();showToast('✅ Lifetime tersimpan (lokal)','ok');
+  }
 }
 function saveSyncInterval(){
   const val = +document.getElementById('s-sync').value;
@@ -2471,9 +2603,17 @@ function saveWaNo(){
   localStorage.setItem('hsb9_wa_no',no);
   showToast('✅ No. WhatsApp tersimpan: '+no,'ok');
 }
-function saveNm(){
+async function saveNm(ev){
+  showSpinner('Menyimpan nama impeller...',ev?.currentTarget);
   for(let i=0;i<16;i++){const e=document.getElementById('inm-'+i);if(e)nms[i]=e.value||`IMP-${String(i+1).padStart(2,'0')}`;}
-  sv('nms',nms);alert('Tersimpan!');rIGrid();
+  sv('nms',nms);
+  if(ONLINE){
+    await api('saveConfig',{data:JSON.stringify({imp_names:nms.join(',')})});
+    hideSpinner();showToast('✅ Nama impeller tersimpan ke server!','ok');
+  } else {
+    hideSpinner();showToast('✅ Nama impeller tersimpan (lokal)','ok');
+  }
+  rIGrid();
 }
 function exp(){
   const blob=new Blob([JSON.stringify({cfg,nms,st,ampLog,spLog,pvLog,lbLog,ssLog,ltCfg,hSt,hLog},null,2)],{type:'application/json'});
