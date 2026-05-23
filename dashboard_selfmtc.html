@@ -749,7 +749,7 @@ function showOverlay(msg){
 function hideOverlay(){
   document.getElementById('loadingOverlay').classList.remove('active');
 }
-const AREAS    = ['Ace-1','Ace-2','Melting','Die Making'];
+const AREAS    = ['Ace-1','Ace-2','HSP','Melting','Die Making','CND']; /* diperluas — akan override dinamis dari data */
 const DEPT     = ['','Produksi','Maintenance','Kaizen/PE','Lainnya'];
 const STAT     = ['Open','Temporary','Close'];
 const DCOLS    = ['#276040','#C97F1A','#B52E2E'];
@@ -1246,7 +1246,15 @@ function renderAreaMatrix(){
   mat.innerHTML='';
   const sd=slicedData(), fd=visData();
 
-  AREAS.forEach(function(area){
+  /* Gunakan area dinamis dari data aktual, urutan sesuai AREAS jika ada */
+  const areaSet = [...new Set(sd.map(r=>r.area).filter(Boolean))];
+  const knownOrder = ['Ace-1','Ace-2','HSP','Melting','Die Making','CND'];
+  const dynamicAreas = [
+    ...knownOrder.filter(a=>areaSet.includes(a)),
+    ...areaSet.filter(a=>!knownOrder.includes(a))
+  ];
+
+  dynamicAreas.forEach(function(area){
     const arows=sd.filter(r=>r.area===area);
     if(!arows.length) return;
     const frows=fd.filter(r=>r.area===area);
