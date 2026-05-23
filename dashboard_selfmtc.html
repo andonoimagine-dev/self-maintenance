@@ -764,8 +764,8 @@ let donutCharts={};
 /* ═══ UTILS ═══ */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function escQ(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
-function gS(r){return pending[r.id]?.status ?? r.status}
-function gD(r){return pending[r.id]?.dept   ?? r.dept}
+function gS(r){var p=pending[r.id];return (p&&p.status!==undefined)?p.status:r.status}
+function gD(r){var p=pending[r.id];return (p&&p.dept!==undefined)?p.dept:r.dept}
 function fmtDate(s){const d=new Date(s);return d.getDate()+' '+d.toLocaleString('id-ID',{month:'short'})+' '+String(d.getFullYear()).slice(-2)}
 function yearOf(s){return String(new Date(s).getFullYear())}
 function monthOf(s){const d=new Date(s);return d.toLocaleString('id-ID',{month:'short',year:'numeric'})}
@@ -1290,8 +1290,8 @@ function renderAreaMatrix(){
       });
       return Object.entries(m).sort((a,b)=>b[1].t-a[1].t);
     }
-    const mArr=grpArea('mesin'), mMax=mArr[0]?.[1].t||1;
-    const pArr=grpArea('part'),  pMax=pArr[0]?.[1].t||1;
+    const mArr=grpArea('mesin'), mMax=(mArr[0]&&mArr[0][1])?mArr[0][1].t||1:1;
+    const pArr=grpArea('part'),  pMax=(pArr[0]&&pArr[0][1])?pArr[0][1].t||1:1;
     const kArr=grpArea('kategori');
 
     /* pareto bar html */
@@ -1454,18 +1454,18 @@ function renderGlobalPareto(){
           opn=rows.filter(r=>gS(r)==='Open').length;
     return [name,{t,cls,tmp,opn}];
   }).sort((a,b)=>b[1].t-a[1].t);
-  const km=katData[0]?.[1].t||1;
+  const km=(katData[0]&&katData[0][1])?katData[0][1].t||1:1;
   document.getElementById('gpKat').innerHTML=
     parLeg+
     katData.map(e=>gpBar(e[0],e[1],km,'kategori')).join('');
 
-  const md=grpBy(fd,'mesin'), mm=md[0]?.[1].t||1;
+  const md=grpBy(fd,'mesin'), mm=(md[0]&&md[0][1])?md[0][1].t||1:1;
   document.getElementById('gpMesin').innerHTML=parLeg+md.map(e=>gpBar(e[0],e[1],mm,'mesin')).join('');
 
-  const pd=grpBy(fd,'part'), pm=pd[0]?.[1].t||1;
+  const pd=grpBy(fd,'part'), pm=(pd[0]&&pd[0][1])?pd[0][1].t||1:1;
   document.getElementById('gpPart').innerHTML=parLeg+pd.map(e=>gpBar(e[0],e[1],pm,'part')).join('');
 
-  const ad=grpBy(fd,'area'), am=ad[0]?.[1].t||1;
+  const ad=grpBy(fd,'area'), am=(ad[0]&&ad[0][1])?ad[0][1].t||1:1;
   document.getElementById('gpArea').innerHTML=parLeg+ad.map(e=>gpBar(e[0],e[1],am,'area')).join('');
 }
 
@@ -1525,10 +1525,10 @@ function renderTable(){
       '<td class="td-mono">'+r.id+'</td>' +
       '<td class="td-m">'+fmtDate(r.tanggal)+'</td>' +
       '<td>'+r.area+'</td>' +
-      '<td class="td-m ed-cell" title="'+esc(r.mesin)+'" onclick="event.stopPropagation();editCell(this,''+r.id+'','mesin','+JSON.stringify(r.mesin)+')">'+esc(r.mesin)+'</td>' +
-      '<td class="td-m ed-cell" title="'+esc(r.part)+'" onclick="event.stopPropagation();editCell(this,''+r.id+'','part','+JSON.stringify(r.part)+')">'+esc(r.part)+'</td>' +
-      '<td class="td-m ed-cell" onclick="event.stopPropagation();editCell(this,''+r.id+'','kategori','+JSON.stringify(r.kategori)+')">'+r.kategori+'</td>' +
-      '<td class="td-m ed-cell" title="'+esc(r.deskripsi)+'" onclick="event.stopPropagation();editCell(this,''+r.id+'','deskripsi','+JSON.stringify(r.deskripsi)+')">'+esc(r.deskripsi)+'</td>' +
+      '<td class="td-m ed-cell" title="'+esc(r.mesin)+'" onclick="event.stopPropagation();editCell(this,\''+escQ(r.id)+'\',\'mesin\',\''+escQ(r.mesin)+'\')">'+esc(r.mesin)+'</td>' +
+      '<td class="td-m ed-cell" title="'+esc(r.part)+'" onclick="event.stopPropagation();editCell(this,\''+escQ(r.id)+'\',\'part\',\''+escQ(r.part)+'\')">'+esc(r.part)+'</td>' +
+      '<td class="td-m ed-cell" onclick="event.stopPropagation();editCell(this,\''+escQ(r.id)+'\',\'kategori\',\''+escQ(r.kategori)+'\')">'+r.kategori+'</td>' +
+      '<td class="td-m ed-cell" title="'+esc(r.deskripsi)+'" onclick="event.stopPropagation();editCell(this,\''+escQ(r.id)+'\',\'deskripsi\',\''+escQ(r.deskripsi)+'\')">'+esc(r.deskripsi)+'</td>' +
       '<td><span class="pb pb-'+r.priority+'">'+r.priority+'</span></td>' +
       '<td onclick="event.stopPropagation()"><select class="isel" onchange="setPend(\''+r.id+'\',\'dept\',this.value)">'+dOpts+'</select></td>' +
       '<td onclick="event.stopPropagation()"><select class="isel" onchange="setPend(\''+r.id+'\',\'status\',this.value)">'+sOpts+'</select></td>' +
