@@ -443,13 +443,13 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 }
 /* ═══ EDIT MODE (password-protected inline editing) ═══ */
 .edit-mode-badge{
-  display:none;align-items:center;gap:6px;
-  background:#276040;border:1px solid rgba(255,255,255,.25);
-  color:#fff;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.8);font-size:11px;font-weight:700;font-family:'DM Mono',monospace;
   letter-spacing:.05em;padding:5px 12px;border-radius:50px;cursor:pointer;
   transition:all .2s;
 }
-.edit-mode-badge.on{display:flex;background:#B52E2E;}
+.edit-mode-badge.on{background:#B52E2E;border-color:rgba(255,255,255,.3);color:#fff;}
 .edit-mode-badge .em-dot{width:7px;height:7px;border-radius:50%;background:#6EE7B7;flex-shrink:0}
 .edit-mode-badge.on .em-dot{background:#FCA5A5;animation:blink .9s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
