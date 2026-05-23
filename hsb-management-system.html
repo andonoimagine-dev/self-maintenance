@@ -968,7 +968,11 @@ async function loadFromSheets() {
   ssLog = Array.isArray(r.steelshot) ? r.steelshot.map(x=>{
     const pd=parseDate(x.date);
     const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
-    return { date:ds, sh:x.shift, s5:+x.ss550_karung, wc:+x.wirecut_karung, lb:+x.limbah_ss||0, op:x.operator, n:x.keterangan };
+    // Tolerate typo variants from Sheets (ss55_karung vs ss550_karung)
+    const s5v = +x.ss550_karung || +x.ss55_karung || 0;
+    const wcv = +x.wirecut_karung || +x.wirecut_karu || 0;
+    const lbv = +x.limbah_ss || 0;
+    return { date:ds, sh:x.shift, s5:s5v, wc:wcv, lb:lbv, op:x.operator, n:x.keterangan };
   }) : ssLog;
   sv('ssLog',ssLog);
 
