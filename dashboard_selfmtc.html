@@ -1249,7 +1249,10 @@ function printTable(){
     'thead tr{background:#1a5c38;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
     'thead th{padding:6px 5px;text-align:left;font-size:8pt;border:1px solid #1a5c38;word-break:break-word}'+
     'tbody td{padding:5px;border:1px solid #ccc;vertical-align:top;font-size:8pt;word-break:break-word}'+
-    '@page{size:A3 landscape;margin:12mm}'+
+    '@page{size:A3 landscape;margin:12mm;margin-top:0;margin-bottom:0}'+
+    '@page :first{margin-top:0;margin-bottom:0}'+
+    '@page :left{margin-top:0;margin-bottom:0}'+
+    '@page :right{margin-top:0;margin-bottom:0}'+
     '@media print{body{padding:0}}'+
     '</style></head><body>'+
     '<h2>Laporan Temuan Abnormal — Self Maintenance</h2>'+
