@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Self MTC Dashboard — PT AT Indonesia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -275,6 +278,13 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
   .form-temuan-btn{padding:6px 10px;font-size:0;gap:0;letter-spacing:0}
   .form-temuan-btn svg{width:15px;height:15px}
   .form-temuan-btn::after{content:'FORM';font-size:10px;font-weight:700;font-family:'DM Mono',monospace;margin-left:5px}
+
+  /* Fullscreen & Edit Mode — compact di mobile */
+  #fsLabel{display:none}
+  #fsBtn{padding:6px 9px;font-size:14px}
+  #editBadgeLabel{display:none}
+  .edit-mode-badge{padding:5px 9px}
+  .edit-mode-badge .em-dot{width:8px;height:8px}
 
   /* Slicer jadi bottom drawer */
   .slicer{
@@ -1825,7 +1835,7 @@ function syncData(isAuto){
   const ring=document.getElementById('syncRing');
   if(!isAuto){btn.textContent='⏳';btn.disabled=true;showOverlay('Mengambil data terbaru…')}
   ring.classList.add('active');
-  fetch(APPS_URL+'?action=getData')
+  fetch(APPS_URL+'?action=getData&_='+Date.now())
     .then(r=>r.json())
     .then(function(res){
       if(res.data&&Array.isArray(res.data)){
@@ -1833,12 +1843,14 @@ function syncData(isAuto){
         buildSlicer(); renderAll(); setTs();
         ring.classList.remove('active');
         ring.classList.remove('error');
-      } else { throw new Error('invalid') }
+        if(!isAuto) showEdToast('✓ Data berhasil dimuat — '+DATA.length+' temuan');
+      } else { throw new Error('Response tidak valid: '+JSON.stringify(res).slice(0,80)) }
     })
     .catch(function(err){
       ring.classList.remove('active');
       ring.classList.add('error');
-      if(!isAuto) document.getElementById('navTs').textContent='Sync gagal';
+      const msg='Sync gagal: '+err.message;
+      if(!isAuto){ document.getElementById('navTs').textContent='Sync gagal'; showEdToast('⚠ '+msg); }
       console.error('Sync error:',err.message);
     })
     .finally(function(){
