@@ -31,11 +31,14 @@
   --header:rgba(10,15,23,.96);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+*{-webkit-tap-highlight-color:transparent;}
+button,a,[onclick]{touch-action:manipulation;cursor:pointer;}
 html{font-size:16px;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.45;min-height:100vh;}
 
 /* ============== HEADER ============== */
-.hdr{position:sticky;top:0;z-index:100;background:var(--header);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.hdr{position:sticky;top:0;z-index:100;background:var(--header);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+@media(max-width:480px){.lg-t2{display:none;}#clk{display:none;}.hdr{padding:8px 10px;}}
 .lg{display:flex;align-items:center;gap:12px;}
 .lg-ic{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),#0044aa);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;box-shadow:0 3px 10px rgba(0,102,204,.25);flex-shrink:0;}
 .lg-t1{font-size:1.2rem;font-weight:800;letter-spacing:.5px;line-height:1.05;}
@@ -51,12 +54,14 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 /* ============== NAV ============== */
 .nv{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:60px;z-index:99;box-shadow:var(--shadow);}
 .nv::-webkit-scrollbar{display:none;}
-.tb{flex:0 0 auto;padding:11px 16px;background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tb{flex:0 0 auto;padding:12px 14px;background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;min-height:44px;}
+@media(max-width:600px){.tb{padding:12px 10px;font-size:.7rem;gap:4px;}}
 .tb.on{color:var(--accent);border-bottom-color:var(--accent);}
 .tb:hover:not(.on){color:var(--text);}
 
 /* ============== CONTENT ============== */
-.ct{padding:14px;max-width:1800px;margin:0 auto;}
+.ct{padding:10px;max-width:1800px;margin:0 auto;}
+@media(min-width:600px){.ct{padding:14px;}}
 .pg{display:none;}.pg.on{display:block;}
 
 /* CARDS */
@@ -79,7 +84,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .al-o{background:var(--ok-bg);border:1px solid rgba(5,150,105,.25);color:var(--ok);}
 
 /* IMPELLER GRID */
-.ig{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.ig{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+@media(min-width:400px){.ig{grid-template-columns:repeat(4,1fr);gap:7px;}}
 @media(min-width:700px){.ig{grid-template-columns:repeat(8,1fr);gap:8px;}}
 .ic{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:9px 5px;text-align:center;cursor:pointer;transition:transform .12s,border-color .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;overflow:hidden;}
 .ic:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
@@ -131,7 +137,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 @media(min-width:700px){.db3{grid-template-columns:1fr 1fr;}}
 @media(min-width:1100px){.db3{grid-template-columns:1fr 1fr 1fr;}}
 
-.db-card{height:380px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow);overflow:hidden;}
+.db-card{height:320px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:var(--shadow);overflow:hidden;}
+@media(min-width:700px){.db-card{height:360px;}}
+@media(min-width:1100px){.db-card{height:380px;}}
 .db-head{height:30px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;margin-bottom:6px;}
 .db-canvas{flex:1;min-height:0;position:relative;}
 .db-canvas>canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;}
@@ -149,17 +157,18 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
 /* FORMS */
 .fr{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
-.fg{flex:1;min-width:120px;}
+.fg{flex:1;min-width:140px;}
+@media(max-width:380px){.fg{min-width:100%;flex:none;}}
 .fg label{display:block;font-size:.65rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
-.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:.85rem;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;} @media(min-width:600px){.fg input,.fg select,.fg textarea{font-size:.85rem;}}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
 .fg textarea{resize:vertical;min-height:55px;}
 
 /* TABLE */
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:.78rem;}
-th{background:var(--card2);color:var(--muted);padding:8px 10px;text-align:left;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-bottom:2px solid var(--border);font-size:.65rem;}
-td{padding:7px 10px;border-bottom:1px solid var(--border);}
+th{background:var(--card2);color:var(--muted);padding:7px 8px;text-align:left;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-bottom:2px solid var(--border);font-size:.65rem;white-space:nowrap;}
+td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:.82rem;}
 tr:hover td{background:var(--accent-bg);}
 .bd{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:700;letter-spacing:.4px;}
 .bd-ok{background:var(--ok-bg);color:var(--ok);} .bd-ng{background:var(--danger-bg);color:var(--danger);} .bd-wn{background:var(--warn-bg);color:var(--warn);} .bd-if{background:var(--info-bg);color:var(--info);}
@@ -182,7 +191,8 @@ tr:hover td{background:var(--accent-bg);}
 .lt{height:6px;border-radius:4px;transition:width .3s;}
 
 /* BUTTONS */
-.btn{padding:9px 18px;border-radius:9px;border:none;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+.btn{padding:9px 18px;border-radius:9px;border:none;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;min-height:44px;}
+@media(max-width:600px){.btn{font-size:.8rem;}}
 .btn:hover{filter:brightness(.92);}
 .btn-p{background:var(--accent);color:#fff;}
 .btn-d{background:var(--danger);color:#fff;}
@@ -192,23 +202,28 @@ tr:hover td{background:var(--accent-bg);}
 .btn-s{padding:5px 11px;font-size:.7rem;}
 
 /* MODAL */
-.mv{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(2px);}
+.mv{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(2px);}
+@media(min-width:600px){.mv{align-items:center;padding:14px;}}
+
 .mv.on{display:flex;}
-.mw{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.2);}
+.mw{background:var(--card);border:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 -4px 30px rgba(0,0,0,.2);}
+@media(min-width:600px){.mw{border-radius:14px;max-width:430px;max-height:90vh;box-shadow:0 8px 30px rgba(0,0,0,.2);}}
 .mh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);border-radius:14px 14px 0 0;z-index:1;}
 .mh h3{font-size:1rem;font-weight:700;}
 .mx{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;padding:2px 6px;border-radius:5px;line-height:1;}
 .mx:hover{background:var(--danger-bg);color:var(--danger);}
 .mb{padding:14px 18px;}
 .mb label{display:block;font-size:.65rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
-.mb input,.mb select,.mb textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:.85rem;margin-bottom:10px;}
+.mb input,.mb select,.mb textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;margin-bottom:10px;} @media(min-width:600px){.mb input,.mb select,.mb textarea{font-size:.85rem;}}
 .ma{display:flex;gap:7px;flex-wrap:wrap;}
 
 /* SETTING */
 .sr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
 .sr:last-child{border:none;}
 .sl{flex:1;font-weight:500;}
-.si{width:110px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;color:var(--text);font-family:'Courier New',monospace;font-size:.82rem;text-align:right;}
+.si{width:110px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;color:var(--text);font-family:'Courier New',monospace;font-size:16px;text-align:right;}
+@media(min-width:600px){.si{font-size:.82rem;width:110px;}}
+@media(max-width:480px){.si{width:90px;}}
 
 /* LOADING SPINNER */
 /* ── LOADING OVERLAY ── */
@@ -802,6 +817,48 @@ tr:hover td{background:var(--accent-bg);}
         <button class="btn btn-p" style="flex:1;" onclick="saveMi(event)">💾 Simpan</button>
         <button class="btn btn-w btn-s" onclick="confI()">✔ Konfirmasi OK</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SPAREPART DETAIL -->
+<div class="mv" id="m-sp-detail">
+  <div class="mw" style="max-width:560px;">
+    <div class="mh">
+      <div>
+        <h3 id="msd-title">Detail History</h3>
+        <div id="msd-sub" style="font-size:.72rem;color:var(--muted);margin-top:2px;"></div>
+      </div>
+      <button class="mx" onclick="cM('m-sp-detail')">×</button>
+    </div>
+    <div class="mb" style="padding:14px 16px;">
+      <!-- Stats row -->
+      <div id="msd-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;"></div>
+      <!-- Timeline chart -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:.68rem;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">📅 Timeline Penggantian</div>
+        <div style="height:72px;position:relative;background:var(--bg);border-radius:8px;border:1px solid var(--border);overflow:hidden;">
+          <canvas id="c-sp-timeline" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
+        </div>
+      </div>
+      <!-- History table -->
+      <div style="font-size:.68rem;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">📋 Riwayat Lengkap</div>
+      <div style="max-height:260px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);">
+        <table style="width:100%;border-collapse:collapse;font-size:.78rem;">
+          <thead>
+            <tr style="background:var(--card2);position:sticky;top:0;">
+              <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">TGL</th>
+              <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">JAM PAKAI</th>
+              <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">KONDISI</th>
+              <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">OPERATOR</th>
+              <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">TIPE</th>
+            </tr>
+          </thead>
+          <tbody id="msd-tb"></tbody>
+        </table>
+      </div>
+      <!-- Next estimate -->
+      <div id="msd-next" style="margin-top:12px;padding:10px 12px;border-radius:8px;font-size:.78rem;"></div>
     </div>
   </div>
 </div>
@@ -1881,15 +1938,33 @@ function rSp(){
   let h='';
   SP_PT.forEach(nm=>{
     const m=modus(nm);
-    h+=`<div style="margin-bottom:10px;"><div class="fb" style="margin-bottom:4px;"><div style="font-size:.82rem;font-weight:700;">${nm}</div><div style="font-size:.65rem;color:var(--muted);">Modus: ${m}h</div></div>`;
+    // Count total replacements for this part across all impellers
+    const totalRep=spLog.filter(s=>s.nm===nm).length;
+    h+=`<div style="margin-bottom:12px;">
+      <div class="fb" style="margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-size:.85rem;font-weight:700;">${nm}</div>
+          ${totalRep>0?`<span style="font-size:.65rem;background:var(--ok-bg);color:var(--ok);border:1px solid rgba(5,150,105,.3);border-radius:10px;padding:1px 8px;font-weight:700;">${totalRep}x ganti</span>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-size:.65rem;color:var(--muted);">Modus: ${m}h</div>
+          <button onclick="openSpDetailByPart('${nm.replace(/'/g,"\\'")}')" style="font-size:.65rem;padding:3px 9px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text2);cursor:pointer;font-family:inherit;font-weight:600;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">📋 Semua History</button>
+        </div>
+      </div>`;
     let any=false;
     for(let i=0;i<16;i++){
       const d=daysSP(i,nm);if(d==null)continue;any=true;
       const j=estJ(d),p=Math.min(100,Math.round(j/m*100));
-      const c=p>=100?'var(--danger)':p>=80?'var(--warn)':'var(--ok)';
-      h+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:78px;font-size:.7rem;color:var(--text2);">${nms[i]}</div><div class="ltw" style="flex:1;"><div class="lt" style="width:${p}%;background:${c};"></div></div><div style="width:55px;text-align:right;font-size:.7rem;font-family:'Courier New',monospace;color:${c};">${p}%</div></div>`;
+      const col=p>=100?'var(--danger)':p>=80?'var(--warn)':'var(--ok)';
+      const nmEsc=nm.replace(/'/g,"\\'");
+      h+=`<div onclick="openSpDetail(${i},'${nmEsc}')" title="Klik untuk detail history ${nm}" style="display:flex;align-items:center;gap:6px;margin-bottom:3px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .12s;" onmouseover="this.style.background='var(--accent-bg)'" onmouseout="this.style.background=''">
+        <div style="width:78px;font-size:.7rem;color:var(--text2);">${nms[i]}</div>
+        <div class="ltw" style="flex:1;"><div class="lt" style="width:${p}%;background:${col};"></div></div>
+        <div style="width:55px;text-align:right;font-size:.7rem;font-family:'Courier New',monospace;color:${col};">${p}%</div>
+        <div style="font-size:.7rem;color:var(--muted);">›</div>
+      </div>`;
     }
-    if(!any)h+=`<div style="font-size:.72rem;color:var(--muted);">Belum ada history</div>`;
+    if(!any)h+=`<div style="font-size:.72rem;color:var(--muted);padding:4px 4px 8px;">Belum ada history penggantian — <button onclick="openSpDetailByPart('${nm.replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem;text-decoration:underline;font-family:inherit;">Lihat detail →</button></div>`;
     h+='</div>';
   });
   lt.innerHTML=h;
@@ -1907,6 +1982,283 @@ function rSp(){
   const hsr=[...hLog].sort((a,b)=>b.date.localeCompare(a.date));
   ht.innerHTML=hsr.map(r=>`<tr><td>${fD(r.date)}</td><td>Hanger #${r.id}</td><td><span class="bd ${r.tp==='repair'?'bd-wn':'bd-ok'}">${r.tp==='repair'?'Repair':'Baru'}</span></td><td class="mn">${r.jm}h</td><td>${r.kn}</td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
 }
+// ============================================================
+// SPAREPART DETAIL MODAL
+// ============================================================
+// Show detail for ALL impellers for one part name (via "Semua History" button)
+function openSpDetailByPart(partName){
+  // Show combined view — pick impeller with most recent replacement
+  // Find which impeller has the most history for this part
+  const allLogs = spLog.filter(s=>s.nm===partName);
+  if(!allLogs.length){
+    // No history yet — open modal with empty state
+    openSpDetail(-1, partName);
+    return;
+  }
+  // Open with all impellers combined view
+  openSpDetailAll(partName);
+}
+
+// Show combined history for a part across ALL impellers
+function openSpDetailAll(partName){
+  const logs = spLog
+    .filter(s => s.nm === partName)
+    .sort((a,b) => a.date.localeCompare(b.date));
+
+  document.getElementById('msd-title').textContent = partName;
+  document.getElementById('msd-sub').textContent = `Semua Impeller — ${logs.length} kali penggantian total`;
+
+  // Stats
+  const jams = logs.map(l=>+l.jm).filter(j=>j>0);
+  const avg  = jams.length ? Math.round(jams.reduce((a,b)=>a+b,0)/jams.length) : 0;
+  const maxJ = jams.length ? Math.max(...jams) : 0;
+  const minJ = jams.length ? Math.min(...jams) : 0;
+  const mod  = modus(partName);
+
+  document.getElementById('msd-stats').innerHTML = [
+    {label:'Total Ganti', val:logs.length, unit:'kali', c:'var(--accent)'},
+    {label:'Rata-rata',   val:avg,          unit:'jam',  c:'var(--ok)'},
+    {label:'Tertinggi',   val:maxJ,         unit:'jam',  c:'var(--info)'},
+    {label:'Terendah',    val:minJ,         unit:'jam',  c:'var(--warn)'},
+  ].map(s=>`
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;">
+      <div style="font-size:1.15rem;font-weight:800;color:${s.c};line-height:1.1;">${s.val}</div>
+      <div style="font-size:.6rem;color:var(--muted);margin-top:2px;">${s.unit}</div>
+      <div style="font-size:.65rem;color:var(--text2);font-weight:600;">${s.label}</div>
+    </div>`).join('');
+
+  // Timeline
+  requestAnimationFrame(()=>{
+    const cv=document.getElementById('c-sp-timeline');
+    if(!cv)return;
+    const W=cv.getBoundingClientRect().width||400, H=72;
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=W*dpr; cv.height=H*dpr;
+    const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+    const dk=document.documentElement.getAttribute('data-theme')==='dark';
+    ctx.clearRect(0,0,W,H);
+    if(!logs.length){
+      ctx.fillStyle='var(--muted)';ctx.font='12px sans-serif';
+      ctx.textAlign='center';ctx.fillText('Belum ada data',W/2,H/2);return;
+    }
+    const PAD={l:20,r:20,t:14,b:22};
+    const TW=W-PAD.l-PAD.r, CY=PAD.t+(H-PAD.t-PAD.b)/2;
+    ctx.strokeStyle=dk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
+    ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(PAD.l,CY);ctx.lineTo(PAD.l+TW,CY);ctx.stroke();
+    // Modus line
+    ctx.strokeStyle='rgba(0,102,204,.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    const modY=CY-18;
+    ctx.beginPath();ctx.moveTo(PAD.l,modY);ctx.lineTo(PAD.l+TW,modY);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,102,204,.6)';ctx.font='bold 8px sans-serif';
+    ctx.textAlign='right';ctx.fillText(`Modus ${mod}h`,PAD.l+TW,modY-2);
+    logs.forEach((log,i)=>{
+      const x=PAD.l+(logs.length>1?TW*i/(logs.length-1):TW/2);
+      const jPct=mod>0?Math.min(+log.jm/mod,1.3):0.5;
+      const r=4+jPct*4;
+      const col=jPct>=1?'#dc2626':jPct>=0.8?'#d97706':'#059669';
+      ctx.beginPath();ctx.arc(x,CY,r,0,Math.PI*2);
+      ctx.fillStyle=col;ctx.fill();
+      ctx.strokeStyle=dk?'rgba(0,0,0,.4)':'rgba(255,255,255,.8)';
+      ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle=col;ctx.font='bold 8px sans-serif';ctx.textAlign='center';
+      ctx.fillText(log.jm+'h',x,CY-r-3);
+      const[yy,mm,dd]=log.date.split('-');
+      ctx.fillStyle=dk?'#8aa4bc':'#5a7a90';ctx.font='7px sans-serif';
+      ctx.fillText(`${+dd}/${+mm}`,x,CY+r+9);
+    });
+  });
+
+  // Table — show all impellers, latest first
+  const tb=document.getElementById('msd-tb');
+  tb.innerHTML=[...logs].reverse().map((r,idx)=>{
+    const jPct=mod>0?+r.jm/mod:0;
+    const col=jPct>=1?'var(--danger)':jPct>=0.8?'var(--warn)':'var(--ok)';
+    const rowBg=idx%2===1?'background:var(--card2);':'';
+    const impName=nms[+r.i]||`IMP-${String(+r.i+1).padStart(2,'0')}`;
+    return`<tr style="${rowBg}">
+      <td style="padding:7px 10px;">${fD(r.date)}</td>
+      <td style="padding:7px 10px;font-size:.75rem;font-weight:700;color:var(--accent);">${impName}</td>
+      <td style="padding:7px 10px;font-family:'Courier New',monospace;font-weight:700;color:${col};">${r.jm}h</td>
+      <td style="padding:7px 10px;"><span class="bd bd-wn">${r.kn}</span></td>
+      <td style="padding:7px 10px;">${r.op||'-'}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="5" class="es">Belum ada data</td></tr>';
+
+  // Update table header for "all" view
+  const thead=document.querySelector('#m-sp-detail thead tr');
+  if(thead) thead.innerHTML=`
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">TGL</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--accent);letter-spacing:.5px;border-bottom:1px solid var(--border);">IMPELLER</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">JAM PAKAI</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">KONDISI</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">OPERATOR</th>`;
+
+  // Next estimate — show per-impeller summary
+  const nextEl=document.getElementById('msd-next');
+  // Find impellers that have this part in history
+  const impWithHistory=[...new Set(logs.map(l=>+l.i))];
+  if(impWithHistory.length){
+    let rows='';
+    impWithHistory.forEach(ii=>{
+      const d=daysSP(ii,partName);
+      if(d==null)return;
+      const used=estJ(d), pct=Math.min(100,Math.round(used/mod*100));
+      const col=pct>=100?'var(--danger)':pct>=80?'var(--warn)':'var(--ok)';
+      const impName=nms[ii]||`IMP-${String(ii+1).padStart(2,'0')}`;
+      rows+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <div style="width:70px;font-size:.72rem;font-weight:600;">${impName}</div>
+        <div style="flex:1;background:var(--border);border-radius:3px;height:5px;">
+          <div style="height:5px;border-radius:3px;background:${col};width:${pct}%;"></div>
+        </div>
+        <div style="width:40px;text-align:right;font-size:.72rem;font-family:'Courier New',monospace;color:${col};">${pct}%</div>
+      </div>`;
+    });
+    nextEl.style.cssText='background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:.78rem;';
+    nextEl.innerHTML=`<div style="font-weight:700;margin-bottom:8px;">⏱ Status Saat Ini per Impeller</div>${rows}`;
+  } else { nextEl.innerHTML=''; }
+
+  document.getElementById('m-sp-detail').classList.add('on');
+}
+
+function openSpDetail(impIdx, partName){
+  const logs = spLog
+    .filter(s => +s.i === impIdx && s.nm === partName)
+    .sort((a,b) => a.date.localeCompare(b.date));
+
+  const nm = nms[impIdx] || `IMP-${String(impIdx+1).padStart(2,'0')}`;
+  document.getElementById('msd-title').textContent = `${partName}`;
+  document.getElementById('msd-sub').textContent = `${nm} — ${logs.length} kali penggantian`;
+
+  // ── Stats ──────────────────────────────────────────────
+  const jams = logs.map(l=>+l.jm).filter(j=>j>0);
+  const avg  = jams.length ? Math.round(jams.reduce((a,b)=>a+b,0)/jams.length) : 0;
+  const maxJ = jams.length ? Math.max(...jams) : 0;
+  const minJ = jams.length ? Math.min(...jams) : 0;
+  const mod  = modus(partName);
+
+  const stats = [
+    {label:'Total Ganti', val:logs.length, unit:'kali', c:'var(--accent)'},
+    {label:'Rata-rata',   val:avg,          unit:'jam',  c:'var(--ok)'},
+    {label:'Tertinggi',   val:maxJ,         unit:'jam',  c:'var(--info)'},
+    {label:'Terendah',    val:minJ,         unit:'jam',  c:'var(--warn)'},
+  ];
+  document.getElementById('msd-stats').innerHTML = stats.map(s=>`
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;">
+      <div style="font-size:1.15rem;font-weight:800;color:${s.c};line-height:1.1;">${s.val}</div>
+      <div style="font-size:.6rem;color:var(--muted);margin-top:2px;">${s.unit}</div>
+      <div style="font-size:.65rem;color:var(--text2);font-weight:600;">${s.label}</div>
+    </div>`).join('');
+
+  // ── Timeline canvas ──────────────────────────────────
+  requestAnimationFrame(()=>{
+    const cv = document.getElementById('c-sp-timeline');
+    if(!cv) return;
+    const W=cv.getBoundingClientRect().width||400, H=72;
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=W*dpr; cv.height=H*dpr;
+    const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+    const dk=document.documentElement.getAttribute('data-theme')==='dark';
+    ctx.clearRect(0,0,W,H);
+
+    if(!logs.length || impIdx===-1){ ctx.fillStyle='var(--muted)'; ctx.font='12px sans-serif';
+      ctx.textAlign='center'; ctx.fillText('Belum ada data',W/2,H/2); return; }
+
+    // Timeline: dots on a horizontal line, sized by jam pakai
+    const PAD={l:20,r:20,t:14,b:22};
+    const TW=W-PAD.l-PAD.r;
+    const CY=PAD.t+(H-PAD.t-PAD.b)/2;
+
+    // Draw base line
+    ctx.strokeStyle=dk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
+    ctx.lineWidth=2; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(PAD.l,CY); ctx.lineTo(PAD.l+TW,CY); ctx.stroke();
+
+    // Modus line (dashed)
+    const modPct = mod > 0 ? 1 : 0;
+    ctx.strokeStyle='rgba(0,102,204,.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    const modY=CY-18;
+    ctx.beginPath(); ctx.moveTo(PAD.l,modY); ctx.lineTo(PAD.l+TW,modY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,102,204,.6)'; ctx.font='bold 8px sans-serif';
+    ctx.textAlign='right'; ctx.fillText(`Modus ${mod}h`,PAD.l+TW,modY-2);
+
+    // Dots
+    logs.forEach((log,i)=>{
+      const x = PAD.l + (logs.length>1 ? TW*i/(logs.length-1) : TW/2);
+      const jPct = mod>0 ? Math.min(+log.jm/mod, 1.3) : 0.5;
+      const r = 4+jPct*4;
+      const col = jPct>=1?'#dc2626':jPct>=0.8?'#d97706':'#059669';
+      // Dot
+      ctx.beginPath(); ctx.arc(x,CY,r,0,Math.PI*2);
+      ctx.fillStyle=col; ctx.fill();
+      ctx.strokeStyle=dk?'rgba(0,0,0,.4)':'rgba(255,255,255,.8)';
+      ctx.lineWidth=1.5; ctx.stroke();
+      // Jam label above
+      ctx.fillStyle=col; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(log.jm+'h', x, CY-r-3);
+      // Date below
+      const [yy,mm,dd]=log.date.split('-');
+      ctx.fillStyle=dk?'#8aa4bc':'#5a7a90'; ctx.font='7px sans-serif';
+      ctx.fillText(`${+dd}/${+mm}`, x, CY+r+9);
+    });
+  });
+
+  // ── Restore table header for single-impeller view ─────
+  const thead2=document.querySelector('#m-sp-detail thead tr');
+  if(thead2) thead2.innerHTML=`
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">TGL</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">JAM PAKAI</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">KONDISI</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">OPERATOR</th>
+    <th style="padding:7px 10px;text-align:left;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);">TIPE</th>`;
+  // ── Table ──────────────────────────────────────────────
+  const tb = document.getElementById('msd-tb');
+  tb.innerHTML = [...logs].reverse().map((r,idx)=>{
+    const jPct = mod>0 ? +r.jm/mod : 0;
+    const col = jPct>=1?'var(--danger)':jPct>=0.8?'var(--warn)':'var(--ok)';
+    const rowBg = idx===0 ? 'background:var(--accent-bg);' : (idx%2===1?'background:var(--card2);':'');
+    return `<tr style="${rowBg}">
+      <td style="padding:7px 10px;">${fD(r.date)}</td>
+      <td style="padding:7px 10px;font-family:'Courier New',monospace;font-weight:700;color:${col};">${r.jm}h</td>
+      <td style="padding:7px 10px;"><span class="bd bd-wn">${r.kn}</span></td>
+      <td style="padding:7px 10px;">${r.op||'-'}</td>
+      <td style="padding:7px 10px;">${r.j==='assy'?'<span class="bd bd-if">Assy</span>':'<span class="bd bd-ok">Satuan</span>'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="es">Belum ada data</td></tr>';
+
+  // ── Next estimate ──────────────────────────────────────
+  const nextEl = document.getElementById('msd-next');
+  const lastLog = logs[logs.length-1];
+  if(lastLog && mod>0){
+    const d = daysSP(impIdx, partName);
+    const used = d!=null ? estJ(d) : 0;
+    const remaining = Math.max(0, mod - used);
+    const daysLeft = Math.round(remaining/16);
+    const pct = Math.min(100, Math.round(used/mod*100));
+    const col = pct>=100?'var(--danger)':pct>=80?'var(--warn)':'var(--ok)';
+    nextEl.style.cssText = `background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:.78rem;`;
+    nextEl.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-weight:700;">⏱ Estimasi Kondisi Saat Ini</span>
+        <span style="font-weight:800;color:${col};">${pct}%</span>
+      </div>
+      <div style="background:var(--border);border-radius:4px;height:6px;margin-bottom:8px;">
+        <div style="height:6px;border-radius:4px;background:${col};width:${pct}%;transition:width .5s;"></div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:.72rem;color:var(--muted);">
+        <span>Terakhir ganti: <b style="color:var(--text);">${fD(lastLog.date)}</b></span>
+        <span>Terpakai: <b style="color:${col};">${used}h / ${mod}h</b></span>
+        ${remaining>0?`<span>Sisa est.: <b style="color:var(--ok);">~${daysLeft} hari</b></span>`:'<span style="color:var(--danger);font-weight:700;">⚠ Segera ganti!</span>'}
+      </div>`;
+  } else {
+    nextEl.innerHTML = '';
+  }
+
+  document.getElementById('m-sp-detail').classList.add('on');
+}
+
 async function saveSp(ev){
   showSpinner('Menyimpan sparepart...',ev?.currentTarget);
   const date=document.getElementById('sp-d').value;const i=+document.getElementById('sp-i').value;
