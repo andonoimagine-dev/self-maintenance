@@ -783,13 +783,15 @@ function slicedData(){
 }
 function visData(){
   let sd=slicedData();
-  /* Terapkan filter dropdown */
-  const aF  = document.getElementById('fArea')      ? document.getElementById('fArea').value      : '';
-  const priF= document.getElementById('fPrioritas') ? document.getElementById('fPrioritas').value : '';
-  const stF = document.getElementById('fStatus')    ? document.getElementById('fStatus').value    : '';
-  if(aF)   sd=sd.filter(r=>r.area===aF);
-  if(priF) sd=sd.filter(r=>r.priority===priF);
-  if(stF)  sd=sd.filter(r=>gS(r)===stF);
+  /* Terapkan filter dropdown — hanya jika DOM sudah siap */
+  try {
+    const aF  = (document.getElementById('fArea')      ||{}).value||'';
+    const priF= (document.getElementById('fPrioritas') ||{}).value||'';
+    const stF = (document.getElementById('fStatus')    ||{}).value||'';
+    if(aF)   sd=sd.filter(r=>r.area===aF);
+    if(priF) sd=sd.filter(r=>r.priority===priF);
+    if(stF)  sd=sd.filter(r=>gS(r)===stF);
+  } catch(e){}
   /* Terapkan filter activeHL (klik Analisis Temuan) */
   if(activeHL) sd=sd.filter(r=>r[activeHL.f]===activeHL.v);
   return sd;
@@ -1238,10 +1240,14 @@ function renderAreaMatrix(){
     const arows=sd.filter(r=>r.area===area);
     if(!arows.length) return;
     const frows=fd.filter(r=>r.area===area);
-    /* Sembunyikan area card jika tidak ada data setelah semua filter */
-    if(!frows.length) return;
-    /* srows = data yang sudah difilter semua (dropdown + activeHL) */
-    const srows=frows;
+    /* Sembunyikan area card hanya jika ada filter aktif dan hasilnya kosong */
+    const hasFilter = activeHL ||
+      ((document.getElementById('fArea')||{}).value||'') ||
+      ((document.getElementById('fPrioritas')||{}).value||'') ||
+      ((document.getElementById('fStatus')||{}).value||'');
+    if(hasFilter && !frows.length) return;
+    /* srows = gunakan frows saat ada filter, arows saat tidak ada filter */
+    const srows = hasFilter ? frows : arows;
     const tot=srows.length,
           opn=srows.filter(r=>gS(r)==='Open').length,
           tmp=srows.filter(r=>gS(r)==='Temporary').length,
@@ -1823,7 +1829,7 @@ function syncData(isAuto){
     .then(r=>r.json())
     .then(function(res){
       if(res.data&&Array.isArray(res.data)){
-        DATA=res.data; if(!isAuto) pending=[];
+        DATA=res.data; if(!isAuto) pending={};
         buildSlicer(); renderAll(); setTs();
         ring.classList.remove('active');
         ring.classList.remove('error');
