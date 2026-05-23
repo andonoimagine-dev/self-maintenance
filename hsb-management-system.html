@@ -1256,11 +1256,15 @@ function drawChart(canvasId,data,series,opts){
     if(v<=0)return 5;
     const e=Math.pow(10,Math.floor(Math.log10(v)));
     const f=v/e;
-    return(f<=1?1:f<=2?2:f<=3?3:f<=5?5:10)*e;
+    // More granular so max is closer to actual data (avoids huge empty space)
+    const n=f<=1?1:f<=1.2?1.2:f<=1.5?1.5:f<=2?2:f<=2.5?2.5:f<=3?3:f<=4?4:f<=5?5:10;
+    return n*e;
   }
   function niceStep(top){
-    for(const s of [1,2,5,10,20,25,50,100,200,500])if(top/s<=7)return s;
-    return Math.ceil(top/6);
+    // Clean steps — avoids ugly 750, 1500, 2250 etc
+    const steps=[1,2,5,10,20,25,50,100,200,250,500,1000,2000,2500,5000,10000];
+    for(const s of steps)if(top/s<=6)return s;
+    return Math.round(top/5/1000)*1000||1000;
   }
   const YMAX=niceUp(rawMax*1.18);
   const STEP=niceStep(YMAX);
