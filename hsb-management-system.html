@@ -287,9 +287,10 @@ tr:hover td{background:var(--accent-bg);}
       <div class="db-canvas"><canvas id="c-ss"></canvas></div>
       <div class="db-foot">
         <div class="lg-r" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
-          <div style="display:flex;gap:8px;">
-            <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550</div>
-            <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (Kg)</div>
+            <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (Kg)</div>
+            <div class="lg-i"><div class="lg-d" style="background:#b45309;"></div>Limbah SS (Kg)</div>
           </div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
             <button class="chc-b on" id="db-ss-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsSetView('day',this)">Harian</button>
@@ -297,6 +298,7 @@ tr:hover td{background:var(--accent-bg);}
             <span style="width:1px;height:16px;background:var(--border);margin:0 2px;"></span>
             <button class="chc-b on" id="db-ss-f-550" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('s5',this)">SS 550</button>
             <button class="chc-b on" id="db-ss-f-wc" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('wc',this)">Wire Cut</button>
+            <button class="chc-b on" id="db-ss-f-lb" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('lb',this)">Limbah SS</button>
           </div>
         </div>
       </div>
@@ -598,8 +600,9 @@ tr:hover td{background:var(--accent-bg);}
     <div class="fr">
       <div class="fg"><label>Tanggal</label><input type="date" id="ss-d"></div>
       <div class="fg"><label>Shift</label><select id="ss-sh"><option>NSP</option><option>NSM</option></select></div>
-      <div class="fg"><label>SS 550 (Ton)</label><input type="number" id="ss-50" min="0"></div>
-      <div class="fg"><label>Wire Cut (Ton)</label><input type="number" id="ss-wc" min="0"></div>
+      <div class="fg"><label>SS 550 (Kg)</label><input type="number" id="ss-50" min="0"></div>
+      <div class="fg"><label>Wire Cut (Kg)</label><input type="number" id="ss-wc" min="0"></div>
+      <div class="fg"><label>Limbah Steelshot (Kg)</label><input type="number" id="ss-lb" min="0" step="0.1"></div>
       <div class="fg"><label>Op</label><input type="text" id="ss-op"></div>
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="ss-no"></textarea></div></div>
@@ -630,17 +633,18 @@ tr:hover td{background:var(--accent-bg);}
       <span style="width:1px;height:18px;background:var(--border);margin:0 4px;"></span>
       <button class="chc-b on" id="ss-f-550" onclick="ssToggle('s5',this)">🟣 SS 550</button>
       <button class="chc-b on" id="ss-f-wc" onclick="ssToggle('wc',this)">🟢 Wire Cut</button>
+      <button class="chc-b on" id="ss-f-lb" onclick="ssToggle('lb',this)">🟤 Limbah SS</button>
     </div>
     <div style="height:260px;position:relative;"><canvas id="c-ss-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
-      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (Ton)</div>
-      <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (Ton)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (Kg)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (Kg)</div>
     </div>
   </div>
   <div class="cd">
     <div class="st">📋 History Steelshot</div>
     <div class="tw"><table>
-      <thead><tr><th>Tgl</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>Total</th><th>Op</th><th>Ket</th></tr></thead>
+      <thead><tr><th>Tgl</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>Limbah SS</th><th>Total</th><th>Op</th><th>Ket</th></tr></thead>
       <tbody id="ss-tb"></tbody>
     </table></div>
   </div>
@@ -664,8 +668,8 @@ tr:hover td{background:var(--accent-bg);}
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">🔮 Range Steelshot</div>
-    <div class="sr"><div class="sl">SS 550 — Bawah (Ton/hari)</div><input class="si" type="number" id="s-slo"></div>
-    <div class="sr"><div class="sl">SS 550 — Atas (Ton/hari)</div><input class="si" type="number" id="s-shi"></div>
+    <div class="sr"><div class="sl">SS 550 — Bawah (Kg/hari)</div><input class="si" type="number" id="s-slo"></div>
+    <div class="sr"><div class="sl">SS 550 — Atas (Kg/hari)</div><input class="si" type="number" id="s-shi"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt()">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
@@ -964,7 +968,7 @@ async function loadFromSheets() {
   ssLog = Array.isArray(r.steelshot) ? r.steelshot.map(x=>{
     const pd=parseDate(x.date);
     const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
-    return { date:ds, sh:x.shift, s5:+x.ss550_karung, wc:+x.wirecut_karung, op:x.operator, n:x.keterangan };
+    return { date:ds, sh:x.shift, s5:+x.ss550_karung, wc:+x.wirecut_karung, lb:+x.limbah_ss||0, op:x.operator, n:x.keterangan };
   }) : ssLog;
   sv('ssLog',ssLog);
 
@@ -1524,6 +1528,7 @@ function buildSsData(){
     date,
     s5:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.s5||0),0),
     wc:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.wc||0),0),
+    lb:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.lb||0),0),
   }));
 }
 function buildLbDashData(){
@@ -1539,7 +1544,8 @@ function renderSsDashChart(){
   const sr=[];
   if(dbSsShowS5)sr.push({k:'s5',c:'#7c3aed'});
   if(dbSsShowWc)sr.push({k:'wc',c:'#059669'});
-  if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Ton',weekly:dbSsView==='week',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
+  if(dbSsShowLb)sr.push({k:'lb',c:'#b45309'});
+  if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Kg',weekly:dbSsView==='week',ranges:[{v:cfg.sHi,c:'#7c3aed'}]});
 }
 function renderLbDashChart(){
   const daily=buildLbDashData();
@@ -2239,7 +2245,7 @@ function ssSetView(v,btn){
 }
 // Dashboard mini chart toggles (share same state as detail charts)
 let dbLbShowPasir=true,dbLbShowDebu=true;
-let dbSsShowS5=true,dbSsShowWc=true;
+let dbSsShowS5=true,dbSsShowWc=true,dbSsShowLb=true;
 let dbLbView='day',dbSsView='day';
 
 function dbLbSetView(v,btn){
@@ -2262,8 +2268,9 @@ function dbLbToggle(key,btn){
 }
 function dbSsToggle(key,btn){
   if(key==='s5')dbSsShowS5=!dbSsShowS5;
-  else dbSsShowWc=!dbSsShowWc;
-  btn.classList.toggle('on',key==='s5'?dbSsShowS5:dbSsShowWc);
+  else if(key==='wc')dbSsShowWc=!dbSsShowWc;
+  else dbSsShowLb=!dbSsShowLb;
+  btn.classList.toggle('on',key==='s5'?dbSsShowS5:key==='wc'?dbSsShowWc:dbSsShowLb);
   renderSsDashChart();
 }
 function lbToggle(key,btn){
@@ -2272,10 +2279,12 @@ function lbToggle(key,btn){
   btn.classList.toggle('on',key==='pasir'?lbShowPasir:lbShowDebu);
   drawFullLb();
 }
+let ssShowLb=true;
 function ssToggle(key,btn){
   if(key==='s5')ssShowS5=!ssShowS5;
-  else ssShowWc=!ssShowWc;
-  btn.classList.toggle('on',key==='s5'?ssShowS5:ssShowWc);
+  else if(key==='wc')ssShowWc=!ssShowWc;
+  else ssShowLb=!ssShowLb;
+  btn.classList.toggle('on',key==='s5'?ssShowS5:key==='wc'?ssShowWc:ssShowLb);
   drawFullSs();
 }
 function lbPd(b,p){
@@ -2365,6 +2374,7 @@ function buildSsRaw(cf,ct){
     date,
     s5:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.s5||0),0),
     wc:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.wc||0),0),
+    lb:ssLog.filter(s=>s.date===date).reduce((a,x)=>a+(+x.lb||0),0),
   }));
 }
 function drawFullSs(){
@@ -2375,8 +2385,9 @@ function drawFullSs(){
   const ssSr=[];
   if(ssShowS5)ssSr.push({k:'s5',c:'#7c3aed'});
   if(ssShowWc)ssSr.push({k:'wc',c:'#059669'});
+  if(ssShowLb)ssSr.push({k:'lb',c:'#b45309'});
   if(ssSr.length)drawChart('c-ss-full',data,ssSr,{
-    yLabel:'Ton',
+    yLabel:'Kg',
     weekly:ssView==='week',
     ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed80'}]
   });
@@ -2388,7 +2399,7 @@ function rSs(){
   const sr=[...ssLog].sort((a,b)=>b.date.localeCompare(a.date));
   tb.innerHTML=sr.slice(0,200).map(r=>{
     const tot=(+r.s5||0)+(+r.wc||0);
-    return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${r.s5||0}</td><td class="mn">${r.wc||0}</td><td class="mn">${tot}</td><td>${r.op}</td><td>${r.n||'-'}</td></tr>`;
+    return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${r.s5||0}</td><td class="mn">${r.wc||0}</td><td class="mn">${r.lb||0}</td><td class="mn">${tot}</td><td>${r.op}</td><td>${r.n||'-'}</td></tr>`;
   }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
 }
 async function saveSs(){
@@ -2586,11 +2597,16 @@ function waSteelshot(){
   msg+=`📅 ${tgl}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`*SS 550*\n`;
-  msg+=`  NSP: ${ss5NSP} Ton | NSM: ${ss5NSM} Ton\n`;
-  msg+=`  Total: ${ss5NSP+ss5NSM} Ton\n\n`;
+  msg+=`  NSP: ${ss5NSP} Kg | NSM: ${ss5NSM} Kg\n`;
+  msg+=`  Total: ${ss5NSP+ss5NSM} Kg\n\n`;
+  const lbNSP=ss.filter(s=>s.sh==='NSP').reduce((a,x)=>a+(+x.lb||0),0);
+  const lbNSM=ss.filter(s=>s.sh==='NSM').reduce((a,x)=>a+(+x.lb||0),0);
   msg+=`*Wire Cut*\n`;
-  msg+=`  NSP: ${wcNSP} Ton | NSM: ${wcNSM} Ton\n`;
-  msg+=`  Total: ${wcNSP+wcNSM} Ton\n`;
+  msg+=`  NSP: ${wcNSP} Kg | NSM: ${wcNSM} Kg\n`;
+  msg+=`  Total: ${wcNSP+wcNSM} Kg\n\n`;
+  msg+=`*Limbah Steelshot*\n`;
+  msg+=`  NSP: ${lbNSP} Kg | NSM: ${lbNSM} Kg\n`;
+  msg+=`  Total: ${lbNSP+lbNSM} Kg\n`;
   msg+=`\n_${tgl} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
@@ -2680,7 +2696,7 @@ function waDashboard(){
   msg+=`\n🗑 *LIMBAH HARI INI*\n`;
   msg+=`  Pasir: ${pasirHari} Trolley | Debu: ${debuHari} Trolley\n`;
   msg+=`\n🔮 *STEELSHOT HARI INI*\n`;
-  msg+=`  SS 550: ${ss5Hari} Ton | Wire Cut: ${wcHari} Ton\n`;
+  msg+=`  SS 550: ${ss5Hari} Kg | Wire Cut: ${wcHari} Kg\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
