@@ -441,6 +441,58 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
   letter-spacing:.01em;text-align:center;
   max-width:240px;line-height:1.55;
 }
+/* ═══ EDIT MODE (password-protected inline editing) ═══ */
+.edit-mode-badge{
+  display:none;align-items:center;gap:6px;
+  background:#276040;border:1px solid rgba(255,255,255,.25);
+  color:#fff;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;
+  letter-spacing:.05em;padding:5px 12px;border-radius:50px;cursor:pointer;
+  transition:all .2s;
+}
+.edit-mode-badge.on{display:flex;background:#B52E2E;}
+.edit-mode-badge .em-dot{width:7px;height:7px;border-radius:50%;background:#6EE7B7;flex-shrink:0}
+.edit-mode-badge.on .em-dot{background:#FCA5A5;animation:blink .9s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Auth modal */
+.em-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;display:none;align-items:center;justify-content:center}
+.em-overlay.on{display:flex}
+.em-card{background:var(--surf);border-radius:var(--rlg);padding:32px 28px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.em-card h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.em-card p{font-size:13px;color:var(--txt2);margin-bottom:20px}
+.em-input{width:100%;padding:10px 14px;border:1.5px solid var(--bord2);border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border .2s}
+.em-input:focus{border-color:var(--acc)}
+.em-input.err{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.em-err{font-size:12px;color:var(--red);margin-top:6px;min-height:16px}
+.em-actions{display:flex;gap:8px;margin-top:16px}
+.em-btn-ok{flex:1;padding:10px;background:var(--acc);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+.em-btn-ok:hover{opacity:.9}
+.em-btn-cancel{padding:10px 16px;background:var(--surf2);border:1px solid var(--bord);border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer}
+
+/* Editable cells in edit mode */
+body.edit-on td.ed-cell{
+  cursor:pointer;position:relative;
+  background:rgba(234,240,251,.35);
+}
+body.edit-on td.ed-cell:hover{background:var(--acc2);outline:1.5px solid var(--acc);border-radius:4px}
+body.edit-on td.ed-cell::after{
+  content:'✎';position:absolute;top:3px;right:4px;font-size:9px;color:var(--acc);opacity:.6
+}
+
+/* Inline edit input inside cell */
+.ed-input-wrap{display:flex;gap:4px;align-items:center;min-width:120px}
+.ed-inp{width:100%;padding:4px 7px;border:1.5px solid var(--acc);border-radius:6px;font-size:13px;font-family:inherit;background:var(--surf);outline:none}
+.ed-inp.lg{min-width:200px}
+.ed-ok{padding:3px 8px;background:var(--acc);color:#fff;border:none;border-radius:5px;font-size:12px;cursor:pointer;white-space:nowrap}
+.ed-cancel{padding:3px 7px;background:var(--surf2);border:1px solid var(--bord);border-radius:5px;font-size:12px;cursor:pointer}
+
+/* Edit confirm toast */
+.ed-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(30px);background:#276040;color:#fff;
+  padding:10px 20px;border-radius:50px;font-size:13px;font-weight:600;z-index:999;
+  opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.ed-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
 </style>
 </head>
 <body>
@@ -476,6 +528,10 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
         <span id="fsIcon">⛶</span>
         <span id="fsLabel">Fullscreen</span>
       </button>
+      <button class="edit-mode-badge" id="editBadge" onclick="toggleEditMode()" title="Mode Edit Data">
+        <span class="em-dot"></span>
+        <span id="editBadgeLabel">EDIT MODE</span>
+      </button>
     </div>
   </div>
 </nav>
@@ -485,6 +541,22 @@ table.tbl tbody td{padding:11px 12px;font-size:13px;vertical-align:middle}
 
 <!-- FAB filter (mobile only) -->
 <button class="filter-fab" onclick="toggleSlicer()" title="Filter periode">⚙</button>
+
+<!-- Auth modal for edit mode -->
+<div class="em-overlay" id="emOverlay">
+  <div class="em-card">
+    <h3>🔐 Mode Edit Data</h3>
+    <p>Masukkan password untuk mengaktifkan mode edit mesin, part, kategori, dan deskripsi.</p>
+    <input class="em-input" type="password" id="emPwdInput" placeholder="Password" onkeydown="if(event.key==='Enter')emConfirm()">
+    <div class="em-err" id="emErr"></div>
+    <div class="em-actions">
+      <button class="em-btn-cancel" onclick="emCancel()">Batal</button>
+      <button class="em-btn-ok" onclick="emConfirm()">Masuk</button>
+    </div>
+  </div>
+</div>
+<!-- Edit toast notification -->
+<div class="ed-toast" id="edToast"></div>
 
 <div class="hl-bar" id="hlBar">
   <div class="hl-l"><div class="hl-dot"></div><span class="hl-name" id="hlName">—</span><span class="hl-n" id="hlN">—</span></div>
@@ -859,6 +931,138 @@ function startAutoSync(intervalSec){
 }
 
 
+
+
+/* ═══ EDIT MODE — PASSWORD PROTECTED ═══ */
+const EDIT_PASSWORD = 'selfmtc2026';   /* <-- ganti password di sini */
+let editModeOn = false;
+
+function toggleEditMode(){
+  if(editModeOn){
+    /* Langsung matikan */
+    editModeOn = false;
+    document.body.classList.remove('edit-on');
+    const badge = document.getElementById('editBadge');
+    badge.classList.remove('on');
+    badge.querySelector('.em-dot').style.background = '#6EE7B7';
+    document.getElementById('editBadgeLabel').textContent = 'EDIT MODE';
+    showEdToast('✓ Mode edit dinonaktifkan');
+  } else {
+    /* Minta password */
+    document.getElementById('emOverlay').classList.add('on');
+    document.getElementById('emPwdInput').value = '';
+    document.getElementById('emErr').textContent = '';
+    document.getElementById('emPwdInput').classList.remove('err');
+    setTimeout(()=>document.getElementById('emPwdInput').focus(), 100);
+  }
+}
+
+function emConfirm(){
+  const val = document.getElementById('emPwdInput').value;
+  if(val === EDIT_PASSWORD){
+    editModeOn = true;
+    document.body.classList.add('edit-on');
+    const badge = document.getElementById('editBadge');
+    badge.classList.add('on');
+    document.getElementById('editBadgeLabel').textContent = 'EDIT AKTIF';
+    document.getElementById('emOverlay').classList.remove('on');
+    showEdToast('✓ Mode edit aktif — klik sel Mesin / Part / Kategori / Deskripsi untuk edit');
+  } else {
+    const inp = document.getElementById('emPwdInput');
+    inp.classList.add('err');
+    document.getElementById('emErr').textContent = 'Password salah. Coba lagi.';
+    inp.value = '';
+    setTimeout(()=>inp.classList.remove('err'), 600);
+    setTimeout(()=>inp.focus(), 50);
+  }
+}
+
+function emCancel(){
+  document.getElementById('emOverlay').classList.remove('on');
+}
+
+/* ── Inline cell editor ── */
+function editCell(td, id, field, currentVal){
+  if(!editModeOn) return;          /* hanya aktif saat edit mode on */
+  if(td.querySelector('.ed-inp')) return;  /* sudah terbuka */
+
+  const isLong = (field === 'deskripsi');
+  const orig = td.innerHTML;
+
+  /* Build input */
+  const inp = document.createElement(isLong ? 'textarea' : 'input');
+  inp.className = 'ed-inp' + (isLong ? ' lg' : '');
+  inp.value = currentVal;
+  if(isLong){ inp.rows = 2; inp.style.resize = 'vertical'; }
+  else { inp.type = 'text'; }
+
+  const btnOk = document.createElement('button');
+  btnOk.className = 'ed-ok'; btnOk.textContent = '✓';
+
+  const btnCancel = document.createElement('button');
+  btnCancel.className = 'ed-cancel'; btnCancel.textContent = '✕';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'ed-input-wrap';
+  wrap.style.flexDirection = isLong ? 'column' : 'row';
+  wrap.appendChild(inp);
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:4px';
+  btnRow.appendChild(btnOk); btnRow.appendChild(btnCancel);
+  wrap.appendChild(btnRow);
+
+  td.innerHTML = '';
+  td.appendChild(wrap);
+  inp.focus();
+  inp.select();
+
+  function save(){
+    const newVal = inp.value.trim();
+    if(newVal === '' || newVal === currentVal){
+      td.innerHTML = orig; return;
+    }
+    /* Update DATA lokal dulu */
+    DATA = DATA.map(r => r.id === id ? Object.assign({}, r, {[field]: newVal}) : r);
+    td.innerHTML = newVal.length > 30 ? newVal.slice(0,30)+'…' : newVal;
+    td.title = newVal;
+    showEdToast('💾 Menyimpan '+field+' ke spreadsheet…');
+    /* Kirim ke Google Sheets */
+    fetch(APPS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'updateDetail', id: id, field: field, value: newVal})
+    }).then(()=>{
+      showEdToast('✓ '+field+' berhasil disimpan');
+      renderSummary(); renderGlobalPareto(); renderAreaMatrix();
+    }).catch(()=>{
+      showEdToast('⚠ Gagal simpan — cek koneksi');
+    });
+  }
+
+  function cancel(){ td.innerHTML = orig; }
+
+  btnOk.addEventListener('click', e=>{ e.stopPropagation(); save(); });
+  btnCancel.addEventListener('click', e=>{ e.stopPropagation(); cancel(); });
+  inp.addEventListener('keydown', function(e){
+    if(!isLong && e.key === 'Enter'){ e.preventDefault(); save(); }
+    if(e.key === 'Escape'){ cancel(); }
+  });
+}
+
+/* ── Toast notification ── */
+let _toastTimer;
+function showEdToast(msg){
+  const t = document.getElementById('edToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+/* Tutup auth modal klik backdrop */
+document.addEventListener('click', function(e){
+  if(e.target.id === 'emOverlay') emCancel();
+});
 
 /* ═══ FULLSCREEN ═══ */
 function enterFullscreen(){
@@ -1297,10 +1501,10 @@ function renderTable(){
       '<td class="td-mono">'+r.id+'</td>' +
       '<td class="td-m">'+fmtDate(r.tanggal)+'</td>' +
       '<td>'+r.area+'</td>' +
-      '<td class="td-m" title="'+esc(r.mesin)+'">'+esc(r.mesin)+'</td>' +
-      '<td class="td-m" title="'+esc(r.part)+'">'+esc(r.part)+'</td>' +
-      '<td class="td-m">'+r.kategori+'</td>' +
-      '<td class="td-m" title="'+esc(r.deskripsi)+'">'+esc(r.deskripsi)+'</td>' +
+      '<td class="td-m ed-cell" title="'+esc(r.mesin)+'" onclick="event.stopPropagation();editCell(this,''+r.id+'','mesin','+JSON.stringify(r.mesin)+')">'+esc(r.mesin)+'</td>' +
+      '<td class="td-m ed-cell" title="'+esc(r.part)+'" onclick="event.stopPropagation();editCell(this,''+r.id+'','part','+JSON.stringify(r.part)+')">'+esc(r.part)+'</td>' +
+      '<td class="td-m ed-cell" onclick="event.stopPropagation();editCell(this,''+r.id+'','kategori','+JSON.stringify(r.kategori)+')">'+r.kategori+'</td>' +
+      '<td class="td-m ed-cell" title="'+esc(r.deskripsi)+'" onclick="event.stopPropagation();editCell(this,''+r.id+'','deskripsi','+JSON.stringify(r.deskripsi)+')">'+esc(r.deskripsi)+'</td>' +
       '<td><span class="pb pb-'+r.priority+'">'+r.priority+'</span></td>' +
       '<td onclick="event.stopPropagation()"><select class="isel" onchange="setPend(\''+r.id+'\',\'dept\',this.value)">'+dOpts+'</select></td>' +
       '<td onclick="event.stopPropagation()"><select class="isel" onchange="setPend(\''+r.id+'\',\'status\',this.value)">'+sOpts+'</select></td>' +
