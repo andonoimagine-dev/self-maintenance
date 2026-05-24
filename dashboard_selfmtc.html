@@ -1276,22 +1276,63 @@ function exportExcel(){
   var today=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
   var filterInfo=buildFilterInfo();
   function ex(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  var headers=['ID','Tanggal','Shift','Area','Mesin','Part','Kategori','Deskripsi','Severity','Frequency','Prioritas','Penemu (PIC)','Dept PIC','PIC Perbaikan','Status'];
-  var nc=headers.length;
-  var headerRow='<tr style="background:#1a5c38;color:#fff;font-weight:bold">'+
-    headers.map(function(h){ return '<th style="border:1px solid #999;padding:6px 8px;white-space:nowrap">'+h+'</th>'; }).join('')+'</tr>';
+
+  /* Definisi kolom: label, lebar (pt Excel ~1pt=7.5px), field */
+  var colDefs=[
+    {h:'ID',          w:70,  wrap:false},
+    {h:'Tanggal',     w:80,  wrap:false},
+    {h:'Shift',       w:45,  wrap:false},
+    {h:'Area',        w:65,  wrap:false},
+    {h:'Mesin',       w:100, wrap:false},
+    {h:'Part',        w:100, wrap:false},
+    {h:'Kategori',    w:100, wrap:false},
+    {h:'Deskripsi',   w:280, wrap:true},
+    {h:'Severity',    w:70,  wrap:false},
+    {h:'Frequency',   w:70,  wrap:false},
+    {h:'Prioritas',   w:60,  wrap:false},
+    {h:'Penemu (PIC)',w:110, wrap:false},
+    {h:'Dept PIC',    w:110, wrap:false},
+    {h:'PIC Perbaikan',w:110,wrap:false},
+    {h:'Status',      w:80,  wrap:false}
+  ];
+  var nc=colDefs.length;
+
+  /* ColGroup untuk lebar kolom yang direspek Excel */
+  var colgroup='<colgroup>'+colDefs.map(function(c){ return '<col style="width:'+c.w+'pt">'; }).join('')+'</colgroup>';
+
+  var thStyle='background:#1a5c38;color:#fff;font-weight:bold;border:1px solid #0f3d20;padding:6px 7px;white-space:nowrap;font-size:10pt;vertical-align:middle';
+  var headerRow='<tr>'+colDefs.map(function(c){ return '<th style="'+thStyle+'">'+c.h+'</th>'; }).join('')+'</tr>';
+
   var dataRows=rows.map(function(r,i){
-    var bg=i%2===0?'#fff':'#f5f5f5';
+    var bg=i%2===0?'#ffffff':'#f2f7f2';
     var cols=[r.id,r.tanggal,r.shift||'',r.area,r.mesin,r.part,r.kategori,r.deskripsi||'',r.severity||'',r.frequency||'',r.priority,r.pic||'',gD(r)||'',r.pic_perbaikan||'',gS(r)];
-    return '<tr style="background:'+bg+'">'+cols.map(function(v){ return '<td style="border:1px solid #ddd;padding:5px 7px;vertical-align:top">'+ex(v)+'</td>'; }).join('')+'</tr>';
+    return '<tr>'+cols.map(function(v,ci){
+      var wrap=colDefs[ci].wrap;
+      var tdStyle='background:'+bg+';border:1px solid #d0d0d0;padding:5px 7px;vertical-align:top;font-size:9pt;'+(wrap?'white-space:pre-wrap;word-wrap:break-word':'white-space:nowrap');
+      return '<td style="'+tdStyle+'">'+ex(v)+'</td>';
+    }).join('')+'</tr>';
   }).join('');
+
+  var titleStyle='font-size:14pt;font-weight:bold;padding:8px 0 2px 0;border:none;color:#0f3d20';
+  var subStyle='font-size:9pt;color:#666;padding:0 0 12px 0;border:none';
+
   var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">'+
     '<head><meta charset="UTF-8">'+
-    '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Temuan Self MTC</x:Name></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->'+
-    '</head><body><table style="font-family:Arial,sans-serif;font-size:10pt;border-collapse:collapse">'+
-    '<tr><td colspan="'+nc+'" style="font-size:13pt;font-weight:bold;padding:8px 0;border:none">Laporan Temuan Abnormal — Self Maintenance</td></tr>'+
-    '<tr><td colspan="'+nc+'" style="font-size:9pt;color:#555;padding:0 0 10px 0;border:none">PT AT Indonesia · ACE Line · '+today+(filterInfo?' · '+filterInfo:'')+' · Total: '+rows.length+' temuan</td></tr>'+
-    headerRow+dataRows+'</table></body></html>';
+    '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'+
+    '<x:Name>Temuan Self MTC</x:Name>'+
+    '<x:WorksheetOptions><x:Print><x:FitWidth/><x:Orientation>Landscape</x:Orientation></x:Print></x:WorksheetOptions>'+
+    '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->'+
+    '<style>'+
+    'table{border-collapse:collapse;font-family:Arial,sans-serif}'+
+    'td,th{font-family:Arial,sans-serif}'+
+    '</style>'+
+    '</head><body>'+
+    '<table>'+
+    '<tr><td colspan="'+nc+'" style="'+titleStyle+'">Laporan Temuan Abnormal — Self Maintenance</td></tr>'+
+    '<tr><td colspan="'+nc+'" style="'+subStyle+'">PT AT Indonesia &nbsp;·&nbsp; ACE Line &nbsp;·&nbsp; '+today+(filterInfo?' &nbsp;·&nbsp; '+filterInfo:'')+' &nbsp;·&nbsp; Total: '+rows.length+' temuan</td></tr>'+
+    colgroup+headerRow+dataRows+
+    '</table></body></html>';
+
   var blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
