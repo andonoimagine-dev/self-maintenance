@@ -1145,10 +1145,15 @@ async function api(action, data={}) {
       Object.entries(data).forEach(([k,v]) => params.set(k, typeof v === 'object' ? JSON.stringify(v) : v));
     }
     const fullUrl = GAS_URL + '?' + params.toString();
+    // Timeout 15 detik agar tidak menggantung halaman selamanya
+    const ctrl = new AbortController();
+    const tmo = setTimeout(() => ctrl.abort(), 15000);
     const res = await fetch(fullUrl, {
       method: 'GET',
       redirect: 'follow',
+      signal: ctrl.signal,
     });
+    clearTimeout(tmo);
     const text = await res.text();
     try {
       const json = JSON.parse(text);
@@ -3714,22 +3719,32 @@ function waDashboard(reportDate, reportShifts){
 
 // ============ INIT ============
 async function initApp() {
-  try {
-    if (ONLINE) {
-      showToast('⟳ Memuat data...','warn');
-      let loaded = false;
-      try { loaded = await loadFromSheets(); } catch(e) { console.error('loadFromSheets:',e); }
-      if (!loaded) { seed(); showToast('⚠ Data lokal digunakan','warn'); }
-      else { showToast('✅ Data dimuat dari server','ok'); try{await flushQueue();}catch(e){} }
-    } else {
-      seed(); setSyncStatus('off');
-    }
-  } catch(e) {
-    console.error('initApp error:',e);
-    try { seed(); } catch(e2) {}
-  }
-  // rDash SELALU berjalan — apapun yang terjadi di atas
+  // ── LANGKAH 1: Render dashboard SEGERA dari localStorage ──
+  // Ini memastikan halaman TIDAK PERNAH blank, walau server lambat/error
+  try { seed(); } catch(e) { console.error('seed:',e); }
   try { rDash(); } catch(e) { console.error('rDash:',e); }
+
+  // ── LANGKAH 2: Load server di BACKGROUND (non-blocking) ──
+  if (ONLINE) {
+    setSyncStatus('syncing');
+    // loadFromSheets dengan timeout — tidak menggantung halaman
+    loadFromSheets()
+      .then(loaded => {
+        if (loaded) {
+          showToast('✅ Data tersinkron dari server','ok');
+          try { rDash(); } catch(e) {}
+          flushQueue().catch(()=>{});
+        } else {
+          setSyncStatus('off');
+        }
+      })
+      .catch(e => {
+        console.error('loadFromSheets bg:',e);
+        setSyncStatus('error');
+      });
+  } else {
+    setSyncStatus('off');
+  }
 }
 
 // Show login if needed, otherwise start app
