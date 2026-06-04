@@ -2973,12 +2973,24 @@ function rSs(){
 }
 async function saveSs(ev){
   showSpinner('Menyimpan data steelshot...',ev?.currentTarget);
-  const date=document.getElementById('ss-d').value;const sh=document.getElementById('ss-sh').value;
-  const s5=+document.getElementById('ss-50').value||0;const wc=+document.getElementById('ss-wc').value||0;
-  const op=document.getElementById('ss-op').value||'Op';const n=document.getElementById('ss-no').value;
+  const date=document.getElementById('ss-d').value;
+  const sh=document.getElementById('ss-sh').value;
+  const s5=+document.getElementById('ss-50').value||0;
+  const wc=+document.getElementById('ss-wc').value||0;
+  const lb=+document.getElementById('ss-lb').value||0;
+  const op=document.getElementById('ss-op').value||'Op';
+  const n=document.getElementById('ss-no').value;
   if(!date){hideSpinner();showToast('Tanggal wajib','warn');return;}
-  ssLog.push({date,sh,s5,wc,op,n});sv('ssLog',ssLog);
-  pushToSheets('saveSteelshot',[{date,shift:sh,ss550_karung:s5,wirecut_karung:wc,total:s5+wc,operator:op,keterangan:n}]);
+  ssLog.push({date,sh,s5,wc,lb,op,n});sv('ssLog',ssLog);
+  pushToSheets('saveSteelshot',[{
+    date,shift:sh,
+    ss550_karung:s5,wirecut_karung:wc,limbah_ss:lb,
+    total:s5+wc,operator:op,keterangan:n
+  }]);
+  // Clear inputs setelah simpan
+  document.getElementById('ss-50').value='';
+  document.getElementById('ss-wc').value='';
+  document.getElementById('ss-lb').value='';
   hideSpinner();rSs();showToast('✅ Data steelshot tersimpan!','ok');
 }
 
