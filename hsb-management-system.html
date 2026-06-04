@@ -1227,7 +1227,7 @@ async function loadFromSheets() {
     // Tolerate typo variants from Sheets (ss55_karung vs ss550_karung)
     const s5v = +x.ss550_karung || +x.ss55_karung || 0;
     const wcv = +x.wirecut_karung || +x.wirecut_karu || 0;
-    const lbv = +x.limbah_ss || 0;
+    const lbv = +x.steelshot_bekas || 0;
     return { date:ds, sh:x.shift, s5:s5v, wc:wcv, lb:lbv, op:x.operator, n:x.keterangan };
   }) : ssLog;
   sv('ssLog',ssLog);
@@ -2984,7 +2984,7 @@ async function saveSs(ev){
   ssLog.push({date,sh,s5,wc,lb,op,n});sv('ssLog',ssLog);
   pushToSheets('saveSteelshot',[{
     date,shift:sh,
-    ss550_karung:s5,wirecut_karung:wc,limbah_ss:lb,
+    ss550_karung:s5,wirecut_karung:wc,steelshot_bekas:lb,
     total:s5+wc,operator:op,keterangan:n
   }]);
   // Clear inputs setelah simpan
