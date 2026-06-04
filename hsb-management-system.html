@@ -3003,11 +3003,10 @@ function ssToggle(key,btn){
   btn.classList.toggle('on',key==='s5'?ssShowS5:key==='wc'?ssShowWc:ssShowLb);
   drawFullSs();
 }
-function lbPd(b,p){const s=document.getElementById('lb-pd-sel');if(s)s.value=p;lbPdSel(p);return;
-  document.querySelectorAll('#p-lb .chc-b').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');lbPdV=p;
-  document.getElementById('lb-cust').style.display=p==='cust'?'flex':'none';
-  if(p!=='cust')drawFullLb();
+function lbPd(b,p){
+  const s=document.getElementById('lb-pd-sel');
+  if(s)s.value=p;
+  lbPdSel(p);
 }
 function buildLbRaw(cf,ct){
   const{f,t}=dtRange(lbPdV,cf,ct);
@@ -3080,11 +3079,27 @@ async function saveLb(ev){
 
 // ============ STEELSHOT ============
 let ssPdV='cur';
-function ssPd(b,p){const s=document.getElementById('ss-pd-sel');if(s)s.value=p;ssPdSel(p);return;
-  document.querySelectorAll('#p-ss .chc-b').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');ssPdV=p;
-  document.getElementById('ss-cust').style.display=p==='cust'?'flex':'none';
-  if(p!=='cust')drawFullSs();
+
+function ssPdSel(v){
+  ssPdV=v;
+  const cust=document.getElementById('ss-cust');
+  if(cust)cust.style.display=v==='cust'?'flex':'none';
+  if(v!=='cust')drawFullSs();
+}
+function ssViewSel(v){
+  ssView=v;
+  drawFullSs();
+}
+function ssDataSel(v){
+  ssShowS5=(v==='all'||v==='s5');
+  ssShowWc=(v==='all'||v==='wc');
+  ssShowLb=(v==='all'||v==='lb');
+  drawFullSs();
+}
+function ssPd(b,p){
+  const s=document.getElementById('ss-pd-sel');
+  if(s)s.value=p;
+  ssPdSel(p);
 }
 function buildSsRaw(cf,ct){
   const{f,t}=dtRange(ssPdV,cf,ct);
