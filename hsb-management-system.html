@@ -366,7 +366,7 @@ tr:hover td{background:var(--accent-bg);}
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (Kg)</div>
             <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (Kg)</div>
-            <div class="lg-i"><div class="lg-d" style="background:#b45309;"></div>Limbah SS (Kg)</div>
+            <div class="lg-i"><div class="lg-d" style="background:#b45309;"></div>SS Bekas (Kg)</div>
           </div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
             <button class="chc-b on" id="db-ss-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsSetView('day',this)">Harian</button>
@@ -374,7 +374,7 @@ tr:hover td{background:var(--accent-bg);}
             <span style="width:1px;height:16px;background:var(--border);margin:0 2px;"></span>
             <button class="chc-b on" id="db-ss-f-550" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('s5',this)">SS 550</button>
             <button class="chc-b on" id="db-ss-f-wc" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('wc',this)">Wire Cut</button>
-            <button class="chc-b on" id="db-ss-f-lb" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('lb',this)">Limbah SS</button>
+            <button class="chc-b on" id="db-ss-f-lb" style="font-size:.6rem;padding:2px 6px;" onclick="dbSsToggle('lb',this)">SS Bekas</button>
           </div>
         </div>
       </div>
@@ -678,7 +678,7 @@ tr:hover td{background:var(--accent-bg);}
       <div class="fg"><label>Shift</label><select id="ss-sh"><option>NSP</option><option>NSM</option></select></div>
       <div class="fg"><label>SS 550 (Kg)</label><input type="number" id="ss-50" min="0"></div>
       <div class="fg"><label>Wire Cut (Kg)</label><input type="number" id="ss-wc" min="0"></div>
-      <div class="fg"><label>Limbah Steelshot (Kg)</label><input type="number" id="ss-lb" min="0" step="0.1"></div>
+      <div class="fg"><label>Steelshot Bekas (Kg)</label><input type="number" id="ss-lb" min="0" step="0.1"></div>
       <div class="fg"><label>Op</label><input type="text" id="ss-op"></div>
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="ss-no"></textarea></div></div>
@@ -709,7 +709,7 @@ tr:hover td{background:var(--accent-bg);}
       <span style="width:1px;height:18px;background:var(--border);margin:0 4px;"></span>
       <button class="chc-b on" id="ss-f-550" onclick="ssToggle('s5',this)">🟣 SS 550</button>
       <button class="chc-b on" id="ss-f-wc" onclick="ssToggle('wc',this)">🟢 Wire Cut</button>
-      <button class="chc-b on" id="ss-f-lb" onclick="ssToggle('lb',this)">🟤 Limbah SS</button>
+      <button class="chc-b on" id="ss-f-lb" onclick="ssToggle('lb',this)">🟤 SS Bekas</button>
     </div>
     <div style="height:260px;position:relative;"><canvas id="c-ss-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
@@ -720,7 +720,7 @@ tr:hover td{background:var(--accent-bg);}
   <div class="cd">
     <div class="st">📋 History Steelshot</div>
     <div class="tw"><table>
-      <thead><tr><th>Tgl</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>Limbah SS</th><th>Total</th><th>Op</th><th>Ket</th></tr></thead>
+      <thead><tr><th>Tgl</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>SS Bekas</th><th>Total</th><th>Op</th><th>Ket</th></tr></thead>
       <tbody id="ss-tb"></tbody>
     </table></div>
   </div>
@@ -748,8 +748,8 @@ tr:hover td{background:var(--accent-bg);}
     <div class="sr"><div class="sl">SS 550 — Atas (Kg/hari)</div><input class="si" type="number" id="s-shi"></div>
     <div class="sr"><div class="sl">Wire Cut — Bawah (Kg/hari)</div><input class="si" type="number" id="s-wlo"></div>
     <div class="sr"><div class="sl">Wire Cut — Atas (Kg/hari)</div><input class="si" type="number" id="s-whi"></div>
-    <div class="sr"><div class="sl">Limbah SS — Bawah (Kg/hari)</div><input class="si" type="number" id="s-lslo"></div>
-    <div class="sr"><div class="sl">Limbah SS — Atas (Kg/hari)</div><input class="si" type="number" id="s-lshi"></div>
+    <div class="sr"><div class="sl">SS Bekas — Bawah (Kg/hari)</div><input class="si" type="number" id="s-lslo"></div>
+    <div class="sr"><div class="sl">SS Bekas — Atas (Kg/hari)</div><input class="si" type="number" id="s-lshi"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt(event)">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
@@ -3225,7 +3225,7 @@ function waSteelshot(){
   msg+=`*Wire Cut*\n`;
   msg+=`  NSP: ${wcNSP} Kg | NSM: ${wcNSM} Kg\n`;
   msg+=`  Total: ${wcNSP+wcNSM} Kg\n\n`;
-  msg+=`*Limbah Steelshot*\n`;
+  msg+=`*SS Bekas*\n`;
   msg+=`  NSP: ${lbNSP} Kg | NSM: ${lbNSM} Kg\n`;
   msg+=`  Total: ${lbNSP+lbNSM} Kg\n`;
   msg+=`\n_${tgl} — TPM HSB Casting 2_`;
