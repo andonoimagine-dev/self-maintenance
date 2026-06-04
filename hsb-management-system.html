@@ -1083,15 +1083,7 @@ document.addEventListener('click', tryAutoFS, {once:true});
 document.addEventListener('touchend', tryAutoFS, {once:true});
 
 // ── Sync checkbox state in rSet ──────────────────────────
-const _origRSet2=window.rSet;
-window.rSet=function(){
-  if(typeof _origRSet2==='function') _origRSet2();
-  const ds=getDisplaySettings();
-  const a=document.getElementById('s-autofs');
-  const r=document.getElementById('s-resumefs');
-  if(a) a.checked=ds.autoFS;
-  if(r) r.checked=ds.resumeFS;
-};
+// Display settings loaded in rSet directly
 
 // ── Spinner helpers ──────────────────────────────────────
 let _spinnerBtn=null; // track which button triggered spinner
@@ -3114,7 +3106,7 @@ function drawFullSs(){
   let cf,ct;
   if(ssPdV==='cust'){cf=document.getElementById('ss-cf').value;ct=document.getElementById('ss-ct').value;if(!cf||!ct)return;}
   const daily=buildSsRaw(cf,ct);
-  const data=ssView==='week'?aggregateWeekly(daily,['s5','wc']):daily;
+  const data=ssView==='week'?aggregateWeekly(daily,['s5','wc','lb']):daily;
   const ssSr=[];
   if(ssShowS5)ssSr.push({k:'s5',c:'#7c3aed'});
   if(ssShowWc)ssSr.push({k:'wc',c:'#059669'});
