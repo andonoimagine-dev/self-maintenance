@@ -3714,24 +3714,22 @@ function waDashboard(reportDate, reportShifts){
 
 // ============ INIT ============
 async function initApp() {
-  // Try to load from Google Sheets first
-  if (ONLINE) {
-    showToast('⟳ Memuat data dari server...','warn');
-    const loaded = await loadFromSheets();
-    if (!loaded) {
-      // Fallback to local
-      seed();
-      showToast('⚠ Menggunakan data lokal (server tidak tersedia)','warn');
+  try {
+    if (ONLINE) {
+      showToast('⟳ Memuat data...','warn');
+      let loaded = false;
+      try { loaded = await loadFromSheets(); } catch(e) { console.error('loadFromSheets:',e); }
+      if (!loaded) { seed(); showToast('⚠ Data lokal digunakan','warn'); }
+      else { showToast('✅ Data dimuat dari server','ok'); try{await flushQueue();}catch(e){} }
     } else {
-      showToast('✅ Data berhasil dimuat dari server','ok');
-      // Try to flush any queued offline changes
-      await flushQueue();
+      seed(); setSyncStatus('off');
     }
-  } else {
-    seed();
-    setSyncStatus('off');
+  } catch(e) {
+    console.error('initApp error:',e);
+    try { seed(); } catch(e2) {}
   }
-  rDash();
+  // rDash SELALU berjalan — apapun yang terjadi di atas
+  try { rDash(); } catch(e) { console.error('rDash:',e); }
 }
 
 // Show login if needed, otherwise start app
