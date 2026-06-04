@@ -203,12 +203,10 @@ tr:hover td{background:var(--accent-bg);}
 .btn-s{padding:5px 11px;font-size:.7rem;}
 
 /* MODAL */
-.mv{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(2px);}
-@media(min-width:600px){.mv{align-items:center;padding:14px;}}
+.mv{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(2px);}
 
 .mv.on{display:flex;}
-.mw{background:var(--card);border:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 -4px 30px rgba(0,0,0,.2);}
-@media(min-width:600px){.mw{border-radius:14px;max-width:430px;max-height:90vh;box-shadow:0 8px 30px rgba(0,0,0,.2);}}
+.mw{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.3);}
 .mh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);border-radius:14px 14px 0 0;z-index:1;}
 .mh h3{font-size:1rem;font-weight:700;}
 .mx{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;padding:2px 6px;border-radius:5px;line-height:1;}
@@ -3422,10 +3420,21 @@ function sendWA(text){
   const url=no
     ? `https://wa.me/${no}?text=${encoded}`
     : `https://wa.me/?text=${encoded}`;
-  // Coba window.open dulu; kalau diblokir (umum di Android), pakai location.href
-  const win=window.open(url,'_blank');
-  if(!win||win.closed||typeof win.closed==='undefined'){
-    // Popup diblokir — navigasi langsung (tidak diblokir browser)
+
+  // Metode paling andal untuk Android: buat elemen <a> lalu klik.
+  // Ini mempertahankan "user gesture" sehingga tidak diblokir browser.
+  try {
+    const a=document.createElement('a');
+    a.href=url;
+    a.target='_blank';
+    a.rel='noopener noreferrer';
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    // Bersihkan elemen setelah sebentar
+    setTimeout(()=>{ try{document.body.removeChild(a);}catch(e){} }, 100);
+  } catch(e) {
+    // Jaring pengaman: navigasi langsung (tidak pernah diblokir)
     window.location.href=url;
   }
 }
