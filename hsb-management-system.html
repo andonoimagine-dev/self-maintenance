@@ -3529,26 +3529,16 @@ function waSteelshot(reportDate, reportShifts){
   reportDate   = reportDate   || dStr(new Date());
   reportShifts = reportShifts || [getActiveShift()];
   const now=new Date();
-  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
   const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  const todayStr=dStr(now);
+  const [ry,rm,rd]=reportDate.split('-');
+  const reportTgl=`${+rd}-${M[+rm-1]}-${ry}`;
+  const activeShift = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
 
-  // Ikuti shift yang sedang dipilih di form input
-  const shiftEl=document.getElementById('ss-sh');
-  const activeShift=shiftEl?shiftEl.value:'NSP';
-
-  // Gunakan tanggal shift yang benar (NSM bisa lintas tengah malam)
-  const shiftDate=getShiftDate(activeShift);
-
-  const ss=ssLog.filter(s=>s.date===shiftDate);
-
-  // Hanya tampilkan data shift yang sedang aktif
-  const ssShift=ss.filter(s=>s.sh===activeShift);
+  const ssShift = ssLog.filter(s=>s.date===reportDate && reportShifts.includes(s.sh));
   const ss5=ssShift.reduce((a,x)=>a+(+x.s5||0),0);
   const wc =ssShift.reduce((a,x)=>a+(+x.wc||0),0);
   const lb =ssShift.reduce((a,x)=>a+(+x.lb||0),0);
 
-  // Status helper
   function ssStatus(val,lo,hi){
     if(!lo&&!hi)  return '➖ Tidak ada standar';
     if(val===0)   return '⬜ Belum ada input';
@@ -3556,47 +3546,37 @@ function waSteelshot(reportDate, reportShifts){
     if(lo>0&&val<lo) return `🟡 *OUT STANDARD* (di bawah ${lo} Kg)`;
     return '🟢 Normal';
   }
-
   const ss5St=ssStatus(ss5,cfg.sLo,cfg.sHi);
   const wcSt =ssStatus(wc, cfg.wLo,cfg.wHi);
   const lbSt =ssStatus(lb, cfg.lsLo,cfg.lsHi);
-
   const hasOut=[ss5St,wcSt,lbSt].some(s=>s.includes('OUT'));
   const allOk =[ss5St,wcSt,lbSt].every(s=>s.includes('Normal')||s.includes('standar')||s.includes('input'));
   const overallEmoji=hasOut?'🔴':allOk?'🟢':'🟡';
   const overallText =hasOut?'ADA ITEM OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN';
-
   const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
 
   let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n`;
-  const [spy,spm,spd]=reportDate.split('-');
-  const reportTglSp=`${+rd}-${M[+rm-1]}-${ry}`;
   msg+=`📅 ${reportTgl}  🕐 ${jam}  |  Shift: *${activeShift}*\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-
   msg+=`*SS 550*\n`;
   msg+=`  Total ${activeShift}: *${ss5} Kg*\n`;
   msg+=`  Standar: ${cfg.sLo||0}–${cfg.sHi||0} Kg/hari\n`;
   msg+=`  Status: ${ss5St}\n\n`;
-
   msg+=`*Wire Cut*\n`;
   msg+=`  Total ${activeShift}: *${wc} Kg*\n`;
   msg+=`  Standar: ${cfg.wLo||0}–${cfg.wHi||0} Kg/hari\n`;
   msg+=`  Status: ${wcSt}\n\n`;
-
   msg+=`*SS Bekas*\n`;
   msg+=`  Total ${activeShift}: *${lb} Kg*\n`;
   msg+=`  Standar: ${cfg.lsLo||0}–${cfg.lsHi||0} Kg/hari\n`;
   msg+=`  Status: ${lbSt}\n`;
-
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`${overallEmoji} *KESIMPULAN: ${overallText}*\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`📊 Dashboard: ${dashUrl}\n`;
-  msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
+  msg+=`\n_${reportTgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
-
 function waSparepart(reportDate){
   reportDate = reportDate || dStr(new Date());
   const now=new Date();
