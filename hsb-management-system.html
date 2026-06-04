@@ -292,6 +292,13 @@ tr:hover td{background:var(--accent-bg);}
   white-space:nowrap;
 }
 
+/* FILTER BAR — dropdown style */
+.fbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.fbar-lbl{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;}
+.fbar-sel{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;height:34px;min-width:100px;}
+.fbar-sel:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+.fbar-sep{width:1px;height:24px;background:var(--border);flex-shrink:0;}
+
 /* MISC */
 .fb{display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .fg-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
@@ -335,15 +342,8 @@ tr:hover td{background:var(--accent-bg);}
 
 <!-- ===== DASHBOARD ===== -->
 <div id="p-dash" class="pg on">
-  <div id="al-box" class="al"></div>
-  <!-- WA RESUME BUTTON -->
-  <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-    <button class="btn" onclick="waDashboard()" style="background:#25D366;color:#fff;gap:7px;font-size:.82rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Kirim Resume ke WhatsApp
-    </button>
-  </div>
   <div class="cd" style="margin-bottom:12px;">
+<div class="cd" style="margin-bottom:12px;">
     <div class="st">⚙ Status Impeller — 16 Unit</div>
     <div class="iac">
       <button class="iac-b iac-on" onclick="allOn()">▶ SEMUA ON <span style="opacity:.75;">(16 unit)</span></button>
@@ -352,6 +352,8 @@ tr:hover td{background:var(--accent-bg);}
     <div class="bar" id="i-sum"></div>
     <div class="ig" id="i-grid"></div>
   </div>
+  </div>
+
 
   <div class="db3">
     <!-- STEEL SHOT -->
@@ -418,6 +420,15 @@ tr:hover td{background:var(--accent-bg);}
       </div>
     </div>
   </div>
+
+  <div id="al-box" class="al"></div>
+    <!-- WA RESUME BUTTON -->
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+    <button class="btn" onclick="openWAPicker('dashboard')" style="background:#25D366;color:#fff;gap:7px;font-size:.82rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Kirim Resume ke WhatsApp
+    </button>
+  </div
 </div>
 
 <!-- ===== PREVENTIVE ===== -->
@@ -485,7 +496,7 @@ tr:hover td{background:var(--accent-bg);}
       <div class="fg"><label>Catatan</label><input type="text" id="sp-no"></div>
     </div>
     <button class="btn btn-p" onclick="saveSp(event)">💾 Simpan</button>
-    <button class="btn btn-s" onclick="waSparepart()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
+    <button class="btn btn-s" onclick="openWAPicker('sparepart')" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
 
   <div class="cd" style="margin-bottom:12px;">
@@ -550,47 +561,47 @@ tr:hover td{background:var(--accent-bg);}
     <div class="st">⚡ Input Ampere — 16 Impeller Sekaligus</div>
     <div class="fr">
       <div class="fg"><label>Tgl &amp; Waktu</label><input type="datetime-local" id="amp-dt"></div>
-      <div class="fg"><label>Shift</label><select id="amp-sh"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>Shift</label><select id="amp-sh" onchange="this.dataset.manualSet='1'"><option>NSP</option><option>NSM</option></select></div>
       <div class="fg"><label>Operator</label><input type="text" id="amp-op"></div>
     </div>
     <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">Range normal: <span id="amp-rg" class="mn t-ok" style="font-weight:700;"></span></div>
     <div class="ig" id="amp-ig"></div>
     <div class="fr" style="margin-top:10px;"><div class="fg"><label>Catatan</label><textarea id="amp-no"></textarea></div></div>
     <button class="btn btn-p" onclick="saveAmp(event)">💾 Simpan Semua</button>
-    <button class="btn btn-s" onclick="waAmpere()" style="background:#25D366;color:#fff;margin-top:8px;margin-left:8px;">
+    <button class="btn btn-s" onclick="openWAPicker('ampere')" style="background:#25D366;color:#fff;margin-top:8px;margin-left:8px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA
     </button>
   </div>
   <!-- GRAFIK TREND AMPERE -->
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📈 Grafik Trend Ampere Harian</div>
-    <!-- Periode -->
-    <div class="chc">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">PERIODE:</span>
-      <button class="chc-b on" onclick="ampPd(this,'cur')">Bulan Ini</button>
-      <button class="chc-b" onclick="ampPd(this,'prev')">Bulan Lalu</button>
-      <button class="chc-b" onclick="ampPd(this,'3m')">3 Bulan</button>
-      <button class="chc-b" onclick="ampPd(this,'cust')">Custom</button>
-      <span id="amp-cust" style="display:none;" class="fg-r">
-        <input type="date" id="amp-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;min-width:120px;">
+    <div class="fbar">
+      <span class="fbar-lbl">Periode</span>
+      <select class="fbar-sel" id="amp-pd-sel" onchange="ampPdSel(this.value)">
+        <option value="cur">Bulan Ini</option>
+        <option value="prev">Bulan Lalu</option>
+        <option value="3m">3 Bulan</option>
+        <option value="cust">Custom</option>
+      </select>
+      <span id="amp-cust" style="display:none;align-items:center;gap:6px;">
+        <input type="date" id="amp-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
         <span style="font-size:.72rem;color:var(--muted);">s/d</span>
-        <input type="date" id="amp-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
-        <button class="btn btn-p btn-s" onclick="drawAmpChart()">Tampilkan</button>
+        <input type="date" id="amp-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
+        <button class="btn btn-p btn-s" onclick="drawAmpChart()">Tampil</button>
       </span>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Tampilan</span>
+      <select class="fbar-sel" id="amp-view-sel" onchange="ampViewSel(this.value)">
+        <option value="day">Harian</option>
+        <option value="week">Mingguan</option>
+      </select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Impeller</span>
+      <select class="fbar-sel" id="amp-imp-sel-dd" onchange="ampImpSelDD(this.value)" style="min-width:130px;">
+        <option value="all">Semua (16)</option>
+      </select>
     </div>
-    <!-- Pilih Impeller -->
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILAN:</span>
-      <button class="chc-b on" id="amp-v-day" onclick="ampSetView('day',this)">📅 Harian</button>
-      <button class="chc-b" id="amp-v-week" onclick="ampSetView('week',this)">📆 Mingguan</button>
-    </div>
-    <div style="margin-bottom:8px;">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;margin-right:8px;">IMPELLER:</span>
-      <button class="chc-b on" onclick="ampSelAll(this)" style="margin-right:4px;">Semua</button>
-      <button class="chc-b" onclick="ampSelNone(this)" style="margin-right:8px;">Clear</button>
-      <div id="amp-imp-sel" style="display:inline-flex;flex-wrap:wrap;gap:4px;margin-top:4px;"></div>
-    </div>
-    <!-- Chart -->
+        <!-- Chart -->
     <div style="height:280px;position:relative;"><canvas id="c-amp" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <!-- Legend -->
     <div id="amp-legend" class="lg-r" style="margin-top:8px;flex-wrap:wrap;"></div>
@@ -615,7 +626,7 @@ tr:hover td{background:var(--accent-bg);}
     <div class="st">🗑 Input Limbah Harian</div>
     <div class="fr">
       <div class="fg"><label>Tanggal</label><input type="date" id="lb-d"></div>
-      <div class="fg"><label>Shift</label><select id="lb-sh"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>Shift</label><select id="lb-sh" onchange="this.dataset.manualSet='1'"><option>NSP</option><option>NSM</option></select></div>
       <div class="fg"><label>Pasir (Trolley)</label><input type="number" id="lb-vp" step="0.5" min="0" placeholder="0"></div>
       <div class="fg"><label>Debu (Trolley)</label><input type="number" id="lb-vd" step="0.5" min="0" placeholder="0"></div>
       <div class="fg"><label>Lokasi TPS</label><input type="text" id="lb-l" placeholder="TPS-1"></div>
@@ -623,34 +634,41 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="lb-kt"></textarea></div></div>
     <button class="btn btn-p" onclick="saveLb(event)">💾 Simpan</button>
-    <button class="btn btn-s" onclick="waLimbah()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
+    <button class="btn btn-s" onclick="openWAPicker('limbah')" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📈 Grafik Trend Limbah</div>
-    <div class="chc">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">PERIODE:</span>
-      <button class="chc-b on" data-pd="cur" onclick="lbPd(this,'cur')">Bulan Ini</button>
-      <button class="chc-b" data-pd="prev" onclick="lbPd(this,'prev')">Bulan Lalu</button>
-      <button class="chc-b" data-pd="3m" onclick="lbPd(this,'3m')">3 Bulan</button>
-      <button class="chc-b" data-pd="6m" onclick="lbPd(this,'6m')">6 Bulan</button>
-      <button class="chc-b" data-pd="1y" onclick="lbPd(this,'1y')">1 Tahun</button>
-      <button class="chc-b" data-pd="cust" onclick="lbPd(this,'cust')">Custom</button>
-      <span id="lb-cust" style="display:none;" class="fg-r">
-        <input type="date" id="lb-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;min-width:120px;">
+    <div class="fbar">
+      <span class="fbar-lbl">Periode</span>
+      <select class="fbar-sel" id="lb-pd-sel" onchange="lbPdSel(this.value)">
+        <option value="cur">Bulan Ini</option>
+        <option value="prev">Bulan Lalu</option>
+        <option value="3m">3 Bulan</option>
+        <option value="6m">6 Bulan</option>
+        <option value="1y">1 Tahun</option>
+        <option value="cust">Custom</option>
+      </select>
+      <span id="lb-cust" style="display:none;align-items:center;gap:6px;">
+        <input type="date" id="lb-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
         <span style="font-size:.72rem;color:var(--muted);">s/d</span>
-        <input type="date" id="lb-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
-        <button class="btn btn-p btn-s" onclick="drawFullLb()">Tampilkan</button>
+        <input type="date" id="lb-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
+        <button class="btn btn-p btn-s" onclick="drawFullLb()">Tampil</button>
       </span>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Tampilan</span>
+      <select class="fbar-sel" id="lb-view-sel" onchange="lbViewSel(this.value)">
+        <option value="day">Harian</option>
+        <option value="week">Mingguan</option>
+      </select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Data</span>
+      <select class="fbar-sel" id="lb-data-sel" onchange="lbDataSel(this.value)">
+        <option value="both">Pasir + Debu</option>
+        <option value="pasir">Pasir saja</option>
+        <option value="debu">Debu saja</option>
+      </select>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILAN:</span>
-      <button class="chc-b on" id="lb-v-day" onclick="lbSetView('day',this)">📅 Harian</button>
-      <button class="chc-b" id="lb-v-week" onclick="lbSetView('week',this)">📆 Mingguan</button>
-      <span style="width:1px;height:18px;background:var(--border);margin:0 4px;"></span>
-      <button class="chc-b on" id="lb-f-pasir" onclick="lbToggle('pasir',this)">🟠 Pasir</button>
-      <button class="chc-b on" id="lb-f-debu" onclick="lbToggle('debu',this)">🔵 Debu</button>
-    </div>
-    <div style="height:260px;position:relative;"><canvas id="c-lb-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
+        <div style="height:260px;position:relative;"><canvas id="c-lb-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
       <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Pasir (Trolley)</div>
       <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Debu (Trolley)</div>
@@ -675,7 +693,7 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div class="fr">
       <div class="fg"><label>Tanggal</label><input type="date" id="ss-d"></div>
-      <div class="fg"><label>Shift</label><select id="ss-sh"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>Shift</label><select id="ss-sh" onchange="this.dataset.manualSet='1'"><option>NSP</option><option>NSM</option></select></div>
       <div class="fg"><label>SS 550 (Kg)</label><input type="number" id="ss-50" min="0"></div>
       <div class="fg"><label>Wire Cut (Kg)</label><input type="number" id="ss-wc" min="0"></div>
       <div class="fg"><label>Steelshot Bekas (Kg)</label><input type="number" id="ss-lb" min="0" step="0.1"></div>
@@ -683,35 +701,42 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="ss-no"></textarea></div></div>
     <button class="btn btn-p" onclick="saveSs(event)">💾 Simpan</button>
-    <button class="btn btn-s" onclick="waSteelshot()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
+    <button class="btn btn-s" onclick="openWAPicker('steelshot')" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📈 Grafik Trend Steelshot</div>
-    <div class="chc">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">PERIODE:</span>
-      <button class="chc-b on" data-pd="cur" onclick="ssPd(this,'cur')">Bulan Ini</button>
-      <button class="chc-b" data-pd="prev" onclick="ssPd(this,'prev')">Bulan Lalu</button>
-      <button class="chc-b" data-pd="3m" onclick="ssPd(this,'3m')">3 Bulan</button>
-      <button class="chc-b" data-pd="6m" onclick="ssPd(this,'6m')">6 Bulan</button>
-      <button class="chc-b" data-pd="1y" onclick="ssPd(this,'1y')">1 Tahun</button>
-      <button class="chc-b" data-pd="cust" onclick="ssPd(this,'cust')">Custom</button>
-      <span id="ss-cust" style="display:none;" class="fg-r">
-        <input type="date" id="ss-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;min-width:120px;">
+    <div class="fbar">
+      <span class="fbar-lbl">Periode</span>
+      <select class="fbar-sel" id="ss-pd-sel" onchange="ssPdSel(this.value)">
+        <option value="cur">Bulan Ini</option>
+        <option value="prev">Bulan Lalu</option>
+        <option value="3m">3 Bulan</option>
+        <option value="6m">6 Bulan</option>
+        <option value="1y">1 Tahun</option>
+        <option value="cust">Custom</option>
+      </select>
+      <span id="ss-cust" style="display:none;align-items:center;gap:6px;">
+        <input type="date" id="ss-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
         <span style="font-size:.72rem;color:var(--muted);">s/d</span>
-        <input type="date" id="ss-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 7px;color:var(--text);font-size:.72rem;">
-        <button class="btn btn-p btn-s" onclick="drawFullSs()">Tampilkan</button>
+        <input type="date" id="ss-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
+        <button class="btn btn-p btn-s" onclick="drawFullSs()">Tampil</button>
       </span>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Tampilan</span>
+      <select class="fbar-sel" id="ss-view-sel" onchange="ssViewSel(this.value)">
+        <option value="day">Harian</option>
+        <option value="week">Mingguan</option>
+      </select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Data</span>
+      <select class="fbar-sel" id="ss-data-sel" onchange="ssDataSel(this.value)">
+        <option value="all">Semua</option>
+        <option value="s5">SS 550 saja</option>
+        <option value="wc">Wire Cut saja</option>
+        <option value="lb">SS Bekas saja</option>
+      </select>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">TAMPILAN:</span>
-      <button class="chc-b on" id="ss-v-day" onclick="ssSetView('day',this)">📅 Harian</button>
-      <button class="chc-b" id="ss-v-week" onclick="ssSetView('week',this)">📆 Mingguan</button>
-      <span style="width:1px;height:18px;background:var(--border);margin:0 4px;"></span>
-      <button class="chc-b on" id="ss-f-550" onclick="ssToggle('s5',this)">🟣 SS 550</button>
-      <button class="chc-b on" id="ss-f-wc" onclick="ssToggle('wc',this)">🟢 Wire Cut</button>
-      <button class="chc-b on" id="ss-f-lb" onclick="ssToggle('lb',this)">🟤 SS Bekas</button>
-    </div>
-    <div style="height:260px;position:relative;"><canvas id="c-ss-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
+        <div style="height:260px;position:relative;"><canvas id="c-ss-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
       <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>SS 550 (Kg)</div>
       <div class="lg-i"><div class="lg-d" style="background:#059669;"></div>Wire Cut (Kg)</div>
@@ -837,6 +862,18 @@ tr:hover td{background:var(--accent-bg);}
       <label>Ampere Saat Ini (A)</label>
       <input type="number" id="mi-a" step="0.1">
       <div id="mi-af" style="font-size:.78rem;margin:-7px 0 10px;min-height:18px;font-weight:600;"></div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;">
+          <label>Shift</label>
+          <select id="mi-sh" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;margin-bottom:10px;">
+            <option>NSP</option><option>NSM</option>
+          </select>
+        </div>
+        <div style="flex:2;">
+          <label>Operator</label>
+          <input type="text" id="mi-op" placeholder="Nama operator..." style="margin-bottom:10px;">
+        </div>
+      </div>
       <label>Catatan</label>
       <textarea id="mi-n"></textarea>
       <div id="mi-lt"></div>
@@ -844,6 +881,52 @@ tr:hover td{background:var(--accent-bg);}
         <button class="btn btn-p" style="flex:1;" onclick="saveMi(event)">💾 Simpan</button>
         <button class="btn btn-w btn-s" onclick="confI()">✔ Konfirmasi OK</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL WA REPORT PICKER -->
+<div class="mv" id="m-wa-picker">
+  <div class="mw" style="max-width:360px;">
+    <div class="mh">
+      <div>
+        <h3 id="wa-picker-title">📤 Kirim Laporan WA</h3>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:2px;" id="wa-picker-sub">Pilih tanggal dan shift yang akan dilaporkan</div>
+      </div>
+      <button class="mx" onclick="cM('m-wa-picker')">×</button>
+    </div>
+    <div class="mb">
+      <!-- Tanggal -->
+      <label>Tanggal Laporan</label>
+      <input type="date" id="wa-pick-date" style="margin-bottom:10px;">
+      <!-- Shortcut tanggal -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="btn btn-g btn-s" onclick="waPickDate(0)">Hari Ini</button>
+        <button class="btn btn-g btn-s" onclick="waPickDate(-1)">Kemarin</button>
+        <button class="btn btn-g btn-s" onclick="waPickDate(-2)">2 Hari Lalu</button>
+        <button class="btn btn-g btn-s" onclick="waPickDate(-3)">3 Hari Lalu</button>
+      </div>
+      <!-- Shift -->
+      <label>Shift</label>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button class="btn" id="wa-pick-nsp" onclick="waPickShift('NSP')"
+          style="flex:1;background:var(--accent);color:#fff;">NSP</button>
+        <button class="btn" id="wa-pick-nsm" onclick="waPickShift('NSM')"
+          style="flex:1;background:var(--card2);border:1px solid var(--border);color:var(--text2);">NSM</button>
+        <button class="btn" id="wa-pick-both" onclick="waPickShift('BOTH')"
+          style="flex:1;background:var(--card2);border:1px solid var(--border);color:var(--text2);">NSP+NSM</button>
+      </div>
+      <!-- Preview info -->
+      <div id="wa-pick-preview" style="background:var(--card2);border:1px solid var(--border);
+        border-radius:8px;padding:10px 12px;font-size:.78rem;color:var(--text2);margin-bottom:14px;">
+      </div>
+      <!-- Send button -->
+      <button class="btn btn-p" style="width:100%;" onclick="waPickSend()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Kirim ke WhatsApp
+      </button>
     </div>
   </div>
 </div>
@@ -1362,6 +1445,36 @@ function fD(s){
 }
 function fDt(s){if(!s)return'-';const d=parseDT(s)||parseDate(s);if(!d||isNaN(d))return s;return`${d.getDate()}-${M[d.getMonth()]}-${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 const today=()=>dStr(new Date());
+
+// Kembalikan tanggal shift yang sedang aktif berdasarkan jam kerja
+// NSP: 07:00–19:29 → tanggal hari ini
+// NSM: 19:30–23:59 → tanggal hari ini
+// NSM: 00:00–06:59 → tanggal KEMARIN (masih shift NSM hari sebelumnya)
+function getShiftDate(shiftCode){
+  const now=new Date();
+  const h=now.getHours(), mn=now.getMinutes();
+  const totalMin=h*60+mn; // menit sejak tengah malam
+  const NSM_START=19*60+30; // 19:30
+  const NSM_END  = 7*60;    // 07:00
+  if(shiftCode==='NSM'){
+    // Jam 00:00–06:59 = masih shift NSM dari kemarin
+    if(totalMin < NSM_END){
+      const yesterday=new Date(now);
+      yesterday.setDate(yesterday.getDate()-1);
+      return dStr(yesterday);
+    }
+  }
+  return dStr(now);
+}
+
+// Deteksi shift aktif berdasarkan jam sekarang
+function getActiveShift(){
+  const now=new Date();
+  const totalMin=now.getHours()*60+now.getMinutes();
+  // NSP: 07:00 (420) s/d 19:29 (1169)
+  return (totalMin>=420 && totalMin<1170)?'NSP':'NSM';
+}
+
 const curMo=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
 function nowL(){const d=new Date();const off=d.getTimezoneOffset();const lcl=new Date(d.getTime()-off*60000);return lcl.toISOString().slice(0,16);}
 
@@ -1894,6 +2007,12 @@ function oM(i){
   document.getElementById('mi-t').textContent=`${nms[i]} — #${i+1}`;
   document.getElementById('mi-a').value=x.a||'';
   document.getElementById('mi-n').value=x.n||'';
+  // Auto-fill shift & operator from last amp log entry for this impeller
+  const lastLog=ampLog.filter(l=>+l.i===i).sort((a,b)=>(b.dt||'').localeCompare(a.dt||''))[0];
+  const miSh=document.getElementById('mi-sh');
+  const miOp=document.getElementById('mi-op');
+  if(miSh) miSh.value=lastLog?.sh||getActiveShift();
+  if(miOp) miOp.value=lastLog?.op&&lastLog.op!=='Manual'?lastLog.op:'';
   upMiAf(x.a);
   let h='<div style="font-size:.65rem;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;">Lifetime Sparepart</div>';
   Object.keys(ltCfg).filter(n=>n!=='Hanger').forEach(nm=>{
@@ -1920,13 +2039,17 @@ async function saveMi(ev){
   showSpinner('Menyimpan...',ev?.currentTarget);
   const a=parseFloat(document.getElementById('mi-a').value);const n=document.getElementById('mi-n').value;
   if(!isNaN(a)){st[activeI].a=a;st[activeI].dt=new Date().toISOString();
-    const row={datetime:new Date().toISOString(),shift:'Manual',impeller_idx:activeI,impeller_name:nms[activeI],ampere:a,status:ampS(a),operator:'Manual',catatan:n};
-    ampLog.push({dt:row.datetime,sh:'Manual',i:activeI,v:a,op:'Manual'});sv('ampLog',ampLog);
+    const miShift=document.getElementById('mi-sh')?.value||getActiveShift();
+    const miOp=document.getElementById('mi-op')?.value||'Manual';
+    const row={datetime:new Date().toISOString(),shift:miShift,impeller_idx:activeI,impeller_name:nms[activeI],ampere:a,status:ampS(a),operator:miOp,catatan:n};
+    ampLog.push({dt:row.datetime,sh:miShift,i:activeI,v:a,op:miOp});sv('ampLog',ampLog);
     pushToSheets('saveAmpere',[row]);
   }
   st[activeI].n=n;sv('st',st);
   pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));
   hideSpinner();cM('m-i');rIGrid();rAlerts();
+  // Refresh ampere log table if on that tab
+  if(document.getElementById('p-amp').classList.contains('on'))rAmp();
 }
 async function confI(){if(activeI==null)return;st[activeI].cf=true;sv('st',st);pushToSheets('updateImpState',st.map((s,i)=>({idx:i,name:nms[i],on:s.on,amp:s.a,dt:s.dt||'',confirmed:s.cf,note:s.n||''})));cM('m-i');rIGrid();rAlerts();showToast('✅ Impeller dikonfirmasi OK','ok');}
 function allOn(){st.forEach(s=>s.on=true);sv('st',st);rIGrid();rAlerts();}
@@ -2439,6 +2562,9 @@ function rAmp(){
   }
   g.innerHTML=h;
   const dt=document.getElementById('amp-dt');if(!dt.value)dt.value=nowL();
+  // Auto-select shift berdasarkan jam sekarang
+  const ampShEl=document.getElementById('amp-sh');
+  if(ampShEl&&!ampShEl.dataset.manualSet)ampShEl.value=getActiveShift();
   // Build impeller selector for chart
   buildAmpImpSel();
   // Update range label
@@ -2485,6 +2611,24 @@ async function saveAmp(ev){
 
 // ============ AMPERE CHART ============
 let ampPdV='cur', ampView='day';
+// ── Dropdown handler functions ───────────────────────────
+function ampPdSel(v){
+  ampPdV=v;
+  const cust=document.getElementById('amp-cust');
+  if(cust)cust.style.display=v==='cust'?'flex':'none';
+  if(v!=='cust')drawAmpChart();
+}
+function ampViewSel(v){
+  ampView=v;
+  document.getElementById('amp-view-sel').value=v;
+  drawAmpChart();
+}
+function ampImpSelDD(v){
+  if(v==='all'){ ampSel=Array.from({length:16},(_,i)=>i); }
+  else { ampSel=[+v]; }
+  drawAmpChart();
+}
+
 // Warna per impeller
 const IMP_COLORS=[
   '#0066cc','#059669','#d97706','#dc2626','#7c3aed','#0891b2',
@@ -2494,26 +2638,23 @@ const IMP_COLORS=[
 // Selected impellers — default semua aktif
 let ampSel=Array.from({length:16},(_,i)=>i);
 
-function ampPd(btn,p){
+function ampPd(btn,p){const s=document.getElementById('amp-pd-sel');if(s)s.value=p;ampPdSel(p);return;
   document.querySelectorAll('#p-amp .chc-b').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');ampPdV=p;
   document.getElementById('amp-cust').style.display=p==='cust'?'flex':'none';
   if(p!=='cust')drawAmpChart();
 }
-function ampSetView(v,btn){
-  ampView=v;
-  document.getElementById('amp-v-day').classList.toggle('on',v==='day');
-  document.getElementById('amp-v-week').classList.toggle('on',v==='week');
-  drawAmpChart();
-}
+function ampSetView(v){ampView=v;const s=document.getElementById('amp-view-sel');if(s)s.value=v;drawAmpChart();}
 
 function buildAmpImpSel(){
-  const box=document.getElementById('amp-imp-sel');
-  if(!box)return;
-  box.innerHTML=nms.map((nm,i)=>{
-    const on=ampSel.includes(i);
-    return `<button id="asel-${i}" class="chc-b${on?' on':''}" onclick="ampToggle(${i})" style="font-size:.65rem;padding:3px 8px;">${nm}</button>`;
-  }).join('');
+  // Populate the dropdown with individual impellers
+  const dd=document.getElementById('amp-imp-sel-dd');
+  if(!dd)return;
+  const curVal=dd.value;
+  dd.innerHTML='<option value="all">Semua (16)</option>'+
+    nms.map((nm,i)=>`<option value="${i}">${nm}</option>`).join('');
+  // Restore selection
+  dd.value=ampSel.length===1?String(ampSel[0]):'all';
 }
 
 function ampToggle(i){
@@ -2797,21 +2938,27 @@ function drawAmpChart(){
 // ============ LIMBAH ============
 let lbPdV='cur', lbView='day';
 let ssView='day';
+
+function lbPdSel(v){
+  lbPdV=v;
+  const cust=document.getElementById('lb-cust');
+  if(cust)cust.style.display=v==='cust'?'flex':'none';
+  if(v!=='cust')drawFullLb();
+}
+function lbViewSel(v){
+  lbView=v;
+  drawFullLb();
+}
+function lbDataSel(v){
+  lbShowPasir=(v==='both'||v==='pasir');
+  lbShowDebu =(v==='both'||v==='debu');
+  drawFullLb();
+}
 let lbShowPasir=true,lbShowDebu=true;
 let ssShowS5=true,ssShowWc=true;
 
-function lbSetView(v,btn){
-  lbView=v;
-  document.getElementById('lb-v-day').classList.toggle('on',v==='day');
-  document.getElementById('lb-v-week').classList.toggle('on',v==='week');
-  drawFullLb();
-}
-function ssSetView(v,btn){
-  ssView=v;
-  document.getElementById('ss-v-day').classList.toggle('on',v==='day');
-  document.getElementById('ss-v-week').classList.toggle('on',v==='week');
-  drawFullSs();
-}
+function lbSetView(v){lbView=v;const s=document.getElementById('lb-view-sel');if(s)s.value=v;drawFullLb();}
+function ssSetView(v){ssView=v;const s=document.getElementById('ss-view-sel');if(s)s.value=v;drawFullSs();}
 // Dashboard mini chart toggles (share same state as detail charts)
 let dbLbShowPasir=true,dbLbShowDebu=true;
 let dbSsShowS5=true,dbSsShowWc=true,dbSsShowLb=true;
@@ -2856,7 +3003,7 @@ function ssToggle(key,btn){
   btn.classList.toggle('on',key==='s5'?ssShowS5:key==='wc'?ssShowWc:ssShowLb);
   drawFullSs();
 }
-function lbPd(b,p){
+function lbPd(b,p){const s=document.getElementById('lb-pd-sel');if(s)s.value=p;lbPdSel(p);return;
   document.querySelectorAll('#p-lb .chc-b').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');lbPdV=p;
   document.getElementById('lb-cust').style.display=p==='cust'?'flex':'none';
@@ -2886,6 +3033,8 @@ function drawFullLb(){
 }
 function rLb(){
   const sd=document.getElementById('lb-d');if(!sd.value)sd.value=today();
+  const lbShEl=document.getElementById('lb-sh');
+  if(lbShEl&&!lbShEl.dataset.manualSet)lbShEl.value=getActiveShift();
   // Clear volume fields on render
   const vp=document.getElementById('lb-vp');if(vp&&!vp.dataset.dirty)vp.value='';
   const vd=document.getElementById('lb-vd');if(vd&&!vd.dataset.dirty)vd.value='';
@@ -2931,7 +3080,7 @@ async function saveLb(ev){
 
 // ============ STEELSHOT ============
 let ssPdV='cur';
-function ssPd(b,p){
+function ssPd(b,p){const s=document.getElementById('ss-pd-sel');if(s)s.value=p;ssPdSel(p);return;
   document.querySelectorAll('#p-ss .chc-b').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');ssPdV=p;
   document.getElementById('ss-cust').style.display=p==='cust'?'flex':'none';
@@ -2963,6 +3112,8 @@ function drawFullSs(){
 }
 function rSs(){
   const sd=document.getElementById('ss-d');if(!sd.value)sd.value=today();
+  const ssShEl=document.getElementById('ss-sh');
+  if(ssShEl&&!ssShEl.dataset.manualSet)ssShEl.value=getActiveShift();
   requestAnimationFrame(()=>drawFullSs());
   const tb=document.getElementById('ss-tb');
   const sr=[...ssLog].sort((a,b)=>b.date.localeCompare(a.date));
@@ -3144,6 +3295,107 @@ function rst(){
 
 
 // ============================================================
+// WHATSAPP REPORT PICKER ENGINE
+// ============================================================
+let _waPickerFn = null;   // which report to send
+let _waPickDate  = null;  // selected date string YYYY-MM-DD
+let _waPickShift = 'NSP'; // 'NSP' | 'NSM' | 'BOTH'
+
+// Open the picker modal before sending WA
+function openWAPicker(reportType, defaultShift){
+  _waPickerFn = reportType;
+  // Default: today + active shift
+  const now = new Date();
+  _waPickDate  = dStr(now);
+  _waPickShift = defaultShift || getActiveShift();
+  document.getElementById('wa-pick-date').value = _waPickDate;
+  // Set title per report type
+  const titles = {
+    steelshot: '🔮 Laporan Steelshot',
+    limbah:    '🗑 Laporan Limbah',
+    ampere:    '🏭 Laporan Ampere',
+    sparepart: '🔩 Laporan Sparepart',
+    preventive:'🔧 Laporan Preventive',
+    dashboard: '📊 Resume Dashboard',
+  };
+  document.getElementById('wa-picker-title').textContent = titles[reportType]||'📤 Kirim Laporan WA';
+  // Hide shift selector for reports that don't need it
+  const noShift = ['sparepart','preventive'];
+  const shiftRow = document.getElementById('wa-pick-nsp')?.parentElement;
+  if(shiftRow) shiftRow.style.display = noShift.includes(reportType)?'none':'flex';
+  waPickShift(_waPickShift);
+  waUpdatePreview();
+  document.getElementById('m-wa-picker').classList.add('on');
+}
+
+function waPickDate(offset){
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  _waPickDate = dStr(d);
+  document.getElementById('wa-pick-date').value = _waPickDate;
+  waUpdatePreview();
+}
+
+function waPickShift(sh){
+  _waPickShift = sh;
+  ['NSP','NSM','BOTH'].forEach(s=>{
+    const btn = document.getElementById('wa-pick-'+s.toLowerCase());
+    if(!btn) return;
+    const active = s === sh;
+    btn.style.background = active ? 'var(--accent)' : 'var(--card2)';
+    btn.style.color = active ? '#fff' : 'var(--text2)';
+    btn.style.border = active ? 'none' : '1px solid var(--border)';
+  });
+  waUpdatePreview();
+}
+
+document.getElementById('wa-pick-date')?.addEventListener('change', function(){
+  _waPickDate = this.value;
+  waUpdatePreview();
+});
+
+function waUpdatePreview(){
+  const el = document.getElementById('wa-pick-preview');
+  if(!el) return;
+  const [y,m,d] = (_waPickDate||'').split('-');
+  const tglStr = _waPickDate ? `${+d}-${M[+m-1]}-${y}` : '-';
+  const shifts  = _waPickShift==='BOTH'?['NSP','NSM']:[_waPickShift];
+  // Count data for this date+shift
+  let counts = '';
+  if(_waPickerFn === 'steelshot'){
+    shifts.forEach(sh=>{
+      const n = ssLog.filter(s=>s.date===_waPickDate&&s.sh===sh).length;
+      counts += `${sh}: ${n} record  `;
+    });
+  } else if(_waPickerFn === 'limbah'){
+    shifts.forEach(sh=>{
+      const n = lbLog.filter(l=>l.date===_waPickDate&&l.sh===sh).length;
+      counts += `${sh}: ${n} record  `;
+    });
+  } else if(_waPickerFn === 'ampere'){
+    counts = `${ampLog.filter(a=>{const pd=parseDT(a.dt);return pd&&dStr(pd)===_waPickDate;}).length} record`;
+  } else if(_waPickerFn === 'sparepart'){
+    counts = `${spLog.filter(s=>s.date===_waPickDate).length} penggantian`;
+  }
+  el.innerHTML = `<b>📅 ${tglStr}</b>  |  <b>Shift: ${_waPickShift}</b><br>
+    <span style="color:var(--ok);">${counts||'─'}</span>`;
+}
+
+function waPickSend(){
+  cM('m-wa-picker');
+  const shifts = _waPickShift==='BOTH' ? ['NSP','NSM'] : [_waPickShift];
+  // Dispatch to correct report function
+  switch(_waPickerFn){
+    case 'steelshot':  waSteelshot(_waPickDate,  shifts); break;
+    case 'limbah':     waLimbah(_waPickDate,     shifts); break;
+    case 'ampere':     waAmpere(_waPickDate,     shifts); break;
+    case 'sparepart':  waSparepart(_waPickDate);          break;
+    case 'preventive': waPreventive();                    break;
+    case 'dashboard':  waDashboard(_waPickDate,  shifts); break;
+  }
+}
+
+// ============================================================
 // WHATSAPP RESUME
 // ============================================================
 // Nomor tujuan default — bisa diubah di Setting
@@ -3159,177 +3411,296 @@ function sendWA(text){
   window.open(url,'_blank');
 }
 
-function waAmpere(){
+function waAmpere(reportDate, reportShifts){
+  reportDate   = reportDate   || dStr(new Date());
+  reportShifts = reportShifts || [getActiveShift()];
   const now=new Date();
   const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
   const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  // Ambil data ampere terbaru per impeller (dari state)
-  const lines=[];
+  const sh = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const abnormal=[];
   let nOk=0,nLo=0,nHi=0,nOf=0;
   for(let i=0;i<16;i++){
     const s=st[i];
     if(!s.on){nOf++;continue;}
     const ss=ampS(s.a);
-    if(ss==='ok')nOk++;else if(ss==='lo')nLo++;else if(ss==='hi')nHi++;
-    if(ss!=='ok'&&s.a!=null){
-      lines.push(`  • ${nms[i]}: ${s.a}A ${ss==='hi'?'⬆ OVER':'⬇ UNDER'}`);
+    if(ss==='ok')nOk++;
+    else if(ss==='lo'){nLo++;abnormal.push(`  • ${nms[i]}: ${s.a}A ⬇ UNDER (min ${cfg.aLo}A)`);}
+    else if(ss==='hi'){nHi++;abnormal.push(`  • ${nms[i]}: ${s.a}A ⬆ OVER (max ${cfg.aHi}A)`);}
+  }
+  const hasOut=nLo>0||nHi>0;
+  const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
+  let msg=`🏭 *LAPORAN AMPERE IMPELLER*\n`;
+  const [ray,ram,rad]=reportDate.split('-');
+  const reportTglAmp=`${+rad}-${M[+ram-1]}-${ray}`;
+  msg+=`📅 ${reportTglAmp}  🕐 ${jam}  |  Shift: *${sh}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`Range Normal: *${cfg.aLo}–${cfg.aHi} A*\n\n`;
+  msg+=`✅ Normal : ${nOk} unit\n`;
+  msg+=`🔴 Over   : ${nHi} unit\n`;
+  msg+=`🟡 Under  : ${nLo} unit\n`;
+  msg+=`⭕ OFF    : ${nOf} unit\n`;
+  if(abnormal.length)msg+=`\n⚠ *Impeller Abnormal:*\n${abnormal.join('\n')}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`${hasOut?'🔴':nOf===16?'⭕':'🟢'} *KESIMPULAN: ${hasOut?'ADA AMPERE ABNORMAL':'SEMUA NORMAL'}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waLimbah(reportDate, reportShifts){
+  reportDate   = reportDate   || dStr(new Date());
+  reportShifts = reportShifts || [getActiveShift()];
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const activeShift = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const lb = lbLog.filter(l=>l.date===reportDate && reportShifts.includes(l.sh));
+  const pasir=lb.filter(l=>l.j==='Pasir').reduce((a,x)=>a+x.v,0);
+  const debu =lb.filter(l=>l.j==='Debu').reduce((a,x)=>a+x.v,0);
+  function lbStatus(val,lo,hi){
+    if(val===0) return '⬜ Belum ada input';
+    if(val>hi)  return `🔴 *OUT STANDARD* (di atas ${hi})`;
+    if(val<lo)  return `🟡 *OUT STANDARD* (di bawah ${lo})`;
+    return '🟢 Normal';
+  }
+  const stsPasir=lbStatus(pasir,cfg.pLo,cfg.pHi);
+  const stsDebu =lbStatus(debu, cfg.dLo,cfg.dHi);
+  const hasOut=[stsPasir,stsDebu].some(s=>s.includes('OUT'));
+  const allOk =[stsPasir,stsDebu].every(s=>s.includes('Normal')||s.includes('input'));
+  const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
+  let msg=`🗑 *LAPORAN LIMBAH HARIAN*
+`;
+  msg+=`📅 ${tgl}  🕐 ${jam}  |  Shift: *${activeShift}*
+`;
+  msg+=`━━━━━━━━━━━━━━━━━━━
+`;
+  msg+=`*Pasir (Trolley)*
+`;
+  msg+=`  Total ${activeShift}: *${pasir} Trolley*
+`;
+  msg+=`  Standar: ${cfg.pLo}–${cfg.pHi} Trolley
+`;
+  msg+=`  Status: ${stsPasir}
+
+`;
+  msg+=`*Debu (Trolley)*
+`;
+  msg+=`  Total ${activeShift}: *${debu} Trolley*
+`;
+  msg+=`  Standar: ${cfg.dLo}–${cfg.dHi} Trolley
+`;
+  msg+=`  Status: ${stsDebu}
+`;
+  msg+=`━━━━━━━━━━━━━━━━━━━
+`;
+  msg+=`${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'ADA ITEM OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*
+`;
+  msg+=`━━━━━━━━━━━━━━━━━━━
+`;
+  msg+=`📊 Dashboard: ${dashUrl}
+`;
+  msg+=`
+_${tgl} ${jam} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waSteelshot(reportDate, reportShifts){
+  reportDate   = reportDate   || dStr(new Date());
+  reportShifts = reportShifts || [getActiveShift()];
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const todayStr=dStr(now);
+
+  // Ikuti shift yang sedang dipilih di form input
+  const shiftEl=document.getElementById('ss-sh');
+  const activeShift=shiftEl?shiftEl.value:'NSP';
+
+  // Gunakan tanggal shift yang benar (NSM bisa lintas tengah malam)
+  const shiftDate=getShiftDate(activeShift);
+
+  const ss=ssLog.filter(s=>s.date===shiftDate);
+
+  // Hanya tampilkan data shift yang sedang aktif
+  const ssShift=ss.filter(s=>s.sh===activeShift);
+  const ss5=ssShift.reduce((a,x)=>a+(+x.s5||0),0);
+  const wc =ssShift.reduce((a,x)=>a+(+x.wc||0),0);
+  const lb =ssShift.reduce((a,x)=>a+(+x.lb||0),0);
+
+  // Status helper
+  function ssStatus(val,lo,hi){
+    if(!lo&&!hi)  return '➖ Tidak ada standar';
+    if(val===0)   return '⬜ Belum ada input';
+    if(hi>0&&val>hi) return `🔴 *OUT STANDARD* (di atas ${hi} Kg)`;
+    if(lo>0&&val<lo) return `🟡 *OUT STANDARD* (di bawah ${lo} Kg)`;
+    return '🟢 Normal';
+  }
+
+  const ss5St=ssStatus(ss5,cfg.sLo,cfg.sHi);
+  const wcSt =ssStatus(wc, cfg.wLo,cfg.wHi);
+  const lbSt =ssStatus(lb, cfg.lsLo,cfg.lsHi);
+
+  const hasOut=[ss5St,wcSt,lbSt].some(s=>s.includes('OUT'));
+  const allOk =[ss5St,wcSt,lbSt].every(s=>s.includes('Normal')||s.includes('standar')||s.includes('input'));
+  const overallEmoji=hasOut?'🔴':allOk?'🟢':'🟡';
+  const overallText =hasOut?'ADA ITEM OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN';
+
+  const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
+
+  let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n`;
+  const [spy,spm,spd]=reportDate.split('-');
+  const reportTglSp=`${+rd}-${M[+rm-1]}-${ry}`;
+  msg+=`📅 ${reportTgl}  🕐 ${jam}  |  Shift: *${activeShift}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+
+  msg+=`*SS 550*\n`;
+  msg+=`  Total ${activeShift}: *${ss5} Kg*\n`;
+  msg+=`  Standar: ${cfg.sLo||0}–${cfg.sHi||0} Kg/hari\n`;
+  msg+=`  Status: ${ss5St}\n\n`;
+
+  msg+=`*Wire Cut*\n`;
+  msg+=`  Total ${activeShift}: *${wc} Kg*\n`;
+  msg+=`  Standar: ${cfg.wLo||0}–${cfg.wHi||0} Kg/hari\n`;
+  msg+=`  Status: ${wcSt}\n\n`;
+
+  msg+=`*SS Bekas*\n`;
+  msg+=`  Total ${activeShift}: *${lb} Kg*\n`;
+  msg+=`  Standar: ${cfg.lsLo||0}–${cfg.lsHi||0} Kg/hari\n`;
+  msg+=`  Status: ${lbSt}\n`;
+
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`${overallEmoji} *KESIMPULAN: ${overallText}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
+function waSparepart(reportDate){
+  reportDate = reportDate || dStr(new Date());
+  const now=new Date();
+  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
+  const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const todayStr=dStr(now);
+  const sp=spLog.filter(s=>s.date===reportDate);
+  if(!sp.length){showToast('Belum ada penggantian sparepart hari ini','warn');return;}
+  const warnings=[];
+  for(let i=0;i<16;i++){
+    for(const nm of Object.keys(ltCfg).filter(n=>n!=='Hanger')){
+      const d=daysSP(i,nm);if(d==null)continue;
+      const m=modus(nm),j=estJ(d),p=Math.round(j/m*100);
+      if(p>=100)warnings.push(`  ⚠ ${nms[i]} — ${nm}: ${p}% (LEWATI LIFETIME)`);
+      else if(p>=80)warnings.push(`  📌 ${nms[i]} — ${nm}: ${p}% (Segera cek)`);
     }
   }
-  const sh=document.getElementById('amp-sh')?.value||'-';
-  let msg=`🏭 *LAPORAN AMPERE IMPELLER*\n`;
-  msg+=`📅 ${tgl} | Shift ${sh} | ${jam}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`✅ Normal  : ${nOk} unit\n`;
-  msg+=`⬆ Over    : ${nHi} unit\n`;
-  msg+=`⬇ Under   : ${nLo} unit\n`;
-  msg+=`⭕ OFF     : ${nOf} unit\n`;
-  if(lines.length){
-    msg+=`\n⚠ *Impeller Abnormal:*\n${lines.join('\n')}\n`;
-  }
-  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
-  sendWA(msg);
-}
-
-function waLimbah(){
-  const now=new Date();
-  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
-  // Ambil data limbah hari ini
-  const todayStr=dStr(now);
-  const lb=lbLog.filter(l=>l.date===todayStr);
-  const pasirNSP=lb.filter(l=>l.j==='Pasir'&&l.sh==='NSP').reduce((a,x)=>a+x.v,0);
-  const pasirNSM=lb.filter(l=>l.j==='Pasir'&&l.sh==='NSM').reduce((a,x)=>a+x.v,0);
-  const debuNSP=lb.filter(l=>l.j==='Debu'&&l.sh==='NSP').reduce((a,x)=>a+x.v,0);
-  const debuNSM=lb.filter(l=>l.j==='Debu'&&l.sh==='NSM').reduce((a,x)=>a+x.v,0);
-  const totalPasir=pasirNSP+pasirNSM;
-  const totalDebu=debuNSP+debuNSM;
-  const stsPasir=totalPasir>cfg.pHi?'⬆ OVER':totalPasir<cfg.pLo&&totalPasir>0?'⬇ UNDER':'✅ Normal';
-  const stsDebu=totalDebu>cfg.dHi?'⬆ OVER':totalDebu<cfg.dLo&&totalDebu>0?'⬇ UNDER':'✅ Normal';
-  let msg=`🗑 *LAPORAN LIMBAH HARIAN*\n`;
-  msg+=`📅 ${tgl}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`*Pasir (Trolley)*\n`;
-  msg+=`  NSP: ${pasirNSP} | NSM: ${pasirNSM} | Total: ${totalPasir} ${stsPasir}\n`;
-  msg+=`  Range: ${cfg.pLo}–${cfg.pHi} Trolley\n\n`;
-  msg+=`*Debu (Trolley)*\n`;
-  msg+=`  NSP: ${debuNSP} | NSM: ${debuNSM} | Total: ${totalDebu} ${stsDebu}\n`;
-  msg+=`  Range: ${cfg.dLo}–${cfg.dHi} Trolley\n`;
-  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
-  sendWA(msg);
-}
-
-function waSteelshot(){
-  const now=new Date();
-  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
-  const todayStr=dStr(now);
-  const ss=ssLog.filter(s=>s.date===todayStr);
-  const ss5NSP=ss.filter(s=>s.sh==='NSP').reduce((a,x)=>a+(+x.s5||0),0);
-  const ss5NSM=ss.filter(s=>s.sh==='NSM').reduce((a,x)=>a+(+x.s5||0),0);
-  const wcNSP=ss.filter(s=>s.sh==='NSP').reduce((a,x)=>a+(+x.wc||0),0);
-  const wcNSM=ss.filter(s=>s.sh==='NSM').reduce((a,x)=>a+(+x.wc||0),0);
-  let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n`;
-  msg+=`📅 ${tgl}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`*SS 550*\n`;
-  msg+=`  NSP: ${ss5NSP} Kg | NSM: ${ss5NSM} Kg\n`;
-  msg+=`  Total: ${ss5NSP+ss5NSM} Kg\n\n`;
-  const lbNSP=ss.filter(s=>s.sh==='NSP').reduce((a,x)=>a+(+x.lb||0),0);
-  const lbNSM=ss.filter(s=>s.sh==='NSM').reduce((a,x)=>a+(+x.lb||0),0);
-  msg+=`*Wire Cut*\n`;
-  msg+=`  NSP: ${wcNSP} Kg | NSM: ${wcNSM} Kg\n`;
-  msg+=`  Total: ${wcNSP+wcNSM} Kg\n\n`;
-  msg+=`*SS Bekas*\n`;
-  msg+=`  NSP: ${lbNSP} Kg | NSM: ${lbNSM} Kg\n`;
-  msg+=`  Total: ${lbNSP+lbNSM} Kg\n`;
-  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
-  sendWA(msg);
-}
-
-function waSparepart(){
-  const now=new Date();
-  const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
-  const todayStr=dStr(now);
-  const sp=spLog.filter(s=>s.date===todayStr);
-  if(!sp.length){showToast('Belum ada penggantian sparepart hari ini','warn');return;}
+  const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
   let msg=`🔩 *LAPORAN PENGGANTIAN SPAREPART*\n`;
-  msg+=`📅 ${tgl}\n`;
+  msg+=`📅 ${tgl}  🕐 ${jam}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   sp.forEach(s=>{
-    msg+=`• ${nms[s.i]||'Imp '+(+s.i+1)}: ${s.nm}\n`;
+    msg+=`• ${nms[s.i]||'Imp '+(+s.i+1)}: *${s.nm}*\n`;
     msg+=`  Jam pakai: ${s.jm}h | Kondisi: ${s.kn}\n`;
     msg+=`  Jenis: ${s.j==='assy'?'Unit Assy':'Satuan'} | Op: ${s.op}\n`;
   });
-  msg+=`\n_${tgl} — TPM HSB Casting 2_`;
+  if(warnings.length)msg+=`\n🔔 *Status Lifetime Saat Ini:*\n${warnings.join('\n')}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
 
 function waPreventive(){
   const now=new Date();
   const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
-  const todayStr=dStr(now);
-  // Ambil preventive hari ini atau terakhir
+  const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
   const pv=[...pvLog].sort((a,b)=>(b.td||'').localeCompare(a.td||''))[0];
   if(!pv){showToast('Belum ada data preventive','warn');return;}
-  const ok=(pv.rs||[]).filter(x=>x.v==='ok').length;
-  const ng=(pv.rs||[]).filter(x=>x.v==='ng').length;
+  const ok  =(pv.rs||[]).filter(x=>x.v==='ok').length;
+  const ng  =(pv.rs||[]).filter(x=>x.v==='ng').length;
   const pend=(pv.rs||[]).filter(x=>x.v==='pending').length;
+  const tot=ok+ng+pend;
+  const pct=tot>0?Math.round(ok/tot*100):0;
   const ngItems=(pv.rs||[]).filter(x=>x.v==='ng');
+  const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
   let msg=`🔧 *LAPORAN PREVENTIVE CHECK*\n`;
-  msg+=`📅 Periode: ${pv.pr}\n`;
-  msg+=`🗓 Tgl Check: ${fD(pv.td)} | PIC: ${pv.pic}\n`;
+  msg+=`📅 ${tgl}  🕐 ${jam}\n`;
+  msg+=`📋 Periode: ${pv.pr} | PIC: ${pv.pic}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`✅ OK      : ${ok} item\n`;
+  msg+=`✅ OK      : ${ok} item (${pct}%)\n`;
   msg+=`❌ NG      : ${ng} item\n`;
   msg+=`○  Pending : ${pend} item\n`;
   if(ngItems.length){
-    msg+=`\n⚠ *Item Abnormal (NG):*\n`;
-    ngItems.slice(0,10).forEach(x=>{
-      msg+=`  • Imp #${+x.i+1} — ${x.it}\n`;
-    });
+    msg+=`\n⚠ *Item NG — Perlu Tindakan:*\n`;
+    ngItems.slice(0,10).forEach(x=>{msg+=`  • ${nms[+x.i]||'Imp #'+(+x.i+1)} — ${x.it}\n`;});
   }
   if(pv.no)msg+=`\n📝 Catatan: ${pv.no}\n`;
-  msg+=`\n_${fD(tgl)} — TPM HSB Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`${ng>0?'🔴':pend>0?'🟡':'🟢'} *KESIMPULAN: ${ng>0?`ADA ${ng} ITEM NG`:pend>0?'ADA ITEM BELUM DICEK':'SEMUA OK'}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
 
-function waDashboard(){
+function waDashboard(reportDate, reportShifts){
+  reportDate   = reportDate   || dStr(new Date());
+  reportShifts = reportShifts || [getActiveShift()];
   const now=new Date();
   const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
   const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  // Impeller summary
+  const sh = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const shiftDate = reportDate;
+  // Impeller
   let nOn=0,nOf=0,nOk=0,nLo=0,nHi=0,nAt=0;
   const abnImp=[];
   for(let i=0;i<16;i++){
     const s=st[i];if(!s.on){nOf++;continue;}nOn++;
     const ss=ampS(s.a);
-    if(ss==='ok')nOk++;else if(ss==='lo'){nLo++;abnImp.push(`${nms[i]}: ${s.a}A ⬇`);}
+    if(ss==='ok')nOk++;
+    else if(ss==='lo'){nLo++;abnImp.push(`${nms[i]}: ${s.a}A ⬇`);}
     else if(ss==='hi'){nHi++;abnImp.push(`${nms[i]}: ${s.a}A ⬆`);}
     if(needAttn(i))nAt++;
   }
-  // Hanger
   const ngH=hSt.filter(h=>h.s==='ng').length;
   const wnH=hSt.filter(h=>h.s==='warn').length;
-  // Limbah hari ini
-  const todayStr=dStr(now);
-  const pasirHari=lbLog.filter(l=>l.date===todayStr&&l.j==='Pasir').reduce((a,x)=>a+x.v,0);
-  const debuHari=lbLog.filter(l=>l.date===todayStr&&l.j==='Debu').reduce((a,x)=>a+x.v,0);
-  // Steelshot hari ini
-  const ss5Hari=ssLog.filter(s=>s.date===todayStr).reduce((a,x)=>a+(+x.s5||0),0);
-  const wcHari=ssLog.filter(s=>s.date===todayStr).reduce((a,x)=>a+(+x.wc||0),0);
-
+  const pasir=lbLog.filter(l=>l.date===reportDate&&reportShifts.includes(l.sh)&&l.j==='Pasir').reduce((a,x)=>a+x.v,0);
+  const debu =lbLog.filter(l=>l.date===reportDate&&reportShifts.includes(l.sh)&&l.j==='Debu').reduce((a,x)=>a+x.v,0);
+  const ssCur=ssLog.filter(s=>s.date===reportDate&&reportShifts.includes(s.sh));
+  const ss5=ssCur.reduce((a,x)=>a+(+x.s5||0),0);
+  const wc =ssCur.reduce((a,x)=>a+(+x.wc||0),0);
+  const lb =ssCur.reduce((a,x)=>a+(+x.lb||0),0);
+  function chk(v,lo,hi){return v===0?'⬜':v>=lo&&v<=hi?'🟢':'🔴';}
+  const hasIssue=nLo>0||nHi>0||ngH>0||
+    (pasir>0&&(pasir<cfg.pLo||pasir>cfg.pHi))||
+    (debu>0 &&(debu<cfg.dLo ||debu>cfg.dHi))||
+    (ss5>0  &&(ss5<cfg.sLo  ||ss5>cfg.sHi));
+  const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
   let msg=`📊 *RESUME HSB CASTING 2*\n`;
-  msg+=`📅 ${tgl} | ${jam}\n`;
+  const [dby,dbm,dbd]=reportDate.split('-');
+  const reportTglDb=`${+dbd}-${M[+dbm-1]}-${dby}`;
+  msg+=`📅 ${reportTglDb}  🕐 ${jam}  |  Shift: *${sh}*\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`⚙ *IMPELLER (16 unit)*\n`;
   msg+=`  ON: ${nOn} | OFF: ${nOf}\n`;
-  msg+=`  ✅ Normal: ${nOk} | ⬆ Over: ${nHi} | ⬇ Under: ${nLo}\n`;
-  msg+=`  ⚠ Perlu perhatian: ${nAt} unit\n`;
+  msg+=`  ✅ Normal: ${nOk} | 🔴 Over: ${nHi} | 🟡 Under: ${nLo}\n`;
+  msg+=`  Range: ${cfg.aLo}–${cfg.aHi} A\n`;
+  if(nAt>0)msg+=`  ⚠ Perlu perhatian: ${nAt} unit\n`;
   if(abnImp.length)msg+=`  Abnormal: ${abnImp.slice(0,5).join(', ')}\n`;
   msg+=`\n🪝 *HANGER (60 unit)*\n`;
   msg+=`  ❌ NG: ${ngH} | ⚠ Warning: ${wnH}\n`;
-  msg+=`\n🗑 *LIMBAH HARI INI*\n`;
-  msg+=`  Pasir: ${pasirHari} Trolley | Debu: ${debuHari} Trolley\n`;
-  msg+=`\n🔮 *STEELSHOT HARI INI*\n`;
-  msg+=`  SS 550: ${ss5Hari} Kg | Wire Cut: ${wcHari} Kg\n`;
+  msg+=`\n🗑 *LIMBAH — Shift ${sh}*\n`;
+  msg+=`  Pasir: ${pasir} Trolley (std: ${cfg.pLo}–${cfg.pHi}) ${chk(pasir,cfg.pLo,cfg.pHi)}\n`;
+  msg+=`  Debu:  ${debu} Trolley (std: ${cfg.dLo}–${cfg.dHi}) ${chk(debu,cfg.dLo,cfg.dHi)}\n`;
+  msg+=`\n🔮 *STEELSHOT — Shift ${sh}*\n`;
+  msg+=`  SS 550:   ${ss5} Kg (std: ${cfg.sLo}–${cfg.sHi}) ${chk(ss5,cfg.sLo,cfg.sHi)}\n`;
+  msg+=`  Wire Cut: ${wc} Kg\n`;
+  msg+=`  SS Bekas: ${lb} Kg\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'ADA KONDISI ABNORMAL':'SEMUA NORMAL'}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`📊 Dashboard: ${dashUrl}\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
