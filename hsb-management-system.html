@@ -879,7 +879,7 @@ tr:hover td{background:var(--accent-bg);}
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📊 Input Ikomi Harian</div>
     <div style="font-size:.75rem;color:var(--info);background:var(--info-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;">
-      Gentani = Total Steelshot (Kg) ÷ Ikomi (Ton). Masukkan tonase material yang di-shootblast hari ini.
+      Gentani = Steelshot SS550 + Wire Cut (Kg) ÷ Ikomi (Ton). SS Bekas tidak dihitung. Masukkan tonase material yang di-shootblast hari ini.
     </div>
     <div class="fr">
       <div class="fg"><label>Tanggal</label><input type="date" id="gt-d"></div>
@@ -943,7 +943,7 @@ tr:hover td{background:var(--accent-bg);}
       <select class="fbar-sel" id="gt-fltr-shift" onchange="histRerender('gentani')"><option value="all">Semua</option><option value="NSP">NSP</option><option value="NSM">NSM</option></select>
     </div>
     <div class="tw"><table>
-      <thead><tr><th>Tgl</th><th>Shift</th><th>Steelshot (Kg)</th><th>Ikomi (Ton)</th><th>Gentani</th><th>Status</th><th>Op</th></tr></thead>
+      <thead><tr><th>Tgl</th><th>Shift</th><th>SS550+WC (Kg)</th><th>Ikomi (Ton)</th><th>Gentani</th><th>Status</th><th>Op</th></tr></thead>
       <tbody id="gt-tb"></tbody>
     </table></div>
   </div>
@@ -3589,8 +3589,9 @@ let gtPdV='cur', gtView='day', dbGtView='day';
 
 // Hitung total steelshot (Kg) untuk tanggal+shift tertentu
 function ssKgFor(date, shift){
+  // Gentani hanya pakai SS 550 + Wire Cut (steelshot baru), TIDAK termasuk SS Bekas
   return ssLog.filter(s=>s.date===date && (!shift||s.sh===shift))
-    .reduce((a,x)=>a+(+x.s5||0)+(+x.wc||0)+(+x.lb||0),0);
+    .reduce((a,x)=>a+(+x.s5||0)+(+x.wc||0),0);
 }
 // Hitung total ikomi (ton) untuk tanggal+shift tertentu
 function ikomiFor(date, shift){
@@ -3631,7 +3632,7 @@ function gtUpdatePreview(){
   const g=kg/ik;
   const st=gtStatus(g);
   el.style.display='block';
-  el.innerHTML=`Steelshot hari ini: <b>${kg} Kg</b> ÷ Ikomi <b>${ik} Ton</b> = Gentani <b>${g.toFixed(2)} Kg/Ton</b> <span class="bd ${st.cl}">${st.s}</span>`;
+  el.innerHTML=`Steelshot (SS550+WireCut): <b>${kg} Kg</b> ÷ Ikomi <b>${ik} Ton</b> = Gentani <b>${g.toFixed(2)} Kg/Ton</b> <span class="bd ${st.cl}">${st.s}</span>`;
 }
 
 async function saveGt(ev){
@@ -3757,6 +3758,20 @@ function drawGentaniChart(canvasId, data, opts){
     ctx.beginPath();
     if(ctx.roundRect)ctx.roundRect(x,y,barW,h,[3,3,0,0]);else ctx.rect(x,y,barW,h);
     ctx.fill();
+  });
+  // Data label di atas tiap batang (gentani harian)
+  ctx.font='bold 9px sans-serif';ctx.fillStyle='#0e7490';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  // Bars hanya ada di hari yang ada data (jarang/sparse), jadi beri label SEMUA bar yang ada nilainya.
+  // Hanya skip jika bar terlalu rapat (banyak data berurutan & slot sempit).
+  const barsWithData=data.filter(d=>d.gt>0).length;
+  const denseBar=slotW<22 && barsWithData>20;
+  data.forEach((d,i)=>{
+    const v=d.gt;if(!v)return;
+    if(denseBar && i%2!==0 && i!==N-1)return;
+    const y=yOf(v);
+    const yAkum=d.gtAkum>0?yOf(d.gtAkum):-99;
+    const labelY = Math.abs(y-yAkum)<14 ? y+13 : y-5;
+    ctx.fillText(v.toFixed(1),xOf(i),labelY);
   });
 
   // Target lines (dashed)
