@@ -748,7 +748,36 @@ tr:hover td{background:var(--accent-bg);}
     </div>
   </div>
   <div class="cd">
-    <div class="st">📋 History Steelshot</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 History Steelshot</div>
+      <button id="ss-edit-btn" onclick="ssToggleEdit()" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="ss-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="ssToggleEdit()" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <!-- FILTER BAR -->
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Filter Tgl</span>
+      <select class="fbar-sel" id="ss-fltr-period" onchange="ssApplyFilter()">
+        <option value="all">Semua</option>
+        <option value="today">Hari Ini</option>
+        <option value="7d">7 Hari</option>
+        <option value="30d">30 Hari</option>
+        <option value="month">Bulan Ini</option>
+      </select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Shift</span>
+      <select class="fbar-sel" id="ss-fltr-shift" onchange="ssApplyFilter()">
+        <option value="all">Semua</option>
+        <option value="NSP">NSP</option>
+        <option value="NSM">NSM</option>
+      </select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Operator</span>
+      <select class="fbar-sel" id="ss-fltr-op" onchange="ssApplyFilter()" style="min-width:110px;">
+        <option value="all">Semua</option>
+      </select>
+    </div>
     <div class="tw"><table>
       <thead><tr><th>Tgl</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>SS Bekas</th><th>Total</th><th>Op</th><th>Ket</th></tr></thead>
       <tbody id="ss-tb"></tbody>
@@ -923,8 +952,11 @@ tr:hover td{background:var(--accent-bg);}
       </div>
       <!-- Preview info -->
       <div id="wa-pick-preview" style="background:var(--card2);border:1px solid var(--border);
-        border-radius:8px;padding:10px 12px;font-size:.78rem;color:var(--text2);margin-bottom:14px;">
+        border-radius:8px;padding:10px 12px;font-size:.78rem;color:var(--text2);margin-bottom:12px;">
       </div>
+      <!-- Catatan bebas (opsional) -->
+      <label style="font-size:.72rem;">📝 Catatan Tambahan (opsional)</label>
+      <textarea id="wa-pick-note" placeholder="cth: Start proses 09:30 after STO..." style="margin-bottom:14px;min-height:50px;"></textarea>
       <!-- Send button -->
       <button class="btn btn-p" style="width:100%;justify-content:center;" onclick="waPickSend()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
@@ -932,6 +964,56 @@ tr:hover td{background:var(--accent-bg);}
         </svg>
         Kirim ke WhatsApp
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PASSWORD EDIT -->
+<div class="mv" id="m-ss-pwd">
+  <div class="mw" style="max-width:340px;">
+    <div class="mh">
+      <h3>🔒 Mode Edit Data</h3>
+      <button class="mx" onclick="cM('m-ss-pwd')">×</button>
+    </div>
+    <div class="mb">
+      <label>Masukkan Password Admin</label>
+      <input type="password" id="ss-pwd-input" placeholder="Password..." style="margin-bottom:6px;" onkeydown="if(event.key==='Enter')ssCheckPwd()">
+      <div id="ss-pwd-err" style="font-size:.75rem;color:var(--danger);min-height:16px;margin-bottom:10px;"></div>
+      <button class="btn btn-p" style="width:100%;justify-content:center;" onclick="ssCheckPwd()">Buka Mode Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT STEELSHOT ROW -->
+<div class="mv" id="m-ss-edit">
+  <div class="mw" style="max-width:400px;">
+    <div class="mh">
+      <h3>✏️ Edit Data Steelshot</h3>
+      <button class="mx" onclick="cM('m-ss-edit')">×</button>
+    </div>
+    <div class="mb">
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;"><label>Tanggal</label><input type="date" id="sse-d" style="margin-bottom:10px;"></div>
+        <div style="flex:1;"><label>Shift</label>
+          <select id="sse-sh" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;margin-bottom:10px;">
+            <option>NSP</option><option>NSM</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;"><label>SS 550 (Kg)</label><input type="number" id="sse-s5" min="0" style="margin-bottom:10px;"></div>
+        <div style="flex:1;"><label>Wire Cut (Kg)</label><input type="number" id="sse-wc" min="0" style="margin-bottom:10px;"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;"><label>SS Bekas (Kg)</label><input type="number" id="sse-lb" min="0" step="0.1" style="margin-bottom:10px;"></div>
+        <div style="flex:1;"><label>Operator</label><input type="text" id="sse-op" style="margin-bottom:10px;"></div>
+      </div>
+      <label>Keterangan</label>
+      <textarea id="sse-no" style="margin-bottom:12px;"></textarea>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-p" style="flex:1;justify-content:center;" onclick="ssSaveEdit()">💾 Simpan</button>
+        <button class="btn" style="flex:1;justify-content:center;background:var(--danger);color:#fff;" onclick="ssDeleteRow()">🗑 Hapus</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1475,6 +1557,14 @@ function getActiveShift(){
   const totalMin=now.getHours()*60+now.getMinutes();
   // NSP: 07:00 (420) s/d 19:29 (1169)
   return (totalMin>=420 && totalMin<1170)?'NSP':'NSM';
+}
+
+// Range jam kerja per shift (untuk header laporan)
+function getShiftTimeRange(shiftCode){
+  if(shiftCode==='NSP') return '07:00 – 19:29';
+  if(shiftCode==='NSM') return '19:30 – 07:00';
+  if(shiftCode==='NSP+NSM') return '07:00 – 07:00 (24 jam)';
+  return '';
 }
 
 const curMo=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
@@ -3127,17 +3217,154 @@ function drawFullSs(){
     ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.sLo,c:'#7c3aed55'},{v:cfg.wHi,c:'#059669'},{v:cfg.wLo,c:'#05966955'},{v:cfg.lsHi,c:'#b45309'},{v:cfg.lsLo,c:'#b4530955'}]
   });
 }
+let ssEditMode=false;
+let ssEditIdx=-1; // index into ssLog of row being edited
+
 function rSs(){
   const sd=document.getElementById('ss-d');if(!sd.value)sd.value=today();
   const ssShEl=document.getElementById('ss-sh');
   if(ssShEl&&!ssShEl.dataset.manualSet)ssShEl.value=getActiveShift();
   requestAnimationFrame(()=>drawFullSs());
+  ssBuildOpFilter();
+  ssRenderTable();
+}
+
+// Bangun daftar operator unik untuk dropdown filter
+function ssBuildOpFilter(){
+  const sel=document.getElementById('ss-fltr-op');
+  if(!sel)return;
+  const cur=sel.value;
+  const ops=[...new Set(ssLog.map(r=>r.op).filter(Boolean))].sort();
+  sel.innerHTML='<option value="all">Semua</option>'+ops.map(o=>`<option value="${o}">${o}</option>`).join('');
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+}
+
+// Terapkan filter & render ulang tabel
+function ssApplyFilter(){ ssRenderTable(); }
+
+function ssGetFiltered(){
+  const pd=document.getElementById('ss-fltr-period')?.value||'all';
+  const sh=document.getElementById('ss-fltr-shift')?.value||'all';
+  const op=document.getElementById('ss-fltr-op')?.value||'all';
+  const now=new Date();
+  const todayS=dStr(now);
+  return ssLog.filter(r=>{
+    if(sh!=='all'&&r.sh!==sh)return false;
+    if(op!=='all'&&r.op!==op)return false;
+    if(pd!=='all'){
+      const rd=parseDate(r.date);if(!rd)return false;
+      if(pd==='today'&&r.date!==todayS)return false;
+      if(pd==='7d'){const d=new Date(now);d.setDate(d.getDate()-7);if(rd<d)return false;}
+      if(pd==='30d'){const d=new Date(now);d.setDate(d.getDate()-30);if(rd<d)return false;}
+      if(pd==='month'){if(rd.getMonth()!==now.getMonth()||rd.getFullYear()!==now.getFullYear())return false;}
+    }
+    return true;
+  });
+}
+
+function ssRenderTable(){
   const tb=document.getElementById('ss-tb');
-  const sr=[...ssLog].sort((a,b)=>b.date.localeCompare(a.date));
-  tb.innerHTML=sr.slice(0,200).map(r=>{
+  if(!tb)return;
+  const filtered=ssGetFiltered();
+  // Urutkan terbaru dulu, simpan index asli di ssLog untuk edit
+  const rows=filtered.map(r=>({r,idx:ssLog.indexOf(r)}))
+    .sort((a,b)=>b.r.date.localeCompare(a.r.date));
+  tb.innerHTML=rows.slice(0,200).map(({r,idx})=>{
     const tot=(+r.s5||0)+(+r.wc||0);
-    return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${r.s5||0}</td><td class="mn">${r.wc||0}</td><td class="mn">${r.lb||0}</td><td class="mn">${tot}</td><td>${r.op}</td><td>${r.n||'-'}</td></tr>`;
-  }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+    const clickAttr=ssEditMode?`onclick="ssOpenEdit(${idx})" style="cursor:pointer;"`:'';
+    const editIcon=ssEditMode?'<td style="text-align:center;">✏️</td>':'';
+    return`<tr ${clickAttr}><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${r.s5||0}</td><td class="mn">${r.wc||0}</td><td class="mn">${r.lb||0}</td><td class="mn">${tot}</td><td>${r.op}</td><td>${r.n||'-'}</td>${editIcon}</tr>`;
+  }).join('')||`<tr><td colspan="${ssEditMode?9:8}" class="es">Tidak ada data sesuai filter</td></tr>`;
+}
+
+// Toggle mode edit (minta password kalau belum aktif)
+function ssToggleEdit(){
+  if(ssEditMode){
+    // Matikan mode edit
+    ssEditMode=false;
+    document.getElementById('ss-edit-banner').style.display='none';
+    document.getElementById('ss-edit-btn').style.background='none';
+    document.getElementById('ss-edit-btn').style.color='var(--muted)';
+    ssRenderTable();
+  } else {
+    // Minta password dulu
+    const inp=document.getElementById('ss-pwd-input');
+    if(inp)inp.value='';
+    document.getElementById('ss-pwd-err').textContent='';
+    document.getElementById('m-ss-pwd').classList.add('on');
+    setTimeout(()=>inp?.focus(),100);
+  }
+}
+
+function ssCheckPwd(){
+  const val=document.getElementById('ss-pwd-input').value;
+  if(val==='adminhsb'){
+    cM('m-ss-pwd');
+    ssEditMode=true;
+    document.getElementById('ss-edit-banner').style.display='block';
+    document.getElementById('ss-edit-btn').style.background='var(--accent)';
+    document.getElementById('ss-edit-btn').style.color='#fff';
+    ssRenderTable();
+    showToast('Mode edit aktif','ok');
+  } else {
+    document.getElementById('ss-pwd-err').textContent='Password salah';
+  }
+}
+
+// Buka modal edit untuk baris ke-idx (index di ssLog)
+function ssOpenEdit(idx){
+  ssEditIdx=idx;
+  const r=ssLog[idx];
+  if(!r)return;
+  document.getElementById('sse-d').value=r.date||'';
+  document.getElementById('sse-sh').value=r.sh||'NSP';
+  document.getElementById('sse-s5').value=r.s5||0;
+  document.getElementById('sse-wc').value=r.wc||0;
+  document.getElementById('sse-lb').value=r.lb||0;
+  document.getElementById('sse-op').value=r.op||'';
+  document.getElementById('sse-no').value=r.n||'';
+  document.getElementById('m-ss-edit').classList.add('on');
+}
+
+function ssSaveEdit(){
+  if(ssEditIdx<0||!ssLog[ssEditIdx])return;
+  const r=ssLog[ssEditIdx];
+  r.date=document.getElementById('sse-d').value;
+  r.sh  =document.getElementById('sse-sh').value;
+  r.s5  =+document.getElementById('sse-s5').value||0;
+  r.wc  =+document.getElementById('sse-wc').value||0;
+  r.lb  =+document.getElementById('sse-lb').value||0;
+  r.op  =document.getElementById('sse-op').value||'Op';
+  r.n   =document.getElementById('sse-no').value;
+  sv('ssLog',ssLog);
+  // Push perubahan ke Sheets (replace seluruh data steelshot)
+  pushToSheets('replaceSteelshot',ssLog.map(x=>({
+    date:x.date,shift:x.sh,
+    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
+    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
+  })));
+  cM('m-ss-edit');
+  ssBuildOpFilter();
+  ssRenderTable();
+  if(document.getElementById('p-ss').classList.contains('on'))drawFullSs();
+  showToast('Data diperbarui','ok');
+}
+
+function ssDeleteRow(){
+  if(ssEditIdx<0)return;
+  if(!confirm('Hapus baris data ini? Tindakan tidak bisa dibatalkan.'))return;
+  ssLog.splice(ssEditIdx,1);
+  sv('ssLog',ssLog);
+  pushToSheets('replaceSteelshot',ssLog.map(x=>({
+    date:x.date,shift:x.sh,
+    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
+    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
+  })));
+  cM('m-ss-edit');
+  ssBuildOpFilter();
+  ssRenderTable();
+  if(document.getElementById('p-ss').classList.contains('on'))drawFullSs();
+  showToast('Baris data dihapus','ok');
 }
 async function saveSs(ev){
   showSpinner('Menyimpan data steelshot...',ev?.currentTarget);
@@ -3317,6 +3544,7 @@ function rst(){
 let _waPickerFn = null;   // which report to send
 let _waPickDate  = null;  // selected date string YYYY-MM-DD
 let _waPickShift = 'NSP'; // 'NSP' | 'NSM' | 'BOTH'
+let _waPickNote  = '';    // catatan tambahan opsional
 
 // Open the picker modal before sending WA
 function openWAPicker(reportType, defaultShift){
@@ -3342,6 +3570,10 @@ function openWAPicker(reportType, defaultShift){
   if(shiftRow) shiftRow.style.display = noShift.includes(reportType)?'none':'flex';
   waPickShift(_waPickShift);
   waUpdatePreview();
+  // Reset catatan
+  const noteEl=document.getElementById('wa-pick-note');
+  if(noteEl)noteEl.value='';
+  _waPickNote='';
   document.getElementById('m-wa-picker').classList.add('on');
 }
 
@@ -3400,6 +3632,8 @@ function waUpdatePreview(){
 
 function waPickSend(){
   const shifts = _waPickShift==='BOTH' ? ['NSP','NSM'] : [_waPickShift];
+  // Ambil catatan tambahan
+  _waPickNote = (document.getElementById('wa-pick-note')?.value || '').trim();
   // Kirim WA DULU (dalam user gesture), baru tutup modal
   // Di Android, window.open harus dipanggil langsung saat tap
   switch(_waPickerFn){
@@ -3452,6 +3686,11 @@ function waAmpere(reportDate, reportShifts){
   const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
   const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
   const sh = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const timeRange=getShiftTimeRange(sh);
+  // Cek terakhir: jam & operator dari ampLog
+  const lastAmp=[...ampLog].filter(l=>reportShifts.includes(l.sh)).sort((a,b)=>(b.dt||'').localeCompare(a.dt||''))[0];
+  let lastCheck='';
+  if(lastAmp&&lastAmp.dt){const d=parseDT(lastAmp.dt);if(d){const jc=d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});lastCheck=`\u23f1 Cek terakhir: ${jc} oleh ${lastAmp.op||'Operator'}\n`;}}
   const abnormal=[];
   let nOk=0,nLo=0,nHi=0,nOf=0;
   for(let i=0;i<16;i++){
@@ -3467,7 +3706,10 @@ function waAmpere(reportDate, reportShifts){
   let msg=`🏭 *LAPORAN AMPERE IMPELLER*\n`;
   const [ray,ram,rad]=reportDate.split('-');
   const reportTglAmp=`${+rad}-${M[+ram-1]}-${ray}`;
-  msg+=`📅 ${reportTglAmp}  🕐 ${jam}  |  Shift: *${sh}*\n`;
+  msg+=`📅 ${reportTglAmp}\n`;
+  msg+=`🕐 Shift ${sh} (${timeRange})\n`;
+  msg+=`📤 Dikirim: ${jam}\n`;
+  msg+=`${lastCheck}`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`Range Normal: *${cfg.aLo}–${cfg.aHi} A*\n\n`;
   msg+=`✅ Normal : ${nOk} unit\n`;
@@ -3477,6 +3719,7 @@ function waAmpere(reportDate, reportShifts){
   if(abnormal.length)msg+=`\n⚠ *Impeller Abnormal:*\n${abnormal.join('\n')}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`${hasOut?'🔴':nOf===16?'⭕':'🟢'} *KESIMPULAN: ${hasOut?'ADA AMPERE ABNORMAL':'SEMUA NORMAL'}*\n`;
+  if(_waPickNote)msg+=`\n📝 *Catatan:* ${_waPickNote}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`📊 Dashboard: ${dashUrl}\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
@@ -3490,6 +3733,7 @@ function waLimbah(reportDate, reportShifts){
   const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
   const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
   const activeShift = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const timeRange=getShiftTimeRange(activeShift);
   const lb = lbLog.filter(l=>l.date===reportDate && reportShifts.includes(l.sh));
   const pasir=lb.filter(l=>l.j==='Pasir').reduce((a,x)=>a+x.v,0);
   const debu =lb.filter(l=>l.j==='Debu').reduce((a,x)=>a+x.v,0);
@@ -3504,9 +3748,15 @@ function waLimbah(reportDate, reportShifts){
   const hasOut=[stsPasir,stsDebu].some(s=>s.includes('OUT'));
   const allOk =[stsPasir,stsDebu].every(s=>s.includes('Normal')||s.includes('input'));
   const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
+  const [rly,rlm,rld]=reportDate.split('-');
+  const reportTglLb=`${+rld}-${M[+rlm-1]}-${rly}`;
   let msg=`🗑 *LAPORAN LIMBAH HARIAN*
 `;
-  msg+=`📅 ${tgl}  🕐 ${jam}  |  Shift: *${activeShift}*
+  msg+=`📅 ${reportTglLb}
+`;
+  msg+=`🕐 Shift ${activeShift} (${timeRange})
+`;
+  msg+=`📤 Dikirim: ${jam}
 `;
   msg+=`━━━━━━━━━━━━━━━━━━━
 `;
@@ -3533,10 +3783,13 @@ function waLimbah(reportDate, reportShifts){
 `;
   msg+=`━━━━━━━━━━━━━━━━━━━
 `;
+  if(_waPickNote)msg+=`
+📝 *Catatan:* ${_waPickNote}
+`;
   msg+=`📊 Dashboard: ${dashUrl}
 `;
   msg+=`
-_${tgl} ${jam} — TPM HSB Casting 2_`;
+_${reportTglLb} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
 
@@ -3548,48 +3801,73 @@ function waSteelshot(reportDate, reportShifts){
   const [ry,rm,rd]=reportDate.split('-');
   const reportTgl=`${+rd}-${M[+rm-1]}-${ry}`;
   const activeShift = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const timeRange=getShiftTimeRange(activeShift);
 
   const ssShift = ssLog.filter(s=>s.date===reportDate && reportShifts.includes(s.sh));
   const ss5=ssShift.reduce((a,x)=>a+(+x.s5||0),0);
   const wc =ssShift.reduce((a,x)=>a+(+x.wc||0),0);
   const lb =ssShift.reduce((a,x)=>a+(+x.lb||0),0);
+  const totalAll=ss5+wc+lb;
 
   function ssStatus(val,lo,hi){
-    if(!lo&&!hi)  return '➖ Tidak ada standar';
-    if(val===0)   return '⬜ Belum ada input';
-    if(hi>0&&val>hi) return `🔴 *OUT STANDARD* (di atas ${hi} Kg)`;
-    if(lo>0&&val<lo) return `🟡 *OUT STANDARD* (di bawah ${lo} Kg)`;
-    return '🟢 Normal';
+    if(!lo&&!hi)  return '\u2796 Tidak ada standar';
+    if(val===0)   return '\u2b1c Belum ada input';
+    if(hi>0&&val>hi) return `\ud83d\udd34 *OUT STANDARD* (di atas ${hi} Kg)`;
+    if(lo>0&&val<lo) return `\ud83d\udfe1 *OUT STANDARD* (di bawah ${lo} Kg)`;
+    return '\ud83d\udfe2 Normal';
   }
   const ss5St=ssStatus(ss5,cfg.sLo,cfg.sHi);
   const wcSt =ssStatus(wc, cfg.wLo,cfg.wHi);
   const lbSt =ssStatus(lb, cfg.lsLo,cfg.lsHi);
-  const hasOut=[ss5St,wcSt,lbSt].some(s=>s.includes('OUT'));
+
+  const exceeded=[];
+  if(ss5St.includes('OUT'))exceeded.push('SS 550');
+  if(wcSt.includes('OUT')) exceeded.push('Wire Cut');
+  if(lbSt.includes('OUT')) exceeded.push('SS Bekas');
+
+  const hasOut=exceeded.length>0;
   const allOk =[ss5St,wcSt,lbSt].every(s=>s.includes('Normal')||s.includes('standar')||s.includes('input'));
-  const overallEmoji=hasOut?'🔴':allOk?'🟢':'🟡';
+  const overallEmoji=hasOut?'\ud83d\udd34':allOk?'\ud83d\udfe2':'\ud83d\udfe1';
   const overallText =hasOut?'ADA ITEM OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN';
+
+  const targetTotal=(+cfg.sHi||0)+(+cfg.wHi||0)+(+cfg.lsHi||0);
+  let budgetLine='';
+  if(targetTotal>0){
+    const sisa=targetTotal-totalAll;
+    if(sisa>=0) budgetLine=`\ud83d\udcb0 *TOTAL: ${totalAll} Kg* \u2705 EFISIEN (sisa ${sisa} Kg dari target ${targetTotal} Kg)`;
+    else        budgetLine=`\ud83d\udcb0 *TOTAL: ${totalAll} Kg* \ud83d\udd34 MELEBIHI (+${Math.abs(sisa)} Kg dari target ${targetTotal} Kg)`;
+  } else {
+    budgetLine=`\ud83d\udcb0 *TOTAL: ${totalAll} Kg*`;
+  }
+
   const dashUrl='https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html';
 
-  let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n`;
-  msg+=`📅 ${reportTgl}  🕐 ${jam}  |  Shift: *${activeShift}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  let msg=`\ud83d\udd2e *LAPORAN STEELSHOT HARIAN*\n`;
+  msg+=`\ud83d\udcc5 ${reportTgl}\n`;
+  msg+=`\ud83d\udd50 Shift ${activeShift} (${timeRange})\n`;
+  msg+=`\ud83d\udce4 Dikirim: ${jam}\n`;
+  msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
   msg+=`*SS 550*\n`;
   msg+=`  Total ${activeShift}: *${ss5} Kg*\n`;
-  msg+=`  Standar: ${cfg.sLo||0}–${cfg.sHi||0} Kg/hari\n`;
+  msg+=`  Standar: ${cfg.sLo||0}\u2013${cfg.sHi||0} Kg/hari\n`;
   msg+=`  Status: ${ss5St}\n\n`;
   msg+=`*Wire Cut*\n`;
   msg+=`  Total ${activeShift}: *${wc} Kg*\n`;
-  msg+=`  Standar: ${cfg.wLo||0}–${cfg.wHi||0} Kg/hari\n`;
+  msg+=`  Standar: ${cfg.wLo||0}\u2013${cfg.wHi||0} Kg/hari\n`;
   msg+=`  Status: ${wcSt}\n\n`;
   msg+=`*SS Bekas*\n`;
   msg+=`  Total ${activeShift}: *${lb} Kg*\n`;
-  msg+=`  Standar: ${cfg.lsLo||0}–${cfg.lsHi||0} Kg/hari\n`;
+  msg+=`  Standar: ${cfg.lsLo||0}\u2013${cfg.lsHi||0} Kg/hari\n`;
   msg+=`  Status: ${lbSt}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
+  msg+=`${budgetLine}\n`;
+  msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
+  if(hasOut)msg+=`\u26a0 *Melebihi standar:* ${exceeded.join(', ')}\n`;
   msg+=`${overallEmoji} *KESIMPULAN: ${overallText}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`📊 Dashboard: ${dashUrl}\n`;
-  msg+=`\n_${reportTgl} ${jam} — TPM HSB Casting 2_`;
+  if(_waPickNote)msg+=`\n\ud83d\udcdd *Catatan:* ${_waPickNote}\n`;
+  msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
+  msg+=`\ud83d\udcca Dashboard: ${dashUrl}\n`;
+  msg+=`\n_${reportTgl} ${jam} \u2014 TPM HSB Casting 2_`;
   sendWA(msg);
 }
 function waSparepart(reportDate){
@@ -3665,6 +3943,7 @@ function waDashboard(reportDate, reportShifts){
   const tgl=`${now.getDate()}-${M[now.getMonth()]}-${now.getFullYear()}`;
   const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
   const sh = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const timeRange=getShiftTimeRange(sh);
   const shiftDate = reportDate;
   // Impeller
   let nOn=0,nOf=0,nOk=0,nLo=0,nHi=0,nAt=0;
@@ -3694,7 +3973,9 @@ function waDashboard(reportDate, reportShifts){
   let msg=`📊 *RESUME HSB CASTING 2*\n`;
   const [dby,dbm,dbd]=reportDate.split('-');
   const reportTglDb=`${+dbd}-${M[+dbm-1]}-${dby}`;
-  msg+=`📅 ${reportTglDb}  🕐 ${jam}  |  Shift: *${sh}*\n`;
+  msg+=`📅 ${reportTglDb}\n`;
+  msg+=`🕐 Shift ${sh} (${timeRange})\n`;
+  msg+=`📤 Dikirim: ${jam}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`⚙ *IMPELLER (16 unit)*\n`;
   msg+=`  ON: ${nOn} | OFF: ${nOf}\n`;
@@ -3714,6 +3995,7 @@ function waDashboard(reportDate, reportShifts){
   msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'ADA KONDISI ABNORMAL':'SEMUA NORMAL'}*\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  if(_waPickNote)msg+=`📝 *Catatan:* ${_waPickNote}\n`;
   msg+=`📊 Dashboard: ${dashUrl}\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
