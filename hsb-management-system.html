@@ -416,7 +416,8 @@ tr:hover td{background:var(--accent-bg);}
       <div class="db-foot">
         <div class="lg-r" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Gentani (Kg/Ton)</div>
+            <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Harian</div>
+            <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>Akumulasi</div>
           </div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
             <button class="chc-b on" id="db-gt-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbGtSetView('day',this)">Harian</button>
@@ -918,9 +919,10 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div style="height:260px;position:relative;"><canvas id="c-gt-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
     <div class="lg-r" style="margin-top:8px;">
-      <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Gentani (Kg/Ton)</div>
-      <div class="lg-i"><div class="lg-d" style="background:#7c3aed55;"></div>Target Bawah</div>
-      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>Target Atas</div>
+      <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Gentani Harian (bar)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>Akumulasi (garis)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#16a34a;"></div>Target Bawah</div>
+      <div class="lg-i"><div class="lg-d" style="background:#dc2626;"></div>Target Atas</div>
     </div>
   </div>
 
@@ -3668,13 +3670,150 @@ async function saveGt(ev){
 }
 
 // Bangun data harian gentani untuk rentang periode
+// Bangun data harian gentani + akumulatif untuk rentang periode
 function buildGtRaw(cf,ct){
   const{f,t}=dtRange(gtPdV,cf,ct);
-  return allDays(f,t).map(date=>{
+  const days=allDays(f,t);
+  // Cari tanggal 1 di bulan dari tanggal awal range (untuk akumulasi dari awal bulan)
+  let accKg=0, accTon=0;
+  return days.map(date=>{
     const kg=ssKgFor(date,null);
     const ton=ikomiFor(date,null);
-    return {date, gt:ton>0?+(kg/ton).toFixed(2):0, _kg:kg, _ton:ton};
+    // Akumulasi berjalan
+    accKg+=kg; accTon+=ton;
+    const harian = ton>0 ? +(kg/ton).toFixed(2) : 0;
+    const akum   = accTon>0 ? +(accKg/accTon).toFixed(2) : 0;
+    return {date, gt:harian, gtAkum:akum, _kg:kg, _ton:ton};
   });
+}
+
+// Grafik Gentani khusus: BAR harian + LINE akumulatif + 2 target
+function drawGentaniChart(canvasId, data, opts){
+  const cv=document.getElementById(canvasId);
+  if(!cv||!data||!data.length)return;
+  const rect=cv.getBoundingClientRect();
+  const W=Math.round(rect.width),H=Math.round(rect.height);
+  if(W<30||H<30){requestAnimationFrame(()=>drawGentaniChart(canvasId,data,opts));return;}
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+
+  const dk=document.documentElement.getAttribute('data-theme')==='dark';
+  const GRIDC=dk?'rgba(255,255,255,.08)':'rgba(0,0,0,.08)';
+  const TICKC=dk?'#8aa4bc':'#4a6a85';
+  const MOC  =dk?'#c0d4e8':'#1a3350';
+
+  const N=data.length;
+  const isWeekly=!!opts.weekly;
+  const singleMonth=!isWeekly&&N>0&&data.every(d=>d.date&&d.date.slice(0,7)===data[0].date.slice(0,7));
+  const yLab=opts.yLabel||'Kg/Ton';
+  const loT=+opts.lo||0, hiT=+opts.hi||0;
+
+  const PAD={t:22,r:12,b:44,l:46};
+  const CW=W-PAD.l-PAD.r, CH=H-PAD.t-PAD.b;
+  if(CW<20||CH<20)return;
+  ctx.clearRect(0,0,W,H);
+
+  // Scale — pertimbangkan bar harian, line akumulatif, dan target
+  const allV=[];
+  data.forEach(d=>{if(d.gt>0)allV.push(d.gt);if(d.gtAkum>0)allV.push(d.gtAkum);});
+  if(loT>0)allV.push(loT); if(hiT>0)allV.push(hiT);
+  const rawMax=Math.max(...allV,1);
+  function niceUp(v){if(v<=0)return 5;const e=Math.pow(10,Math.floor(Math.log10(v)));const f=v/e;const n=f<=1?1:f<=1.2?1.2:f<=1.5?1.5:f<=2?2:f<=2.5?2.5:f<=3?3:f<=4?4:f<=5?5:10;return n*e;}
+  function niceStep(top){const steps=[1,2,5,10,20,25,50,100,200,250,500,1000,2000,2500,5000];for(const s of steps)if(top/s<=6)return s;return Math.round(top/5/1000)*1000||1000;}
+  const YMAX=niceUp(rawMax*1.18);
+  const STEP=niceStep(YMAX);
+  const ticks=[];for(let t=0;t<=YMAX;t+=STEP)ticks.push(t);
+
+  const xOf=i=>PAD.l+(N>1?(CW/N)*(i+0.5):CW/2); // center of each slot (untuk bar)
+  const yOf=v=>PAD.t+CH*(1-Math.min(Math.max(v,0),YMAX)/YMAX);
+
+  // Y grid + labels
+  ctx.setLineDash([]);
+  ticks.forEach(t=>{
+    const y=yOf(t);
+    ctx.strokeStyle=GRIDC;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.fillStyle=TICKC;ctx.font='600 10px sans-serif';
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(t,PAD.l-5,y);
+  });
+  // Y unit label
+  ctx.save();ctx.fillStyle=MOC;ctx.font='bold 10px sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.translate(13,PAD.t+CH/2);ctx.rotate(-Math.PI/2);ctx.fillText(yLab,0,0);ctx.restore();
+
+  // BAR harian (gentani per hari)
+  const slotW=CW/N;
+  const barW=Math.min(slotW*0.6,28);
+  data.forEach((d,i)=>{
+    const v=d.gt;if(!v)return;
+    const x=xOf(i)-barW/2;
+    const y=yOf(v);
+    const h=PAD.t+CH-y;
+    const grd=ctx.createLinearGradient(0,y,0,PAD.t+CH);
+    grd.addColorStop(0,'#0891b2cc');grd.addColorStop(1,'#0891b240');
+    ctx.fillStyle=grd;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,y,barW,h,[3,3,0,0]);else ctx.rect(x,y,barW,h);
+    ctx.fill();
+  });
+
+  // Target lines (dashed)
+  function targetLine(v,color,label){
+    if(!v)return;
+    const y=yOf(v);if(y<PAD.t-2||y>PAD.t+CH+2)return;
+    ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();ctx.restore();
+    ctx.setLineDash([]);
+  }
+  targetLine(hiT,'#dc2626','atas');
+  targetLine(loT,'#16a34a','bawah');
+
+  // LINE akumulatif (gentani akumulasi)
+  const accPts=data.map(d=>d.gtAkum);
+  ctx.beginPath();ctx.strokeStyle='#7c3aed';ctx.lineWidth=2.5;
+  ctx.lineJoin='round';ctx.lineCap='round';ctx.setLineDash([]);
+  let started=false;
+  accPts.forEach((v,i)=>{
+    if(v<=0)return;
+    const x=xOf(i),y=yOf(v);
+    if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // Dots akumulatif
+  const dotR=N<=31?3:N<=62?2:0;
+  if(dotR>0){
+    accPts.forEach((v,i)=>{if(v<=0)return;ctx.beginPath();ctx.arc(xOf(i),yOf(v),dotR,0,Math.PI*2);ctx.fillStyle='#7c3aed';ctx.fill();});
+  }
+
+  // Data label di garis akumulatif (titik terakhir + tiap beberapa titik)
+  ctx.font='bold 9px sans-serif';ctx.fillStyle='#7c3aed';ctx.textAlign='center';
+  const labelGap=N<=10?1:N<=20?2:Math.ceil(N/10);
+  accPts.forEach((v,i)=>{
+    if(v<=0)return;
+    if(i%labelGap!==0 && i!==N-1)return;
+    ctx.fillText(v.toFixed(1),xOf(i),yOf(v)-7);
+  });
+
+  // X-axis labels
+  ctx.fillStyle=TICKC;ctx.font='600 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+  const xGap=N<=15?1:N<=31?Math.ceil(N/15):Math.ceil(N/10);
+  data.forEach((d,i)=>{
+    if(i%xGap!==0 && i!==N-1)return;
+    let lbl;
+    if(isWeekly)lbl=d.date;
+    else if(singleMonth)lbl=(d.date||'').slice(8,10).replace(/^0/,'');
+    else lbl=(d.date||'').slice(8,10)+'/'+(d.date||'').slice(5,7);
+    ctx.fillText(lbl,xOf(i),PAD.t+CH+6);
+  });
+  // Bulan label (single month)
+  if(singleMonth&&N>0){
+    const mo=+(data[0].date||'').slice(5,7);
+    const yr=(data[0].date||'').slice(0,4);
+    ctx.fillStyle=MOC;ctx.font='bold 9px sans-serif';
+    ctx.fillText(`${M[mo-1]} ${yr}`,PAD.l+CW/2,PAD.t+CH+22);
+  }
 }
 
 function gtPdSel(v){
@@ -3689,15 +3828,28 @@ function drawFullGt(){
   let cf,ct;
   if(gtPdV==='cust'){cf=document.getElementById('gt-cf').value;ct=document.getElementById('gt-ct').value;if(!cf||!ct)return;}
   const daily=buildGtRaw(cf,ct);
-  const data=gtView==='week'?aggregateWeeklyAvg(daily,['gt']):daily;
-  drawChart('c-gt-full',data,[{k:'gt',c:'#0891b2'}],{
-    yLabel:'Kg/Ton',
-    weekly:gtView==='week',
-    ranges:[{v:+cfg.gtHi||0,c:'#7c3aed'},{v:+cfg.gtLo||0,c:'#7c3aed55'}]
-  });
+  const data=gtView==='week'?aggregateGtWeekly(daily):daily;
+  drawGentaniChart('c-gt-full',data,{yLabel:'Kg/Ton',weekly:gtView==='week',lo:+cfg.gtLo||0,hi:+cfg.gtHi||0});
 }
 
-// Dashboard mini gentani chart
+// Agregasi mingguan untuk gentani (rata-rata harian + akumulatif terakhir di minggu)
+function aggregateGtWeekly(daily){
+  const weekMap=new Map();
+  daily.forEach(d=>{
+    if(!d.date)return;
+    const{label,weekStart}=getWeekLabel(d.date);
+    if(!weekMap.has(label))weekMap.set(label,{date:label,_ws:weekStart,sumGt:0,cntGt:0,lastAkum:0});
+    const w=weekMap.get(label);
+    if(d.gt>0){w.sumGt+=d.gt;w.cntGt++;}
+    if(d.gtAkum>0)w.lastAkum=d.gtAkum; // akumulatif = nilai terakhir di minggu itu
+  });
+  return [...weekMap.values()].sort((a,b)=>a._ws-b._ws).map(w=>({
+    date:w.date,
+    gt:w.cntGt>0?+(w.sumGt/w.cntGt).toFixed(2):0,
+    gtAkum:w.lastAkum
+  }));
+}
+
 function dbGtSetView(v,btn){
   dbGtView=v;
   document.getElementById('db-gt-v-day').classList.toggle('on',v==='day');
@@ -3706,18 +3858,16 @@ function dbGtSetView(v,btn){
 }
 function drawDashGt(){
   const{f,t}=dtRange('cur');
-  const daily=allDays(f,t).map(date=>{
+  const days=allDays(f,t);
+  let accKg=0,accTon=0;
+  const daily=days.map(date=>{
     const kg=ssKgFor(date,null);const ton=ikomiFor(date,null);
-    return {date, gt:ton>0?+(kg/ton).toFixed(2):0};
+    accKg+=kg;accTon+=ton;
+    return {date, gt:ton>0?+(kg/ton).toFixed(2):0, gtAkum:accTon>0?+(accKg/accTon).toFixed(2):0};
   });
-  const data=dbGtView==='week'?aggregateWeeklyAvg(daily,['gt']):daily;
-  drawChart('c-gt',data,[{k:'gt',c:'#0891b2'}],{
-    yLabel:'Kg/Ton',weekly:dbGtView==='week',
-    ranges:[{v:+cfg.gtHi||0,c:'#7c3aed'},{v:+cfg.gtLo||0,c:'#7c3aed55'}]
-  });
+  const data=dbGtView==='week'?aggregateGtWeekly(daily):daily;
+  drawGentaniChart('c-gt',data,{yLabel:'Kg/Ton',weekly:dbGtView==='week',lo:+cfg.gtLo||0,hi:+cfg.gtHi||0});
 }
-
-// Render tabel history gentani
 function gtRenderTable(){
   const tb=document.getElementById('gt-tb');
   if(!tb)return;
