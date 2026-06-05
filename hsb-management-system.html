@@ -968,6 +968,26 @@ tr:hover td{background:var(--accent-bg);}
   </div>
 </div>
 
+<!-- MODAL KONFIRMASI HAPUS -->
+<div class="mv" id="m-ss-del">
+  <div class="mw" style="max-width:360px;">
+    <div class="mh">
+      <h3>🗑 Hapus Data?</h3>
+      <button class="mx" onclick="cM('m-ss-del')">×</button>
+    </div>
+    <div class="mb">
+      <div style="background:var(--danger-bg,rgba(220,38,38,.1));border:1px solid var(--danger);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:.8rem;color:var(--text);line-height:1.5;" id="ss-del-info">-</div>
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">Baris data ini akan dihapus permanen dari aplikasi dan spreadsheet. Tindakan tidak bisa dibatalkan.</p>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" style="flex:1;justify-content:center;background:var(--card2);border:1px solid var(--border);color:var(--text);" onclick="cM('m-ss-del')">Batal</button>
+        <button class="btn" style="flex:1;justify-content:center;background:var(--danger);color:#fff;" onclick="ssConfirmDelete()">🗑 Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL PASSWORD EDIT -->
 <div class="mv" id="m-ss-pwd">
   <div class="mw" style="max-width:340px;">
@@ -3231,6 +3251,7 @@ function drawFullSs(){
 }
 let ssEditMode=false;
 let ssEditIdx=-1; // index into ssLog of row being edited
+let ssEditOrig=null; // {oldDate, oldShift, oldIdx (occurrence)} untuk match di server
 
 function rSs(){
   const sd=document.getElementById('ss-d');if(!sd.value)sd.value=today();
@@ -3328,6 +3349,13 @@ function ssOpenEdit(idx){
   ssEditIdx=idx;
   const r=ssLog[idx];
   if(!r)return;
+  // Hitung occurrence ke-berapa baris ini di antara baris dengan date+shift sama
+  // (untuk mencocokkan baris yang tepat di server)
+  let occ=0;
+  for(let i=0;i<idx;i++){
+    if(ssLog[i].date===r.date&&ssLog[i].sh===r.sh)occ++;
+  }
+  ssEditOrig={oldDate:r.date,oldShift:r.sh,oldIdx:occ};
   document.getElementById('sse-d').value=r.date||'';
   document.getElementById('sse-sh').value=r.sh||'NSP';
   document.getElementById('sse-s5').value=r.s5||0;
@@ -3341,6 +3369,7 @@ function ssOpenEdit(idx){
 async function ssSaveEdit(){
   if(ssEditIdx<0||!ssLog[ssEditIdx])return;
   const r=ssLog[ssEditIdx];
+  const orig=ssEditOrig||{oldDate:r.date,oldShift:r.sh,oldIdx:0};
   r.date=document.getElementById('sse-d').value;
   r.sh  =document.getElementById('sse-sh').value;
   r.s5  =+document.getElementById('sse-s5').value||0;
@@ -3353,21 +3382,33 @@ async function ssSaveEdit(){
   ssBuildOpFilter();
   ssRenderTable();
   if(document.getElementById('p-ss').classList.contains('on'))drawFullSs();
-  // Sync ke server — tunggu hasil, beri feedback akurat
+  // Sync 1 baris saja (payload kecil — muat di GET URL)
   showSpinner('Menyimpan perubahan ke server...');
-  const ok=await pushToSheets('replaceSteelshot',ssLog.map(x=>({
-    date:x.date,shift:x.sh,
-    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
-    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
-  })));
+  const ok=await syncOneRow('editSteelshotRow',{
+    oldDate:orig.oldDate,oldShift:orig.oldShift,oldIdx:orig.oldIdx,
+    date:r.date,shift:r.sh,s5:r.s5,wc:r.wc,lb:r.lb,op:r.op,n:r.n
+  });
   hideSpinner();
   if(ok)showToast('✅ Data tersimpan & tersinkron ke server','ok');
-  else  showToast('⚠ Tersimpan lokal, tapi GAGAL sync server. Akan dicoba lagi otomatis saat koneksi pulih.','warn',6000);
+  else  showToast('⚠ Tersimpan lokal, tapi GAGAL sync ke server. Coba lagi nanti.','warn',6000);
 }
 
-async function ssDeleteRow(){
+// Tombol Hapus di modal edit — buka modal konfirmasi (bukan confirm() bawaan)
+function ssDeleteRow(){
   if(ssEditIdx<0)return;
-  if(!confirm('Hapus baris data ini? Tindakan tidak bisa dibatalkan.'))return;
+  const r=ssLog[ssEditIdx];
+  if(!r)return;
+  // Isi info baris yang akan dihapus di modal konfirmasi
+  const info=document.getElementById('ss-del-info');
+  if(info)info.innerHTML=`<b>${fD(r.date)}</b> · Shift ${r.sh}<br>SS550: ${r.s5||0} · WireCut: ${r.wc||0} · Bekas: ${r.lb||0} Kg · ${r.op||'-'}`;
+  document.getElementById('m-ss-del').classList.add('on');
+}
+
+// Konfirmasi hapus benar-benar dijalankan
+async function ssConfirmDelete(){
+  cM('m-ss-del');
+  if(ssEditIdx<0)return;
+  const orig=ssEditOrig||{oldDate:ssLog[ssEditIdx].date,oldShift:ssLog[ssEditIdx].sh,oldIdx:0};
   ssLog.splice(ssEditIdx,1);
   sv('ssLog',ssLog);
   cM('m-ss-edit');
@@ -3375,14 +3416,21 @@ async function ssDeleteRow(){
   ssRenderTable();
   if(document.getElementById('p-ss').classList.contains('on'))drawFullSs();
   showSpinner('Menghapus & sinkron ke server...');
-  const ok=await pushToSheets('replaceSteelshot',ssLog.map(x=>({
-    date:x.date,shift:x.sh,
-    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
-    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
-  })));
+  const ok=await syncOneRow('deleteSteelshotRow',{
+    oldDate:orig.oldDate,oldShift:orig.oldShift,oldIdx:orig.oldIdx
+  });
   hideSpinner();
   if(ok)showToast('✅ Baris dihapus & tersinkron ke server','ok');
-  else  showToast('⚠ Dihapus lokal, tapi GAGAL sync server. Akan dicoba lagi otomatis saat koneksi pulih.','warn',6000);
+  else  showToast('⚠ Dihapus lokal, tapi GAGAL sync ke server. Coba lagi nanti.','warn',6000);
+}
+
+// Helper: kirim 1 aksi baris ke server (payload kecil), return true/false
+async function syncOneRow(action,params){
+  if(!ONLINE)return false;
+  setSyncStatus('syncing');
+  const r=await api(action,params);
+  setSyncStatus(r.ok?'ok':'error');
+  return !!r.ok;
 }
 async function saveSs(ev){
   showSpinner('Menyimpan data steelshot...',ev?.currentTarget);
