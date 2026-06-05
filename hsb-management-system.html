@@ -235,8 +235,8 @@ tr:hover td{background:var(--accent-bg);}
 .spinner-ov{
   position:fixed;inset:0;z-index:9997;
   display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;
-  background:rgba(15,25,45,.62);
-  backdrop-filter:blur(4px);
+  background:rgba(15,25,45,.35);
+  backdrop-filter:blur(2px);
   pointer-events:all; /* block ALL clicks underneath */
   transition:opacity .15s;
 }
@@ -1278,17 +1278,18 @@ async function flushQueue() {
 // ============================================================
 // TOAST NOTIFICATION
 // ============================================================
-function showToast(msg, type='ok') {
+function showToast(msg, type='ok', duration=3000) {
   let t = document.getElementById('toast');
   if (!t) { t = document.createElement('div'); t.id='toast'; document.body.appendChild(t); }
   t.textContent = msg;
-  t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:9px;font-size:.82rem;font-weight:700;z-index:9999;transition:opacity .3s;` +
+  t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;transition:opacity .3s,transform .3s;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);` +
     (type==='ok' ? 'background:var(--ok);color:#fff;' :
      type==='warn' ? 'background:var(--warn);color:#fff;' :
      'background:var(--danger);color:#fff;');
   t.style.opacity='1';
+  t.style.transform='translateX(-50%) translateY(0)';
   clearTimeout(t._hide);
-  t._hide = setTimeout(()=>{ t.style.opacity='0'; }, 3000);
+  t._hide = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; }, duration);
 }
 
 // ============================================================
@@ -1339,6 +1340,17 @@ function doLogin() {
 // SYNC STATUS INDICATOR
 // ============================================================
 function setSyncStatus(status) {
+  // Top loading bar tipis (non-blocking) — muncul saat ambil/sync data
+  let bar=document.getElementById('top-loadbar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='top-loadbar';
+    bar.style.cssText='position:fixed;top:0;left:0;height:3px;width:0;z-index:99999;background:linear-gradient(90deg,var(--accent),#22c55e);transition:width .3s,opacity .4s;opacity:0;pointer-events:none;';
+    document.body.appendChild(bar);
+  }
+  if(status==='syncing'){ bar.style.opacity='1'; bar.style.width='75%'; }
+  else { bar.style.width='100%'; setTimeout(()=>{bar.style.opacity='0';setTimeout(()=>bar.style.width='0',400);},250); }
+
   let el = document.getElementById('sync-st');
   if (!el) return;
   if (status === 'syncing') { el.textContent='⟳ Sync...'; el.style.color='var(--warn)'; }
@@ -3326,7 +3338,7 @@ function ssOpenEdit(idx){
   document.getElementById('m-ss-edit').classList.add('on');
 }
 
-function ssSaveEdit(){
+async function ssSaveEdit(){
   if(ssEditIdx<0||!ssLog[ssEditIdx])return;
   const r=ssLog[ssEditIdx];
   r.date=document.getElementById('sse-d').value;
@@ -3337,34 +3349,40 @@ function ssSaveEdit(){
   r.op  =document.getElementById('sse-op').value||'Op';
   r.n   =document.getElementById('sse-no').value;
   sv('ssLog',ssLog);
-  // Push perubahan ke Sheets (replace seluruh data steelshot)
-  pushToSheets('replaceSteelshot',ssLog.map(x=>({
-    date:x.date,shift:x.sh,
-    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
-    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
-  })));
   cM('m-ss-edit');
   ssBuildOpFilter();
   ssRenderTable();
   if(document.getElementById('p-ss').classList.contains('on'))drawFullSs();
-  showToast('Data diperbarui','ok');
+  // Sync ke server — tunggu hasil, beri feedback akurat
+  showSpinner('Menyimpan perubahan ke server...');
+  const ok=await pushToSheets('replaceSteelshot',ssLog.map(x=>({
+    date:x.date,shift:x.sh,
+    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
+    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
+  })));
+  hideSpinner();
+  if(ok)showToast('✅ Data tersimpan & tersinkron ke server','ok');
+  else  showToast('⚠ Tersimpan lokal, tapi GAGAL sync server. Akan dicoba lagi otomatis saat koneksi pulih.','warn',6000);
 }
 
-function ssDeleteRow(){
+async function ssDeleteRow(){
   if(ssEditIdx<0)return;
   if(!confirm('Hapus baris data ini? Tindakan tidak bisa dibatalkan.'))return;
   ssLog.splice(ssEditIdx,1);
   sv('ssLog',ssLog);
-  pushToSheets('replaceSteelshot',ssLog.map(x=>({
-    date:x.date,shift:x.sh,
-    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
-    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
-  })));
   cM('m-ss-edit');
   ssBuildOpFilter();
   ssRenderTable();
   if(document.getElementById('p-ss').classList.contains('on'))drawFullSs();
-  showToast('Baris data dihapus','ok');
+  showSpinner('Menghapus & sinkron ke server...');
+  const ok=await pushToSheets('replaceSteelshot',ssLog.map(x=>({
+    date:x.date,shift:x.sh,
+    ss550_karung:x.s5,wirecut_karung:x.wc,steelshot_bekas:x.lb,
+    total:(+x.s5||0)+(+x.wc||0),operator:x.op,keterangan:x.n
+  })));
+  hideSpinner();
+  if(ok)showToast('✅ Baris dihapus & tersinkron ke server','ok');
+  else  showToast('⚠ Dihapus lokal, tapi GAGAL sync server. Akan dicoba lagi otomatis saat koneksi pulih.','warn',6000);
 }
 async function saveSs(ev){
   showSpinner('Menyimpan data steelshot...',ev?.currentTarget);
