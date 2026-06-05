@@ -334,6 +334,7 @@ tr:hover td{background:var(--accent-bg);}
   <button class="tb" data-t="amp">⚡ Ampere Log</button>
   <button class="tb" data-t="ss">🔮 Steel Shot</button>
   <button class="tb" data-t="lb">🗑 Limbah</button>
+  <button class="tb" data-t="gt">📊 Gentani</button>
   <button class="tb" data-t="set">⚙ Setting</button>
 </div>
 
@@ -405,19 +406,35 @@ tr:hover td{background:var(--accent-bg);}
       </div>
     </div>
 
-    <!-- HANGER -->
+    <!-- GENTANI STEELSHOT -->
     <div class="db-card">
       <div class="db-head">
-        <div class="st" style="margin:0;flex:1;">🪝 Hanger — 60 Unit</div>
-        <button class="btn btn-g btn-s" onclick="goTab('sp')">Detail →</button>
+        <div class="st" style="margin:0;flex:1;">📊 Gentani Steelshot</div>
+        <button class="btn btn-g btn-s" onclick="goTab('gt')">Detail →</button>
       </div>
-      <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
-        <div class="bar" id="hg-sum" style="margin-bottom:6px;flex-shrink:0;"></div>
-        <div style="flex:1;min-height:0;overflow-y:auto;">
-          <div class="hg" id="hg-grid"></div>
+      <div class="db-canvas"><canvas id="c-gt"></canvas></div>
+      <div class="db-foot">
+        <div class="lg-r" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Gentani (Kg/Ton)</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="chc-b on" id="db-gt-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbGtSetView('day',this)">Harian</button>
+            <button class="chc-b" id="db-gt-v-week" style="font-size:.6rem;padding:2px 6px;" onclick="dbGtSetView('week',this)">Mingguan</button>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- HANGER — full width di bawah (seperti status impeller) -->
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="db-head">
+      <div class="st" style="margin:0;flex:1;">🪝 Hanger — 60 Unit</div>
+      <button class="btn btn-g btn-s" onclick="goTab('sp')">Detail →</button>
+    </div>
+    <div class="bar" id="hg-sum" style="margin-bottom:8px;"></div>
+    <div class="hg" id="hg-grid"></div>
   </div>
 
   <div id="al-box" class="al"></div>
@@ -856,6 +873,80 @@ tr:hover td{background:var(--accent-bg);}
   </div>
 </div>
 
+<!-- ===== GENTANI ===== -->
+<div id="p-gt" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📊 Input Ikomi Harian</div>
+    <div style="font-size:.75rem;color:var(--info);background:var(--info-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;">
+      Gentani = Total Steelshot (Kg) ÷ Ikomi (Ton). Masukkan tonase material yang di-shootblast hari ini.
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Tanggal</label><input type="date" id="gt-d"></div>
+      <div class="fg"><label>Shift</label><select id="gt-sh" onchange="this.dataset.manualSet='1'"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>Ikomi (Ton)</label><input type="number" id="gt-ik" min="0" step="0.1" placeholder="cth: 12.5" oninput="gtUpdatePreview()"></div>
+      <div class="fg"><label>Operator</label><input type="text" id="gt-op"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="gt-no"></textarea></div></div>
+    <div id="gt-preview" style="font-size:.8rem;color:var(--text2);background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:none;"></div>
+    <button class="btn btn-p" onclick="saveGt(event)">💾 Simpan Ikomi</button>
+  </div>
+
+  <!-- GRAFIK GENTANI -->
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📈 Grafik Trend Gentani</div>
+    <div class="fbar">
+      <span class="fbar-lbl">Periode</span>
+      <select class="fbar-sel" id="gt-pd-sel" onchange="gtPdSel(this.value)">
+        <option value="cur">Bulan Ini</option>
+        <option value="prev">Bulan Lalu</option>
+        <option value="3m">3 Bulan</option>
+        <option value="6m">6 Bulan</option>
+        <option value="cust">Custom</option>
+      </select>
+      <span id="gt-cust" style="display:none;align-items:center;gap:6px;">
+        <input type="date" id="gt-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
+        <span style="font-size:.72rem;color:var(--muted);">s/d</span>
+        <input type="date" id="gt-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
+        <button class="btn btn-p btn-s" onclick="drawFullGt()">Tampil</button>
+      </span>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Tampilan</span>
+      <select class="fbar-sel" id="gt-view-sel" onchange="gtViewSel(this.value)">
+        <option value="day">Harian</option>
+        <option value="week">Mingguan</option>
+      </select>
+    </div>
+    <div style="height:260px;position:relative;"><canvas id="c-gt-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
+    <div class="lg-r" style="margin-top:8px;">
+      <div class="lg-i"><div class="lg-d" style="background:#0891b2;"></div>Gentani (Kg/Ton)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#7c3aed55;"></div>Target Bawah</div>
+      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>Target Atas</div>
+    </div>
+  </div>
+
+  <!-- HISTORY GENTANI -->
+  <div class="cd">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 History Ikomi & Gentani</div>
+      <button id="gentani-edit-btn" onclick="histToggleEdit('gentani')" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="gentani-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('gentani')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Filter Tgl</span>
+      <select class="fbar-sel" id="gt-fltr-period" onchange="histRerender('gentani')"><option value="all">Semua</option><option value="7d">7 Hari</option><option value="30d">30 Hari</option><option value="month">Bulan Ini</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Shift</span>
+      <select class="fbar-sel" id="gt-fltr-shift" onchange="histRerender('gentani')"><option value="all">Semua</option><option value="NSP">NSP</option><option value="NSM">NSM</option></select>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>Tgl</th><th>Shift</th><th>Steelshot (Kg)</th><th>Ikomi (Ton)</th><th>Gentani</th><th>Status</th><th>Op</th></tr></thead>
+      <tbody id="gt-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
 <!-- ===== SETTING ===== -->
 <div id="p-set" class="pg">
   <div class="cd" style="margin-bottom:12px;">
@@ -880,6 +971,13 @@ tr:hover td{background:var(--accent-bg);}
     <div class="sr"><div class="sl">Wire Cut — Atas (Kg/hari)</div><input class="si" type="number" id="s-whi"></div>
     <div class="sr"><div class="sl">SS Bekas — Bawah (Kg/hari)</div><input class="si" type="number" id="s-lslo"></div>
     <div class="sr"><div class="sl">SS Bekas — Atas (Kg/hari)</div><input class="si" type="number" id="s-lshi"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt(event)">💾 Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📊 Target Gentani (Kg/Ton)</div>
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Rasio pemakaian steelshot per ton material. Nilai di luar rentang ini akan ditandai abnormal.</div>
+    <div class="sr"><div class="sl">Gentani — Bawah</div><input class="si" type="number" step="0.1" id="s-gtlo"></div>
+    <div class="sr"><div class="sl">Gentani — Atas</div><input class="si" type="number" step="0.1" id="s-gthi"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveSt(event)">💾 Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;">
@@ -1563,6 +1661,13 @@ async function loadFromSheets() {
   }) : hLog;
   sv('hLog',hLog);
 
+  ikomiLog = Array.isArray(r.ikomi) ? r.ikomi.map(x=>{
+    const pd=parseDate(x.date);
+    const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
+    return { date:ds, sh:x.shift, ik:+x.ikomi_ton, op:x.operator, n:x.keterangan };
+  }) : ikomiLog;
+  sv('ikomiLog',ikomiLog);
+
   // impeller & hanger state
   if (Array.isArray(r.impeller_state) && r.impeller_state.length) {
     st = r.impeller_state; sv('st',st);
@@ -1600,6 +1705,7 @@ async function loadFromSheets() {
       sLo: +c.ss_low||0,      sHi: +c.ss_high||1000,
       wLo: +c.wc_low||0,      wHi: +c.wc_high||1000,
       lsLo:+c.ls_low||0,      lsHi:+c.ls_high||500,
+      gtLo:+c.gt_low||0,      gtHi:+c.gt_high||0,
     };
     if (c.imp_names) nms = c.imp_names.split(',').map(s=>s.trim()).filter(Boolean);
     // Load lifetime config from lt_ keys
@@ -1643,6 +1749,7 @@ let spLog=ld('spLog')||[];
 let pvLog=ld('pvLog')||[];
 let lbLog=ld('lbLog')||[];
 let ssLog=ld('ssLog')||[];
+let ikomiLog=ld('ikomiLog')||[];
 let ltCfg=ld('ltCfg')||{'Impeller Blade':480,'Control Cage':480,'Distributor':480,'End Liner Atas':960,'End Liner Bawah':960,'Ceiling Liner':960,'Front Cover':720,'V-Belt':1440,'Motor':8760,'Hanger':960};
 let hSt=ld('hSt')||Array.from({length:60},(_,i)=>({id:i+1,s:'ok',n:'',cf:false}));
 let hLog=ld('hLog')||[];
@@ -1838,7 +1945,7 @@ function goTab(t){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
   document.getElementById('p-'+t).classList.add('on');
   document.querySelectorAll('.tb').forEach(b=>{if(b.dataset.t===t)b.classList.add('on');});
-  ({dash:rDash,prev:rPv,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,set:rSet})[t]?.();
+  ({dash:rDash,prev:rPv,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,gt:rGt,set:rSet})[t]?.();
 }
 document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.t)));
 
@@ -2191,6 +2298,7 @@ function renderLbDashChart(){
   if(sr.length)drawChart('c-lb',ld,sr,{yLabel:'Trolley',weekly:dbLbView==='week',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.dHi,c:'#0891b2'}]});
 }
 function drawDashCharts(){
+  try{drawDashGt();}catch(e){}
   renderSsDashChart();
   renderLbDashChart();
 }
@@ -3312,6 +3420,20 @@ const HIST_CFG = {
     matchKeys:(orig)=>({date:orig.date,shift:orig.sh,jenis:orig.j}),
     toSheet:(r)=>({date:r.date,shift:r.sh,volume_trolley:r.v,lokasi:r.l,operator:r.op}),
   },
+  gentani: {
+    title:'Edit Data Ikomi',
+    arr:()=>ikomiLog,
+    fields:[
+      {k:'date',label:'Tanggal',type:'date'},
+      {k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},
+      {k:'ik',label:'Ikomi (Ton)',type:'number'},
+      {k:'op',label:'Operator',type:'text'},
+    ],
+    delInfo:r=>`<b>${fD(r.date)}</b> · Shift ${r.sh}<br>Ikomi: ${r.ik} Ton · ${r.op||'-'}`,
+    table:'ikomi',
+    matchKeys:(orig)=>({date:orig.date,shift:orig.sh}),
+    toSheet:(r)=>({date:r.date,shift:r.sh,ikomi_ton:r.ik,operator:r.op}),
+  },
 };
 
 let histEditType=null;   // 'preventive' | 'sparepart' | ...
@@ -3356,7 +3478,7 @@ function histUpdateBtn(type,active){
 
 // Panggil render ulang tabel sesuai type
 function histRerender(type){
-  ({preventive:rPv,sparepart:rSp,hanger:()=>{const e=document.getElementById('p-sp');if(e)rSp();},ampere:rAmp,limbah:rLb})[type]?.();
+  ({preventive:rPv,sparepart:rSp,hanger:()=>{const e=document.getElementById('p-sp');if(e)rSp();},ampere:rAmp,limbah:rLb,gentani:gtRenderTable})[type]?.();
 }
 
 // Buka modal edit untuk baris ke-idx
@@ -3402,7 +3524,7 @@ async function histSaveEdit(){
     if(!el)return;
     r[f.k]=f.type==='number'?(+el.value||0):el.value;
   });
-  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog'}[histEditType];
+  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog',gentani:'ikomiLog'}[histEditType];
   sv(lsKey,cfg.arr());
   cM('m-hist-edit');
   histRerender(histEditType);
@@ -3438,7 +3560,7 @@ async function histConfirmDelete(){
   const cfg=HIST_CFG[histEditType];
   const orig=histEditOrig;
   cfg.arr().splice(histEditIdx,1);
-  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog'}[histEditType];
+  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog',gentani:'ikomiLog'}[histEditType];
   sv(lsKey,cfg.arr());
   cM('m-hist-edit');
   histRerender(histEditType);
@@ -3455,6 +3577,152 @@ async function histConfirmDelete(){
   } else {
     showToast('✅ Baris dihapus (tersimpan lokal)','ok');
   }
+}
+
+
+// ============================================================
+// GENTANI STEELSHOT (rasio Kg steelshot / ton ikomi)
+// ============================================================
+let gtPdV='cur', gtView='day', dbGtView='day';
+
+// Hitung total steelshot (Kg) untuk tanggal+shift tertentu
+function ssKgFor(date, shift){
+  return ssLog.filter(s=>s.date===date && (!shift||s.sh===shift))
+    .reduce((a,x)=>a+(+x.s5||0)+(+x.wc||0)+(+x.lb||0),0);
+}
+// Hitung total ikomi (ton) untuk tanggal+shift tertentu
+function ikomiFor(date, shift){
+  return ikomiLog.filter(k=>k.date===date && (!shift||k.sh===shift))
+    .reduce((a,x)=>a+(+x.ik||0),0);
+}
+// Gentani = Kg steelshot / ton ikomi (per hari, gabungan shift)
+function gentaniFor(date){
+  const kg=ssKgFor(date,null);
+  const ton=ikomiFor(date,null);
+  return ton>0 ? kg/ton : null;
+}
+// Status gentani terhadap target
+function gtStatus(val){
+  if(val==null)return{s:'-',cl:'bd-if'};
+  const lo=+cfg.gtLo||0, hi=+cfg.gtHi||0;
+  if(hi>0&&val>hi)return{s:'TINGGI',cl:'bd-ng'};
+  if(lo>0&&val<lo)return{s:'RENDAH',cl:'bd-wn'};
+  return{s:'OK',cl:'bd-ok'};
+}
+
+function rGt(){
+  const d=document.getElementById('gt-d');if(d&&!d.value)d.value=today();
+  const shEl=document.getElementById('gt-sh');
+  if(shEl&&!shEl.dataset.manualSet)shEl.value=getActiveShift();
+  requestAnimationFrame(()=>drawFullGt());
+  gtRenderTable();
+}
+
+// Preview gentani saat input ikomi
+function gtUpdatePreview(){
+  const d=document.getElementById('gt-d').value;
+  const ik=+document.getElementById('gt-ik').value||0;
+  const el=document.getElementById('gt-preview');
+  if(!el)return;
+  if(!d||ik<=0){el.style.display='none';return;}
+  const kg=ssKgFor(d,null);
+  const g=kg/ik;
+  const st=gtStatus(g);
+  el.style.display='block';
+  el.innerHTML=`Steelshot hari ini: <b>${kg} Kg</b> ÷ Ikomi <b>${ik} Ton</b> = Gentani <b>${g.toFixed(2)} Kg/Ton</b> <span class="bd ${st.cl}">${st.s}</span>`;
+}
+
+async function saveGt(ev){
+  const d=document.getElementById('gt-d').value;
+  const sh=document.getElementById('gt-sh').value;
+  const ik=+document.getElementById('gt-ik').value||0;
+  const op=document.getElementById('gt-op').value||'Op';
+  const no=document.getElementById('gt-no').value;
+  if(!d){showToast('Tanggal wajib diisi','warn');return;}
+  if(ik<=0){showToast('Ikomi harus lebih dari 0','warn');return;}
+  showSpinner('Menyimpan ikomi...');
+  const rec={date:d,sh,ik,op,n:no};
+  ikomiLog.push(rec);
+  sv('ikomiLog',ikomiLog);
+  const ok=await pushToSheets('saveIkomi',[{date:d,shift:sh,ikomi_ton:ik,operator:op,keterangan:no}]);
+  hideSpinner();
+  // Reset input
+  document.getElementById('gt-ik').value='';
+  document.getElementById('gt-no').value='';
+  document.getElementById('gt-preview').style.display='none';
+  gtRenderTable();
+  if(document.getElementById('p-gt').classList.contains('on'))drawFullGt();
+  if(document.getElementById('p-dash').classList.contains('on'))drawDashCharts();
+  if(ok)showToast('✅ Ikomi tersimpan & tersinkron','ok');
+  else  showToast('⚠ Tersimpan lokal, gagal sync server','warn',5000);
+}
+
+// Bangun data harian gentani untuk rentang periode
+function buildGtRaw(cf,ct){
+  const{f,t}=dtRange(gtPdV,cf,ct);
+  return allDays(f,t).map(date=>{
+    const kg=ssKgFor(date,null);
+    const ton=ikomiFor(date,null);
+    return {date, gt:ton>0?+(kg/ton).toFixed(2):0, _kg:kg, _ton:ton};
+  });
+}
+
+function gtPdSel(v){
+  gtPdV=v;
+  const cust=document.getElementById('gt-cust');
+  if(cust)cust.style.display=v==='cust'?'flex':'none';
+  if(v!=='cust')drawFullGt();
+}
+function gtViewSel(v){ gtView=v; drawFullGt(); }
+
+function drawFullGt(){
+  let cf,ct;
+  if(gtPdV==='cust'){cf=document.getElementById('gt-cf').value;ct=document.getElementById('gt-ct').value;if(!cf||!ct)return;}
+  const daily=buildGtRaw(cf,ct);
+  const data=gtView==='week'?aggregateWeeklyAvg(daily,['gt']):daily;
+  drawChart('c-gt-full',data,[{k:'gt',c:'#0891b2'}],{
+    yLabel:'Kg/Ton',
+    weekly:gtView==='week',
+    ranges:[{v:+cfg.gtHi||0,c:'#7c3aed'},{v:+cfg.gtLo||0,c:'#7c3aed55'}]
+  });
+}
+
+// Dashboard mini gentani chart
+function dbGtSetView(v,btn){
+  dbGtView=v;
+  document.getElementById('db-gt-v-day').classList.toggle('on',v==='day');
+  document.getElementById('db-gt-v-week').classList.toggle('on',v==='week');
+  drawDashGt();
+}
+function drawDashGt(){
+  const{f,t}=dtRange('cur');
+  const daily=allDays(f,t).map(date=>{
+    const kg=ssKgFor(date,null);const ton=ikomiFor(date,null);
+    return {date, gt:ton>0?+(kg/ton).toFixed(2):0};
+  });
+  const data=dbGtView==='week'?aggregateWeeklyAvg(daily,['gt']):daily;
+  drawChart('c-gt',data,[{k:'gt',c:'#0891b2'}],{
+    yLabel:'Kg/Ton',weekly:dbGtView==='week',
+    ranges:[{v:+cfg.gtHi||0,c:'#7c3aed'},{v:+cfg.gtLo||0,c:'#7c3aed55'}]
+  });
+}
+
+// Render tabel history gentani
+function gtRenderTable(){
+  const tb=document.getElementById('gt-tb');
+  if(!tb)return;
+  const fPeriod=histFv('gt-fltr-period'),fSh=histFv('gt-fltr-shift');
+  const em=histEditModes.gentani;
+  const rows=ikomiLog.map((r,idx)=>({r,idx}))
+    .filter(({r})=>histDateOk(r.date,fPeriod)&&(fSh==='all'||r.sh===fSh))
+    .sort((a,b)=>b.r.date.localeCompare(a.r.date));
+  tb.innerHTML=rows.map(({r,idx})=>{
+    const kg=ssKgFor(r.date,r.sh);
+    const g=r.ik>0?kg/r.ik:null;
+    const st=gtStatus(g);
+    const click=em?`onclick="histOpenEdit('gentani',${idx})" style="cursor:pointer;"`:'';
+    return`<tr ${click}><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${kg}</td><td class="mn">${r.ik}</td><td class="mn">${g!=null?g.toFixed(2):'-'}</td><td><span class="bd ${st.cl}">${st.s}</span></td><td>${r.op||'-'}</td></tr>`;
+  }).join('')||'<tr><td colspan="7" class="es">Tidak ada data sesuai filter</td></tr>';
 }
 
 // ============ LIMBAH ============
@@ -3872,6 +4140,8 @@ function rSet(){
   const whiEl=document.getElementById('s-whi');if(whiEl)whiEl.value=cfg.wHi||1000;
   const lsloEl=document.getElementById('s-lslo');if(lsloEl)lsloEl.value=cfg.lsLo||0;
   const lshiEl=document.getElementById('s-lshi');if(lshiEl)lshiEl.value=cfg.lsHi||500;
+  const gtloEl=document.getElementById('s-gtlo');if(gtloEl)gtloEl.value=cfg.gtLo||0;
+  const gthiEl=document.getElementById('s-gthi');if(gthiEl)gthiEl.value=cfg.gtHi||0;
   const ALL=[...SP_PT,'Hanger'];
   document.getElementById('lt-set').innerHTML=ALL.map(n=>`<div class="sr"><div class="sl">${n}</div><input class="si" type="number" id="lts-${n.replace(/ /g,'_')}" value="${ltCfg[n]||480}"> jam</div>`).join('');
   document.getElementById('i-nm-rows').innerHTML=Array.from({length:16},(_,i)=>`<div class="sr"><div class="sl">#${String(i+1).padStart(2,'0')}</div><input class="si" type="text" id="inm-${i}" value="${nms[i]}" style="width:160px;text-align:left;font-family:inherit;"></div>`).join('');
@@ -3890,6 +4160,8 @@ async function saveSt(ev){
   cfg.wHi=+document.getElementById('s-whi').value||1000;
   cfg.lsLo=+document.getElementById('s-lslo').value||0;
   cfg.lsHi=+document.getElementById('s-lshi').value||500;
+  cfg.gtLo=+document.getElementById('s-gtlo')?.value||0;
+  cfg.gtHi=+document.getElementById('s-gthi')?.value||0;
   sv('cfg',cfg);
   // Push config to Google Sheets
   if(ONLINE){
@@ -3900,6 +4172,7 @@ async function saveSt(ev){
       ss_low:cfg.sLo, ss_high:cfg.sHi,
       wc_low:cfg.wLo, wc_high:cfg.wHi,
       ls_low:cfg.lsLo, ls_high:cfg.lsHi,
+      gt_low:cfg.gtLo, gt_high:cfg.gtHi,
       imp_names:nms.join(','),
     };
     // Merge lifetime config into same save
