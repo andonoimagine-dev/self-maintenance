@@ -3644,7 +3644,16 @@ async function saveGt(ev){
   const rec={date:d,sh,ik,op,n:no};
   ikomiLog.push(rec);
   sv('ikomiLog',ikomiLog);
-  const ok=await pushToSheets('saveIkomi',[{date:d,shift:sh,ikomi_ton:ik,operator:op,keterangan:no}]);
+  // Panggil api langsung agar bisa baca pesan error spesifik dari server
+  let serverMsg='';
+  let ok=false;
+  if(ONLINE){
+    setSyncStatus('syncing');
+    const r=await api('saveIkomi',{rows:JSON.stringify([{date:d,shift:sh,ikomi_ton:ik,operator:op,keterangan:no}])});
+    ok=!!r.ok || (r.appended>0);
+    setSyncStatus(ok?'ok':'error');
+    if(!ok){ serverMsg=r.error||'Server menolak data'; queueSync('saveIkomi',{rows:JSON.stringify([{date:d,shift:sh,ikomi_ton:ik,operator:op,keterangan:no}])}); }
+  }
   hideSpinner();
   // Reset input
   document.getElementById('gt-ik').value='';
@@ -3653,8 +3662,9 @@ async function saveGt(ev){
   gtRenderTable();
   if(document.getElementById('p-gt').classList.contains('on'))drawFullGt();
   if(document.getElementById('p-dash').classList.contains('on'))drawDashCharts();
-  if(ok)showToast('✅ Ikomi tersimpan & tersinkron','ok');
-  else  showToast('⚠ Tersimpan lokal, gagal sync server','warn',5000);
+  if(ok)showToast('✅ Ikomi tersimpan & tersinkron ke spreadsheet','ok');
+  else if(!ONLINE)showToast('✅ Ikomi tersimpan (mode lokal)','ok');
+  else showToast('⚠ Tersimpan lokal. Server: '+(serverMsg||'gagal')+'. Pastikan Apps Script sudah deploy ulang.','warn',7000);
 }
 
 // Bangun data harian gentani untuk rentang periode
