@@ -3247,7 +3247,12 @@ const HIST_CFG = {
       {k:'no',label:'Catatan',type:'textarea'},
     ],
     delInfo:r=>`Periode <b>${r.pr||'-'}</b><br>Tgl: ${fD(r.td)} · PIC: ${r.pic||'-'}`,
-    syncAction:null, // preventive: lokal saja (struktur rs kompleks)
+    table:'preventive',
+    // Preventive 1 entri = banyak baris di sheet (per item). Match by date+pic, edit semua baris match.
+    matchKeys:(orig)=>({date:orig.td,pic:orig.pic}),
+    matchKeysNew:(r)=>({date:r.td,pic:r.pic}),
+    toSheet:(r)=>({date:r.td,pic:r.pic,catatan:r.no}),
+    multiRow:true,
   },
   sparepart: {
     title:'Edit Data Sparepart',
@@ -3260,7 +3265,9 @@ const HIST_CFG = {
       {k:'op',label:'Operator',type:'text'},
     ],
     delInfo:r=>`<b>${fD(r.date)}</b> · ${nms[r.i]||'Imp '+(+r.i+1)}<br>${r.nm} · ${r.jm}h · ${r.op||'-'}`,
-    syncAction:null,
+    table:'sparepart',
+    matchKeys:(orig)=>({date:orig.date,impeller_idx:orig.i,nama_part:orig.nm}),
+    toSheet:(r)=>({date:r.date,jam_pakai:r.jm,qty:r.q,kondisi:r.kn,operator:r.op}),
   },
   hanger: {
     title:'Edit Data Hanger',
@@ -3273,7 +3280,9 @@ const HIST_CFG = {
       {k:'op',label:'Operator',type:'text'},
     ],
     delInfo:r=>`<b>${fD(r.date)}</b> · Hanger #${r.id}<br>${r.tp==='repair'?'Repair':'Baru'} · ${r.jm}h · ${r.op||'-'}`,
-    syncAction:null,
+    table:'hanger',
+    matchKeys:(orig)=>({date:orig.date,hanger_id:orig.id}),
+    toSheet:(r)=>({date:r.date,tipe:r.tp,jam_pakai:r.jm,kondisi:r.kn,operator:r.op}),
   },
   ampere: {
     title:'Edit Data Ampere',
@@ -3284,7 +3293,9 @@ const HIST_CFG = {
       {k:'op',label:'Operator',type:'text'},
     ],
     delInfo:r=>`<b>${fDt(r.dt)}</b> · ${nms[r.i]||'Imp '+(+r.i+1)}<br>${r.v}A · Shift ${r.sh} · ${r.op||'-'}`,
-    syncAction:null,
+    table:'ampere',
+    matchKeys:(orig)=>({datetime:orig.dt,impeller_idx:orig.i}),
+    toSheet:(r)=>({shift:r.sh,ampere:r.v,status:ampS(r.v),operator:r.op}),
   },
   limbah: {
     title:'Edit Data Limbah',
@@ -3297,7 +3308,9 @@ const HIST_CFG = {
       {k:'op',label:'Operator',type:'text'},
     ],
     delInfo:r=>`<b>${fD(r.date)}</b> · Shift ${r.sh} · ${r.j}<br>${r.v} Trolley · ${r.l||'-'} · ${r.op||'-'}`,
-    syncAction:null,
+    table:'limbah',
+    matchKeys:(orig)=>({date:orig.date,shift:orig.sh,jenis:orig.j}),
+    toSheet:(r)=>({date:r.date,shift:r.sh,volume_trolley:r.v,lokasi:r.l,operator:r.op}),
   },
 };
 
@@ -3347,12 +3360,24 @@ function histRerender(type){
 }
 
 // Buka modal edit untuk baris ke-idx
+let histEditOrig=null; // {matchKeys, occ} untuk cocokkan baris di server
 function histOpenEdit(type,idx){
   histEditType=type;
   histEditIdx=idx;
   const cfg=HIST_CFG[type];
   const r=cfg.arr()[idx];
   if(!r)return;
+  // Hitung occurrence & simpan match keys ASLI (sebelum diedit) untuk sync server
+  if(cfg.matchKeys){
+    const mk=cfg.matchKeys(r);
+    const arr=cfg.arr();
+    let occ=0;
+    for(let i=0;i<idx;i++){
+      const o=cfg.matchKeys(arr[i]);
+      if(JSON.stringify(o)===JSON.stringify(mk))occ++;
+    }
+    histEditOrig={matchKeys:mk,occ};
+  } else histEditOrig=null;
   document.getElementById('hist-edit-title').textContent='✏️ '+cfg.title;
   const box=document.getElementById('hist-edit-fields');
   box.innerHTML=cfg.fields.map(f=>{
@@ -3366,22 +3391,36 @@ function histOpenEdit(type,idx){
   document.getElementById('m-hist-edit').classList.add('on');
 }
 
-function histSaveEdit(){
+async function histSaveEdit(){
   if(histEditIdx<0)return;
   const cfg=HIST_CFG[histEditType];
   const r=cfg.arr()[histEditIdx];
   if(!r)return;
+  const orig=histEditOrig;
   cfg.fields.forEach(f=>{
     const el=document.getElementById('hist-f-'+f.k);
     if(!el)return;
     r[f.k]=f.type==='number'?(+el.value||0):el.value;
   });
-  // Simpan ke localStorage (key sesuai array)
   const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog'}[histEditType];
   sv(lsKey,cfg.arr());
   cM('m-hist-edit');
   histRerender(histEditType);
-  showToast('✅ Data diperbarui (tersimpan lokal)','ok');
+  // Sync ke server (jika ada mapping)
+  if(cfg.table&&cfg.toSheet&&orig&&ONLINE){
+    showSpinner('Menyimpan perubahan ke server...');
+    const ok=await syncOneRow('editHistRow',{
+      table:cfg.table,
+      matchKeys:JSON.stringify(orig.matchKeys),
+      occ:orig.occ,
+      newVals:JSON.stringify(cfg.toSheet(r))
+    });
+    hideSpinner();
+    if(ok)showToast('✅ Data tersimpan & tersinkron ke server','ok');
+    else  showToast('⚠ Tersimpan lokal, tapi GAGAL sync ke server. Coba lagi nanti.','warn',6000);
+  } else {
+    showToast('✅ Data diperbarui (tersimpan lokal)','ok');
+  }
 }
 
 function histAskDelete(){
@@ -3393,16 +3432,29 @@ function histAskDelete(){
   document.getElementById('m-hist-del').classList.add('on');
 }
 
-function histConfirmDelete(){
+async function histConfirmDelete(){
   cM('m-hist-del');
   if(histEditIdx<0)return;
   const cfg=HIST_CFG[histEditType];
+  const orig=histEditOrig;
   cfg.arr().splice(histEditIdx,1);
   const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog'}[histEditType];
   sv(lsKey,cfg.arr());
   cM('m-hist-edit');
   histRerender(histEditType);
-  showToast('✅ Baris dihapus (tersimpan lokal)','ok');
+  if(cfg.table&&orig&&ONLINE){
+    showSpinner('Menghapus & sinkron ke server...');
+    const ok=await syncOneRow('deleteHistRow',{
+      table:cfg.table,
+      matchKeys:JSON.stringify(orig.matchKeys),
+      occ:orig.occ
+    });
+    hideSpinner();
+    if(ok)showToast('✅ Baris dihapus & tersinkron ke server','ok');
+    else  showToast('⚠ Dihapus lokal, tapi GAGAL sync ke server. Coba lagi nanti.','warn',6000);
+  } else {
+    showToast('✅ Baris dihapus (tersimpan lokal)','ok');
+  }
 }
 
 // ============ LIMBAH ============
