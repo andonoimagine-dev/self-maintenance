@@ -447,7 +447,20 @@ tr:hover td{background:var(--accent-bg);}
     <button class="btn btn-s" onclick="waPreventive()" style="background:#25D366;color:#fff;margin-left:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Kirim ke WA</button>
   </div>
   <div class="cd">
-    <div class="st">📋 Riwayat Preventive</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 Riwayat Preventive</div>
+      <button id="preventive-edit-btn" onclick="histToggleEdit('preventive')" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="preventive-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('preventive')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Periode</span>
+      <select class="fbar-sel" id="pv-fltr-period" onchange="histRerender('preventive')"><option value="all">Semua</option><option value="30d">30 Hari</option><option value="90d">90 Hari</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">PIC</span>
+      <select class="fbar-sel" id="pv-fltr-pic" onchange="histRerender('preventive')"><option value="all">Semua</option></select>
+    </div>
     <div class="tw"><table>
       <thead><tr><th>Periode</th><th>Tgl</th><th>PIC</th><th>OK</th><th>NG</th><th>Catatan</th></tr></thead>
       <tbody id="pv-tb"></tbody>
@@ -506,7 +519,20 @@ tr:hover td{background:var(--accent-bg);}
   </div>
 
   <div class="cd" style="margin-bottom:16px;">
-    <div class="st">📋 History Penggantian Sparepart</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 History Penggantian Sparepart</div>
+      <button id="sparepart-edit-btn" onclick="histToggleEdit('sparepart')" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="sparepart-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('sparepart')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Filter Tgl</span>
+      <select class="fbar-sel" id="sp-fltr-period" onchange="histRerender('sparepart')"><option value="all">Semua</option><option value="30d">30 Hari</option><option value="90d">90 Hari</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Impeller</span>
+      <select class="fbar-sel" id="sp-fltr-imp" onchange="histRerender('sparepart')" style="min-width:110px;"><option value="all">Semua</option></select>
+    </div>
     <div class="tw"><table>
       <thead><tr><th>Tgl</th><th>Impeller</th><th>Sparepart</th><th>Jam</th><th>Qty</th><th>Kondisi</th><th>Op</th></tr></thead>
       <tbody id="sp-tb"></tbody>
@@ -548,7 +574,20 @@ tr:hover td{background:var(--accent-bg);}
   </div>
 
   <div class="cd">
-    <div class="st">📋 History Penggantian Hanger</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 History Penggantian Hanger</div>
+      <button id="hanger-edit-btn" onclick="histToggleEdit('hanger')" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="hanger-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('hanger')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Filter Tgl</span>
+      <select class="fbar-sel" id="hg-fltr-period" onchange="histRerender('hanger')"><option value="all">Semua</option><option value="30d">30 Hari</option><option value="90d">90 Hari</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Tipe</span>
+      <select class="fbar-sel" id="hg-fltr-tp" onchange="histRerender('hanger')"><option value="all">Semua</option><option value="baru">Baru</option><option value="repair">Repair</option></select>
+    </div>
     <div class="tw"><table>
       <thead><tr><th>Tgl</th><th>Hanger</th><th>Tipe</th><th>Jam</th><th>Kondisi</th><th>Op</th></tr></thead>
       <tbody id="hg-tb"></tbody>
@@ -613,7 +652,23 @@ tr:hover td{background:var(--accent-bg);}
   </div>
 
   <div class="cd">
-    <div class="st">📋 Log Ampere</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 Log Ampere</div>
+      <button id="ampere-edit-btn" onclick="histToggleEdit('ampere')" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="ampere-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('ampere')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Shift</span>
+      <select class="fbar-sel" id="amp-fltr-shift" onchange="histRerender('ampere')"><option value="all">Semua</option><option value="NSP">NSP</option><option value="NSM">NSM</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Impeller</span>
+      <select class="fbar-sel" id="amp-fltr-imp" onchange="histRerender('ampere')" style="min-width:110px;"><option value="all">Semua</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Status</span>
+      <select class="fbar-sel" id="amp-fltr-status" onchange="histRerender('ampere')"><option value="all">Semua</option><option value="ok">Normal</option><option value="lo">Under</option><option value="hi">Over</option></select>
+    </div>
     <div class="tw"><table>
       <thead><tr><th>Waktu</th><th>Shift</th><th>Impeller</th><th>Ampere</th><th>Status</th><th>Op</th></tr></thead>
       <tbody id="amp-tb"></tbody>
@@ -679,7 +734,23 @@ tr:hover td{background:var(--accent-bg);}
     <div style="font-size:.72rem;color:var(--muted);margin-top:5px;">Range Pasir: <span id="lb-rp" class="t-ok" style="font-weight:700;"></span> &nbsp;|&nbsp; Range Debu: <span id="lb-rd" class="t-ok" style="font-weight:700;"></span></div>
   </div>
   <div class="cd">
-    <div class="st">📋 History Limbah</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 History Limbah</div>
+      <button id="limbah-edit-btn" onclick="histToggleEdit('limbah')" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="limbah-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('limbah')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Filter Tgl</span>
+      <select class="fbar-sel" id="lb-fltr-period" onchange="histRerender('limbah')"><option value="all">Semua</option><option value="today">Hari Ini</option><option value="7d">7 Hari</option><option value="30d">30 Hari</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Shift</span>
+      <select class="fbar-sel" id="lb-fltr-shift" onchange="histRerender('limbah')"><option value="all">Semua</option><option value="NSP">NSP</option><option value="NSM">NSM</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Jenis</span>
+      <select class="fbar-sel" id="lb-fltr-jenis" onchange="histRerender('limbah')"><option value="all">Semua</option><option value="Pasir">Pasir</option><option value="Debu">Debu</option></select>
+    </div>
     <div class="tw"><table>
       <thead><tr><th>Tgl</th><th>Shift</th><th>Jenis</th><th>Vol</th><th>Status</th><th>Lokasi</th><th>Op</th></tr></thead>
       <tbody id="lb-tb"></tbody>
@@ -964,6 +1035,59 @@ tr:hover td{background:var(--accent-bg);}
         </svg>
         Kirim ke WhatsApp
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PASSWORD UNIVERSAL (untuk semua history) -->
+<div class="mv" id="m-hist-pwd" style="z-index:250;">
+  <div class="mw" style="max-width:340px;">
+    <div class="mh">
+      <h3>🔒 Mode Edit Data</h3>
+      <button class="mx" onclick="cM('m-hist-pwd')">×</button>
+    </div>
+    <div class="mb">
+      <label>Masukkan Password Admin</label>
+      <input type="password" id="hist-pwd-input" placeholder="Password..." style="margin-bottom:6px;" onkeydown="if(event.key==='Enter')histCheckPwd()">
+      <div id="hist-pwd-err" style="font-size:.75rem;color:var(--danger);min-height:16px;margin-bottom:10px;"></div>
+      <button class="btn btn-p" style="width:100%;justify-content:center;" onclick="histCheckPwd()">Buka Mode Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT UNIVERSAL (field dinamis sesuai jenis tabel) -->
+<div class="mv" id="m-hist-edit" style="z-index:250;">
+  <div class="mw" style="max-width:400px;">
+    <div class="mh">
+      <h3 id="hist-edit-title">✏️ Edit Data</h3>
+      <button class="mx" onclick="cM('m-hist-edit')">×</button>
+    </div>
+    <div class="mb">
+      <div id="hist-edit-fields"></div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn btn-p" style="flex:1;justify-content:center;" onclick="histSaveEdit()">💾 Simpan</button>
+        <button class="btn" style="flex:1;justify-content:center;background:var(--danger);color:#fff;" onclick="histAskDelete()">🗑 Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS UNIVERSAL -->
+<div class="mv" id="m-hist-del" style="z-index:350;">
+  <div class="mw" style="max-width:360px;">
+    <div class="mh">
+      <h3>🗑 Hapus Data?</h3>
+      <button class="mx" onclick="cM('m-hist-del')">×</button>
+    </div>
+    <div class="mb">
+      <div style="background:var(--danger-bg,rgba(220,38,38,.1));border:1px solid var(--danger);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:.8rem;color:var(--text);line-height:1.5;" id="hist-del-info">-</div>
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">Baris data ini akan dihapus permanen. Tindakan tidak bisa dibatalkan.</p>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" style="flex:1;justify-content:center;background:var(--card2);border:1px solid var(--border);color:var(--text);" onclick="cM('m-hist-del')">Batal</button>
+        <button class="btn" style="flex:1;justify-content:center;background:var(--danger);color:#fff;" onclick="histConfirmDelete()">🗑 Ya, Hapus</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2260,12 +2384,20 @@ function rPv(){
   c.innerHTML=h;
   Object.entries(pvR).forEach(([k,v])=>upPv(k,v));
   const tb=document.getElementById('pv-tb');
-  const sr=[...pvLog].sort((a,b)=>(b.td||'').localeCompare(a.td||''));
-  tb.innerHTML=sr.map(r=>{
+  // Populate PIC filter
+  const picSel=document.getElementById('pv-fltr-pic');
+  if(picSel){const cur=picSel.value;const pics=[...new Set(pvLog.map(x=>x.pic).filter(Boolean))].sort();picSel.innerHTML='<option value="all">Semua</option>'+pics.map(p=>`<option value="${p}">${p}</option>`).join('');if([...picSel.options].some(o=>o.value===cur))picSel.value=cur;}
+  const fPeriod=histFv('pv-fltr-period'),fPic=histFv('pv-fltr-pic');
+  const em=histEditModes.preventive;
+  const rows=pvLog.map((r,idx)=>({r,idx}))
+    .filter(({r})=>histDateOk(r.td,fPeriod)&&(fPic==='all'||r.pic===fPic))
+    .sort((a,b)=>(b.r.td||'').localeCompare(a.r.td||''));
+  tb.innerHTML=rows.map(({r,idx})=>{
     const ok=(r.rs||[]).filter(x=>x.v==='ok').length;
     const ng=(r.rs||[]).filter(x=>x.v==='ng').length;
-    return`<tr><td>${r.pr||'-'}</td><td>${fD(r.td)}</td><td>${r.pic||'-'}</td><td class="mn t-ok">${ok}</td><td class="mn t-dg">${ng}</td><td>${r.no||'-'}</td></tr>`;
-  }).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
+    const click=em?`onclick="histOpenEdit('preventive',${idx})" style="cursor:pointer;"`:'';
+    return`<tr ${click}><td>${r.pr||'-'}</td><td>${fD(r.td)}</td><td>${r.pic||'-'}</td><td class="mn t-ok">${ok}</td><td class="mn t-dg">${ng}</td><td>${r.no||'-'}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="es">Tidak ada data sesuai filter</td></tr>';
 }
 function setPv(k,v){pvR[k]=v;upPv(k,v);}
 function upPv(k,v){
@@ -2338,8 +2470,18 @@ function rSp(){
   lt.innerHTML=h;
   // Table
   const tb=document.getElementById('sp-tb');
-  const sr=[...spLog].sort((a,b)=>b.date.localeCompare(a.date));
-  tb.innerHTML=sr.map(r=>`<tr><td>${fD(r.date)}</td><td>${nms[r.i]||'Imp '+(+r.i+1)}</td><td>${r.nm}${r.j==='assy'?' <span class="bd bd-if">ASSY</span>':''}</td><td class="mn">${r.jm}h</td><td>${r.q}</td><td><span class="bd bd-wn">${r.kn}</span></td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+  // Populate impeller filter
+  const impSel=document.getElementById('sp-fltr-imp');
+  if(impSel){const cur=impSel.value;impSel.innerHTML='<option value="all">Semua</option>'+nms.map((n,i)=>`<option value="${i}">${n}</option>`).join('');if([...impSel.options].some(o=>o.value===cur))impSel.value=cur;}
+  const fPeriod=histFv('sp-fltr-period'),fImp=histFv('sp-fltr-imp');
+  const em=histEditModes.sparepart;
+  const rows=spLog.map((r,idx)=>({r,idx}))
+    .filter(({r})=>histDateOk(r.date,fPeriod)&&(fImp==='all'||String(r.i)===fImp))
+    .sort((a,b)=>b.r.date.localeCompare(a.r.date));
+  tb.innerHTML=rows.map(({r,idx})=>{
+    const click=em?`onclick="histOpenEdit('sparepart',${idx})" style="cursor:pointer;"`:'';
+    return`<tr ${click}><td>${fD(r.date)}</td><td>${nms[r.i]||'Imp '+(+r.i+1)}</td><td>${r.nm}${r.j==='assy'?' <span class="bd bd-if">ASSY</span>':''}</td><td class="mn">${r.jm}h</td><td>${r.q}</td><td><span class="bd bd-wn">${r.kn}</span></td><td>${r.op}</td></tr>`;
+  }).join('')||'<tr><td colspan="7" class="es">Tidak ada data sesuai filter</td></tr>';
   // Hanger full
   rHgMini('hg-fg','hg-fs');
   const hn=document.getElementById('hg-n');hn.innerHTML=Array.from({length:60},(_,i)=>`<option value="${i+1}">Hanger #${String(i+1).padStart(2,'0')}</option>`).join('');
@@ -2347,8 +2489,15 @@ function rSp(){
   const hd=document.getElementById('hg-d');if(!hd.value)hd.value=today();
   // Hanger history
   const ht=document.getElementById('hg-tb');
-  const hsr=[...hLog].sort((a,b)=>b.date.localeCompare(a.date));
-  ht.innerHTML=hsr.map(r=>`<tr><td>${fD(r.date)}</td><td>Hanger #${r.id}</td><td><span class="bd ${r.tp==='repair'?'bd-wn':'bd-ok'}">${r.tp==='repair'?'Repair':'Baru'}</span></td><td class="mn">${r.jm}h</td><td>${r.kn}</td><td>${r.op}</td></tr>`).join('')||'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
+  const fPeriodH=histFv('hg-fltr-period'),fTp=histFv('hg-fltr-tp');
+  const emH=histEditModes.hanger;
+  const hrows=hLog.map((r,idx)=>({r,idx}))
+    .filter(({r})=>histDateOk(r.date,fPeriodH)&&(fTp==='all'||r.tp===fTp))
+    .sort((a,b)=>b.r.date.localeCompare(a.r.date));
+  ht.innerHTML=hrows.map(({r,idx})=>{
+    const click=emH?`onclick="histOpenEdit('hanger',${idx})" style="cursor:pointer;"`:'';
+    return`<tr ${click}><td>${fD(r.date)}</td><td>Hanger #${r.id}</td><td><span class="bd ${r.tp==='repair'?'bd-wn':'bd-ok'}">${r.tp==='repair'?'Repair':'Baru'}</span></td><td class="mn">${r.jm}h</td><td>${r.kn}</td><td>${r.op}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="es">Tidak ada data sesuai filter</td></tr>';
 }
 // ============================================================
 // SPAREPART DETAIL MODAL
@@ -2697,12 +2846,20 @@ function rAmp(){
   // Draw chart
   requestAnimationFrame(drawAmpChart);
   const tb=document.getElementById('amp-tb');
-  const sr=[...ampLog].sort((a,b)=>(b.dt||'').localeCompare(a.dt||''));
-  tb.innerHTML=sr.slice(0,150).map(r=>{
+  // Populate impeller filter
+  const aImpSel=document.getElementById('amp-fltr-imp');
+  if(aImpSel){const cur=aImpSel.value;aImpSel.innerHTML='<option value="all">Semua</option>'+nms.map((n,i)=>`<option value="${i}">${n}</option>`).join('');if([...aImpSel.options].some(o=>o.value===cur))aImpSel.value=cur;}
+  const fSh=histFv('amp-fltr-shift'),fImpA=histFv('amp-fltr-imp'),fSt=histFv('amp-fltr-status');
+  const emA=histEditModes.ampere;
+  const arows=ampLog.map((r,idx)=>({r,idx}))
+    .filter(({r})=>(fSh==='all'||r.sh===fSh)&&(fImpA==='all'||String(r.i)===fImpA)&&(fSt==='all'||ampS(r.v)===fSt))
+    .sort((a,b)=>(b.r.dt||'').localeCompare(a.r.dt||''));
+  tb.innerHTML=arows.slice(0,150).map(({r,idx})=>{
     const s=ampS(r.v);const cl=s==='ok'?'bd-ok':s==='lo'?'bd-wn':s==='hi'?'bd-ng':'bd-if';
     const tc=s==='hi'?'t-dg':s==='lo'?'t-wn':'t-ok';
-    return`<tr><td>${fDt(r.dt)}</td><td>${r.sh}</td><td>${nms[r.i]||'Imp '+(+r.i+1)}</td><td class="mn ${tc}">${r.v}A</td><td><span class="bd ${cl}">${s.toUpperCase()}</span></td><td>${r.op||'-'}</td></tr>`;
-  }).join('')||'<tr><td colspan="6" class="es">Belum ada log</td></tr>';
+    const click=emA?`onclick="histOpenEdit('ampere',${idx})" style="cursor:pointer;"`:'';
+    return`<tr ${click}><td>${fDt(r.dt)}</td><td>${r.sh}</td><td>${nms[r.i]||'Imp '+(+r.i+1)}</td><td class="mn ${tc}">${r.v}A</td><td><span class="bd ${cl}">${s.toUpperCase()}</span></td><td>${r.op||'-'}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="es">Tidak ada data sesuai filter</td></tr>';
 }
 function hl(i,v){
   const nv=parseFloat(v);const f=document.getElementById('af-'+i);const inp=document.getElementById('ai-'+i);
@@ -3059,6 +3216,195 @@ function drawAmpChart(){
   if(rl)rl.textContent=`${cfg.aLo} – ${cfg.aHi} A`;
 }
 
+
+
+// Helper filter periode generik berdasarkan tanggal
+function histDateOk(dateStr, period){
+  if(period==='all'||!period)return true;
+  const rd=parseDate(dateStr);if(!rd)return false;
+  const now=new Date();
+  if(period==='today')return dateStr===dStr(now);
+  if(period==='7d'){const d=new Date(now);d.setDate(d.getDate()-7);return rd>=d;}
+  if(period==='30d'){const d=new Date(now);d.setDate(d.getDate()-30);return rd>=d;}
+  if(period==='90d'){const d=new Date(now);d.setDate(d.getDate()-90);return rd>=d;}
+  if(period==='month')return rd.getMonth()===now.getMonth()&&rd.getFullYear()===now.getFullYear();
+  return true;
+}
+function histFv(id){const e=document.getElementById(id);return e?e.value:'all';}
+
+// ============================================================
+// GENERIC HISTORY EDIT ENGINE (Preventive, Sparepart, Hanger, Ampere, Limbah)
+// ============================================================
+// Konfigurasi per jenis tabel: field apa yang bisa diedit, cara render baris,
+// cara cocokkan baris di server, dan array data sumbernya.
+const HIST_CFG = {
+  preventive: {
+    title:'Edit Data Preventive',
+    arr:()=>pvLog,
+    fields:[
+      {k:'td',label:'Tanggal Check',type:'date'},
+      {k:'pic',label:'PIC',type:'text'},
+      {k:'no',label:'Catatan',type:'textarea'},
+    ],
+    delInfo:r=>`Periode <b>${r.pr||'-'}</b><br>Tgl: ${fD(r.td)} · PIC: ${r.pic||'-'}`,
+    syncAction:null, // preventive: lokal saja (struktur rs kompleks)
+  },
+  sparepart: {
+    title:'Edit Data Sparepart',
+    arr:()=>spLog,
+    fields:[
+      {k:'date',label:'Tanggal',type:'date'},
+      {k:'jm',label:'Jam Pakai (h)',type:'number'},
+      {k:'q',label:'Qty',type:'text'},
+      {k:'kn',label:'Kondisi',type:'text'},
+      {k:'op',label:'Operator',type:'text'},
+    ],
+    delInfo:r=>`<b>${fD(r.date)}</b> · ${nms[r.i]||'Imp '+(+r.i+1)}<br>${r.nm} · ${r.jm}h · ${r.op||'-'}`,
+    syncAction:null,
+  },
+  hanger: {
+    title:'Edit Data Hanger',
+    arr:()=>hLog,
+    fields:[
+      {k:'date',label:'Tanggal',type:'date'},
+      {k:'tp',label:'Tipe',type:'select',opts:['baru','repair']},
+      {k:'jm',label:'Jam Pakai (h)',type:'number'},
+      {k:'kn',label:'Kondisi',type:'text'},
+      {k:'op',label:'Operator',type:'text'},
+    ],
+    delInfo:r=>`<b>${fD(r.date)}</b> · Hanger #${r.id}<br>${r.tp==='repair'?'Repair':'Baru'} · ${r.jm}h · ${r.op||'-'}`,
+    syncAction:null,
+  },
+  ampere: {
+    title:'Edit Data Ampere',
+    arr:()=>ampLog,
+    fields:[
+      {k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},
+      {k:'v',label:'Ampere (A)',type:'number'},
+      {k:'op',label:'Operator',type:'text'},
+    ],
+    delInfo:r=>`<b>${fDt(r.dt)}</b> · ${nms[r.i]||'Imp '+(+r.i+1)}<br>${r.v}A · Shift ${r.sh} · ${r.op||'-'}`,
+    syncAction:null,
+  },
+  limbah: {
+    title:'Edit Data Limbah',
+    arr:()=>lbLog,
+    fields:[
+      {k:'date',label:'Tanggal',type:'date'},
+      {k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},
+      {k:'v',label:'Volume (Trolley)',type:'number'},
+      {k:'l',label:'Lokasi',type:'text'},
+      {k:'op',label:'Operator',type:'text'},
+    ],
+    delInfo:r=>`<b>${fD(r.date)}</b> · Shift ${r.sh} · ${r.j}<br>${r.v} Trolley · ${r.l||'-'} · ${r.op||'-'}`,
+    syncAction:null,
+  },
+};
+
+let histEditType=null;   // 'preventive' | 'sparepart' | ...
+let histEditIdx=-1;      // index di array sumber
+const histEditModes={};  // {preventive:false, sparepart:false, ...}
+
+// Toggle mode edit untuk tabel tertentu (minta password kalau belum aktif)
+function histToggleEdit(type){
+  if(histEditModes[type]){
+    histEditModes[type]=false;
+    histUpdateBtn(type,false);
+    histRerender(type);
+  } else {
+    histEditType=type; // simpan type yang sedang minta akses
+    const inp=document.getElementById('hist-pwd-input');
+    if(inp)inp.value='';
+    document.getElementById('hist-pwd-err').textContent='';
+    document.getElementById('m-hist-pwd').classList.add('on');
+    setTimeout(()=>inp?.focus(),100);
+  }
+}
+
+function histCheckPwd(){
+  const val=document.getElementById('hist-pwd-input').value;
+  if(val==='adminhsb'){
+    cM('m-hist-pwd');
+    histEditModes[histEditType]=true;
+    histUpdateBtn(histEditType,true);
+    histRerender(histEditType);
+    showToast('Mode edit aktif','ok');
+  } else {
+    document.getElementById('hist-pwd-err').textContent='Password salah';
+  }
+}
+
+function histUpdateBtn(type,active){
+  const btn=document.getElementById(`${type}-edit-btn`);
+  const banner=document.getElementById(`${type}-edit-banner`);
+  if(btn){btn.style.background=active?'var(--accent)':'none';btn.style.color=active?'#fff':'var(--muted)';}
+  if(banner)banner.style.display=active?'block':'none';
+}
+
+// Panggil render ulang tabel sesuai type
+function histRerender(type){
+  ({preventive:rPv,sparepart:rSp,hanger:()=>{const e=document.getElementById('p-sp');if(e)rSp();},ampere:rAmp,limbah:rLb})[type]?.();
+}
+
+// Buka modal edit untuk baris ke-idx
+function histOpenEdit(type,idx){
+  histEditType=type;
+  histEditIdx=idx;
+  const cfg=HIST_CFG[type];
+  const r=cfg.arr()[idx];
+  if(!r)return;
+  document.getElementById('hist-edit-title').textContent='✏️ '+cfg.title;
+  const box=document.getElementById('hist-edit-fields');
+  box.innerHTML=cfg.fields.map(f=>{
+    const val=r[f.k]!=null?r[f.k]:'';
+    if(f.type==='textarea')
+      return `<label>${f.label}</label><textarea id="hist-f-${f.k}" style="margin-bottom:10px;">${val}</textarea>`;
+    if(f.type==='select')
+      return `<label>${f.label}</label><select id="hist-f-${f.k}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;margin-bottom:10px;">${f.opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select>`;
+    return `<label>${f.label}</label><input type="${f.type}" id="hist-f-${f.k}" value="${val}" style="margin-bottom:10px;">`;
+  }).join('');
+  document.getElementById('m-hist-edit').classList.add('on');
+}
+
+function histSaveEdit(){
+  if(histEditIdx<0)return;
+  const cfg=HIST_CFG[histEditType];
+  const r=cfg.arr()[histEditIdx];
+  if(!r)return;
+  cfg.fields.forEach(f=>{
+    const el=document.getElementById('hist-f-'+f.k);
+    if(!el)return;
+    r[f.k]=f.type==='number'?(+el.value||0):el.value;
+  });
+  // Simpan ke localStorage (key sesuai array)
+  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog'}[histEditType];
+  sv(lsKey,cfg.arr());
+  cM('m-hist-edit');
+  histRerender(histEditType);
+  showToast('✅ Data diperbarui (tersimpan lokal)','ok');
+}
+
+function histAskDelete(){
+  if(histEditIdx<0)return;
+  const cfg=HIST_CFG[histEditType];
+  const r=cfg.arr()[histEditIdx];
+  if(!r)return;
+  document.getElementById('hist-del-info').innerHTML=cfg.delInfo(r);
+  document.getElementById('m-hist-del').classList.add('on');
+}
+
+function histConfirmDelete(){
+  cM('m-hist-del');
+  if(histEditIdx<0)return;
+  const cfg=HIST_CFG[histEditType];
+  cfg.arr().splice(histEditIdx,1);
+  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog'}[histEditType];
+  sv(lsKey,cfg.arr());
+  cM('m-hist-edit');
+  histRerender(histEditType);
+  showToast('✅ Baris dihapus (tersimpan lokal)','ok');
+}
+
 // ============ LIMBAH ============
 let lbPdV='cur', lbView='day';
 let ssView='day';
@@ -3165,13 +3511,18 @@ function rLb(){
   document.getElementById('lb-rd').textContent=`${cfg.dLo}–${cfg.dHi} Trolley`;
   requestAnimationFrame(()=>drawFullLb());
   const tb=document.getElementById('lb-tb');
-  const sr=[...lbLog].sort((a,b)=>b.date.localeCompare(a.date));
-  tb.innerHTML=sr.slice(0,200).map(r=>{
+  const fPeriodL=histFv('lb-fltr-period'),fShL=histFv('lb-fltr-shift'),fJn=histFv('lb-fltr-jenis');
+  const emL=histEditModes.limbah;
+  const lrows=lbLog.map((r,idx)=>({r,idx}))
+    .filter(({r})=>histDateOk(r.date,fPeriodL)&&(fShL==='all'||r.sh===fShL)&&(fJn==='all'||r.j===fJn))
+    .sort((a,b)=>b.r.date.localeCompare(a.r.date));
+  tb.innerHTML=lrows.slice(0,200).map(({r,idx})=>{
     const rg=r.j==='Pasir'?{lo:cfg.pLo,hi:cfg.pHi}:{lo:cfg.dLo,hi:cfg.dHi};
     let s='OK',cl='bd-ok';
     if(r.v>rg.hi){s='TINGGI';cl='bd-ng';}else if(r.v<rg.lo&&r.v>0){s='RENDAH';cl='bd-wn';}
-    return`<tr><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td>${r.j}</td><td class="mn">${r.v}</td><td><span class="bd ${cl}">${s}</span></td><td>${r.l||'-'}</td><td>${r.op}</td></tr>`;
-  }).join('')||'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+    const click=emL?`onclick="histOpenEdit('limbah',${idx})" style="cursor:pointer;"`:'';
+    return`<tr ${click}><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td>${r.j}</td><td class="mn">${r.v}</td><td><span class="bd ${cl}">${s}</span></td><td>${r.l||'-'}</td><td>${r.op}</td></tr>`;
+  }).join('')||'<tr><td colspan="7" class="es">Tidak ada data sesuai filter</td></tr>';
 }
 async function saveLb(ev){
   showSpinner('Menyimpan data limbah...',ev?.currentTarget);
