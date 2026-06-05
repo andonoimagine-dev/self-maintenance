@@ -3763,18 +3763,15 @@ function drawGentaniChart(canvasId, data, opts){
     ctx.fill();
   });
   // Data label di atas tiap batang (gentani harian)
-  ctx.font='bold 9px sans-serif';ctx.fillStyle='#0e7490';ctx.textAlign='center';ctx.textBaseline='alphabetic';
-  // Bars hanya ada di hari yang ada data (jarang/sparse), jadi beri label SEMUA bar yang ada nilainya.
-  // Hanya skip jika bar terlalu rapat (banyak data berurutan & slot sempit).
+  // Digambar SETELAH garis akumulasi & dots (lihat di bawah) supaya tidak tertutup.
+  // Simpan posisi untuk dirender belakangan.
+  const barLabels=[];
   const barsWithData=data.filter(d=>d.gt>0).length;
-  const denseBar=slotW<22 && barsWithData>20;
+  const denseBar=slotW<16 && barsWithData>25;
   data.forEach((d,i)=>{
     const v=d.gt;if(!v)return;
     if(denseBar && i%2!==0 && i!==N-1)return;
-    const y=yOf(v);
-    const yAkum=d.gtAkum>0?yOf(d.gtAkum):-99;
-    const labelY = Math.abs(y-yAkum)<14 ? y+13 : y-5;
-    ctx.fillText(v.toFixed(1),xOf(i),labelY);
+    barLabels.push({i, v, x:xOf(i)});
   });
 
   // Target lines (dashed)
@@ -3806,17 +3803,45 @@ function drawGentaniChart(canvasId, data, opts){
   }
 
   // Data label di garis akumulatif (titik terakhir + tiap beberapa titik)
-  ctx.font='bold 9px sans-serif';ctx.fillStyle='#7c3aed';ctx.textAlign='center';
+  ctx.font='bold 9px sans-serif';ctx.fillStyle='#7c3aed';ctx.textAlign='center';ctx.textBaseline='alphabetic';
   const labelGap=N<=10?1:N<=20?2:Math.ceil(N/10);
   accPts.forEach((v,i)=>{
     if(v<=0)return;
     if(i%labelGap!==0 && i!==N-1)return;
-    ctx.fillText(v.toFixed(1),xOf(i),yOf(v)-7);
+    // Label akumulasi: taruh di ATAS titik. Kalau bar di titik ini lebih tinggi
+    // (bar top di atas garis), geser label akumulasi ke BAWAH titik agar tak bentrok.
+    const yLine=yOf(v);
+    const dGt=data[i]?data[i].gt:0;
+    const yBar=dGt>0?yOf(dGt):1e9;
+    const above = yBar < yLine-12; // bar lebih tinggi dari garis di titik ini
+    const ly = above ? yLine+14 : yLine-8;
+    ctx.fillText(v.toFixed(1),xOf(i),ly);
   });
 
-  // X-axis labels
+  // Data label batang (gentani harian) — digambar TERAKHIR, selalu DI ATAS puncak bar
+  ctx.font='bold 9px sans-serif';ctx.fillStyle='#0e7490';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  barLabels.forEach(({i,v,x})=>{
+    const yBarTop=yOf(v);
+    // Selalu di atas puncak bar. Kalau garis akumulasi sangat dekat di atas bar,
+    // beri sedikit ruang ekstra agar tak menempel ke garis/titik.
+    let ly=yBarTop-6;
+    if(ly<PAD.t+8)ly=PAD.t+8; // jangan keluar atas area
+    // background putih tipis biar terbaca walau menimpa garis
+    const txt=v.toFixed(1);
+    const tw=ctx.measureText(txt).width;
+    ctx.save();
+    ctx.fillStyle=dk?'rgba(20,30,48,.75)':'rgba(255,255,255,.8)';
+    ctx.fillRect(x-tw/2-2,ly-9,tw+4,11);
+    ctx.restore();
+    ctx.fillStyle='#0e7490';
+    ctx.fillText(txt,x,ly);
+  });
+
+  // X-axis labels — tampilkan sebanyak mungkin sesuai ruang.
+  // Hitung berapa label muat berdasarkan lebar per-slot (min ~18px per label tanggal).
   ctx.fillStyle=TICKC;ctx.font='600 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
-  const xGap=N<=15?1:N<=31?Math.ceil(N/15):Math.ceil(N/10);
+  const minLabelPx = singleMonth ? 16 : 26; // tanggal saja butuh sedikit ruang; dd/mm butuh lebih
+  let xGap = Math.max(1, Math.ceil(minLabelPx / slotW));
   data.forEach((d,i)=>{
     if(i%xGap!==0 && i!==N-1)return;
     let lbl;
