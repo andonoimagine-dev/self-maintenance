@@ -889,7 +889,10 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="gt-no"></textarea></div></div>
     <div id="gt-preview" style="font-size:.8rem;color:var(--text2);background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:none;"></div>
-    <button class="btn btn-p" onclick="saveGt(event)">💾 Simpan Ikomi</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-p" style="flex:1;min-width:140px;" onclick="saveGt(event)">💾 Simpan Ikomi</button>
+      <button class="btn" onclick="openWAPicker('gentani')" style="flex:1;min-width:140px;background:#25D366;color:#fff;gap:6px;display:flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="pointer-events:none;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span style="pointer-events:none;">Laporan Gentani ke WA</span></button>
+    </div>
   </div>
 
   <!-- GRAFIK GENTANI -->
@@ -4478,6 +4481,7 @@ function openWAPicker(reportType, defaultShift){
     ampere:    '🏭 Laporan Ampere',
     sparepart: '🔩 Laporan Sparepart',
     preventive:'🔧 Laporan Preventive',
+    gentani:   '📊 Laporan Gentani',
     dashboard: '📊 Resume Dashboard',
   };
   document.getElementById('wa-picker-title').textContent = titles[reportType]||'📤 Kirim Laporan WA';
@@ -4542,6 +4546,11 @@ function waUpdatePreview(){
     counts = `${ampLog.filter(a=>{const pd=parseDT(a.dt);return pd&&dStr(pd)===_waPickDate;}).length} record`;
   } else if(_waPickerFn === 'sparepart'){
     counts = `${spLog.filter(s=>s.date===_waPickDate).length} penggantian`;
+  } else if(_waPickerFn === 'gentani'){
+    shifts.forEach(sh=>{
+      const n = ikomiLog.filter(k=>k.date===_waPickDate&&k.sh===sh).length;
+      counts += `${sh}: ${n} ikomi  `;
+    });
   }
   el.innerHTML = `<b>📅 ${tglStr}</b>  |  <b>Shift: ${_waPickShift}</b><br>
     <span style="color:var(--ok);">${counts||'─'}</span>`;
@@ -4560,6 +4569,7 @@ function waPickSend(){
     case 'sparepart':  waSparepart(_waPickDate);          break;
     case 'preventive': waPreventive();                    break;
     case 'dashboard':  waDashboard(_waPickDate,  shifts); break;
+    case 'gentani':    waGentani(_waPickDate,    shifts); break;
   }
   cM('m-wa-picker');
 }
@@ -4909,8 +4919,30 @@ function waDashboard(reportDate, reportShifts){
   msg+=`  SS 550:   ${ss5} Kg (std: ${cfg.sLo}–${cfg.sHi}) ${chk(ss5,cfg.sLo,cfg.sHi)}\n`;
   msg+=`  Wire Cut: ${wc} Kg\n`;
   msg+=`  SS Bekas: ${lb} Kg\n`;
+  // ── GENTANI ──────────────────────────────────────────────
+  const gtKgHari=ssKgFor(reportDate,null);   // SS550+WireCut hari itu
+  const gtTonHari=ikomiFor(reportDate,null);
+  const gtHari=gtTonHari>0 ? gtKgHari/gtTonHari : null;
+  const [gy,gm,gd]=reportDate.split('-');
+  let gAccKg=0,gAccTon=0;
+  allDays(`${gy}-${gm}-01`,reportDate).forEach(dt=>{gAccKg+=ssKgFor(dt,null);gAccTon+=ikomiFor(dt,null);});
+  const gtAkum=gAccTon>0 ? gAccKg/gAccTon : null;
+  const gtLo=+cfg.gtLo||0, gtHi=+cfg.gtHi||0;
+  function gtChk(v){if(v==null)return'⬜';if(gtHi>0&&v>gtHi)return'🔴';if(gtLo>0&&v<gtLo)return'🟡';return'🟢';}
+  const gtIssue=(gtHari!=null&&((gtHi>0&&gtHari>gtHi)||(gtLo>0&&gtHari<gtLo)))||
+                (gtAkum!=null&&((gtHi>0&&gtAkum>gtHi)||(gtLo>0&&gtAkum<gtLo)));
+  msg+=`\n📊 *GENTANI (SS550+WC ÷ Ikomi)*\n`;
+  if(gtHari!=null){
+    msg+=`  Harian: ${gtHari.toFixed(2)} Kg/Ton ${gtChk(gtHari)} (${gtKgHari}Kg ÷ ${gtTonHari}Ton)\n`;
+  } else {
+    msg+=`  Harian: belum ada ikomi ⬜\n`;
+  }
+  if(gtAkum!=null){
+    msg+=`  Akumulasi: ${gtAkum.toFixed(2)} Kg/Ton ${gtChk(gtAkum)}\n`;
+  }
+  if(gtLo>0||gtHi>0)msg+=`  Target: ${gtLo||'-'}–${gtHi||'-'} Kg/Ton\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'ADA KONDISI ABNORMAL':'SEMUA NORMAL'}*\n`;
+  msg+=`${(hasIssue||gtIssue)?'🔴':'🟢'} *KESIMPULAN: ${(hasIssue||gtIssue)?'ADA KONDISI ABNORMAL':'SEMUA NORMAL'}*\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
   if(_waPickNote)msg+=`📝 *Catatan:* ${_waPickNote}\n`;
   msg+=`📊 Dashboard: ${dashUrl}\n`;
@@ -4983,6 +5015,67 @@ window.addEventListener('resize',()=>{
 // AUTO SYNC ENGINE
 // ============================================================
 // Baca interval dari localStorage (default 5 menit = 300 detik)
+
+function waGentani(reportDate, reportShifts){
+  reportDate   = reportDate   || dStr(new Date());
+  reportShifts = reportShifts || [getActiveShift()];
+  const now=new Date();
+  const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const [ry,rm,rd]=reportDate.split('-');
+  const reportTgl=`${+rd}-${M[+rm-1]}-${ry}`;
+  const activeShift = reportShifts.length===1 ? reportShifts[0] : 'NSP+NSM';
+  const timeRange=getShiftTimeRange(activeShift);
+
+  // Data hari ini
+  const kgHari=ssKgFor(reportDate,null);     // SS550+WireCut hari itu
+  const tonHari=ikomiFor(reportDate,null);   // ikomi ton hari itu
+  const gtHari=tonHari>0 ? kgHari/tonHari : null;
+
+  // Akumulasi bulan berjalan (tgl 1 s/d hari laporan)
+  const fb=`${ry}-${rm}-01`;
+  let accKg=0, accTon=0;
+  allDays(fb,reportDate).forEach(dt=>{ accKg+=ssKgFor(dt,null); accTon+=ikomiFor(dt,null); });
+  const gtAkum=accTon>0 ? accKg/accTon : null;
+
+  // Status terhadap target
+  const lo=+cfg.gtLo||0, hi=+cfg.gtHi||0;
+  function gstat(v){
+    if(v==null)return '\u2796 Belum ada data';
+    if(hi>0&&v>hi)return `\ud83d\udd34 *TINGGI* (di atas ${hi})`;
+    if(lo>0&&v<lo)return `\ud83d\udfe1 *RENDAH* (di bawah ${lo})`;
+    return '\ud83d\udfe2 Normal';
+  }
+  const stHari=gstat(gtHari);
+  const stAkum=gstat(gtAkum);
+  const overall=(stHari.includes('TINGGI')||stAkum.includes('TINGGI'))?'\ud83d\udd34':
+                (stHari.includes('RENDAH')||stAkum.includes('RENDAH'))?'\ud83d\udfe1':'\ud83d\udfe2';
+
+  let msg=`\ud83d\udcca *LAPORAN GENTANI STEELSHOT*\n`;
+  msg+=`\ud83d\udcc5 ${reportTgl}\n`;
+  msg+=`\ud83d\udd50 Shift ${activeShift} (${timeRange})\n`;
+  msg+=`\ud83d\udce4 Dikirim: ${jam}\n`;
+  msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
+  msg+=`_Gentani = (SS550 + Wire Cut) Kg \u00f7 Ikomi Ton_\n\n`;
+  msg+=`*GENTANI HARI INI*\n`;
+  msg+=`  Steelshot: *${kgHari} Kg*\n`;
+  msg+=`  Ikomi: *${tonHari} Ton*\n`;
+  msg+=`  Gentani: *${gtHari!=null?gtHari.toFixed(2):'-'} Kg/Ton*\n`;
+  msg+=`  Status: ${stHari}\n\n`;
+  msg+=`*AKUMULASI BULAN INI* (s/d ${+rd} ${M[+rm-1]})\n`;
+  msg+=`  Total Steelshot: *${accKg} Kg*\n`;
+  msg+=`  Total Ikomi: *${accTon} Ton*\n`;
+  msg+=`  Gentani Akum: *${gtAkum!=null?gtAkum.toFixed(2):'-'} Kg/Ton*\n`;
+  msg+=`  Status: ${stAkum}\n`;
+  msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
+  msg+=`\ud83c\udfaf Target: ${lo||'-'} s/d ${hi||'-'} Kg/Ton\n`;
+  msg+=`${overall} *KESIMPULAN: ${overall.includes('\ud83d\udfe2')?'NORMAL':'PERLU PERHATIAN'}*\n`;
+  if(_waPickNote)msg+=`\n\ud83d\udcdd *Catatan:* ${_waPickNote}\n`;
+  msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
+  msg+=`\ud83d\udcca Dashboard: https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html\n`;
+  msg+=`\n_${reportTgl} ${jam} \u2014 TPM HSB Casting 2_`;
+  sendWA(msg);
+}
+
 function getSyncIntervalSec(){ return +localStorage.getItem('hsb9_sync_interval') || 300; }
 let SYNC_INTERVAL_MS = getSyncIntervalSec() * 1000;
 let lastSyncTime = null;
