@@ -3921,8 +3921,12 @@ function gtRenderTable(){
     .filter(({r})=>histDateOk(r.date,fPeriod)&&(fSh==='all'||r.sh===fSh))
     .sort((a,b)=>b.r.date.localeCompare(a.r.date));
   tb.innerHTML=rows.map(({r,idx})=>{
-    const kg=ssKgFor(r.date,r.sh);
-    const g=r.ik>0?kg/r.ik:null;
+    // Gentani = rasio HARIAN: total steelshot sehari (semua shift) ÷ total ikomi sehari (semua shift)
+    // Konsisten dengan grafik. Steelshot tidak difilter per-shift karena ikomi & steelshot
+    // bisa diinput di shift berbeda untuk hari yang sama.
+    const kg=ssKgFor(r.date,null);        // SS550+WireCut total hari itu
+    const tonHari=ikomiFor(r.date,null);  // total ikomi hari itu (semua shift)
+    const g=tonHari>0?kg/tonHari:null;
     const st=gtStatus(g);
     const click=em?`onclick="histOpenEdit('gentani',${idx})" style="cursor:pointer;"`:'';
     return`<tr ${click}><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td class="mn">${kg}</td><td class="mn">${r.ik}</td><td class="mn">${g!=null?g.toFixed(2):'-'}</td><td><span class="bd ${st.cl}">${st.s}</span></td><td>${r.op||'-'}</td></tr>`;
