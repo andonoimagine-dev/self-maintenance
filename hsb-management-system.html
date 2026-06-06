@@ -1281,8 +1281,15 @@ tr:hover td{background:var(--accent-bg);}
       <div id="msd-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;"></div>
       <!-- Timeline chart -->
       <div style="margin-bottom:12px;">
-        <div style="font-size:.68rem;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">📅 Timeline Penggantian</div>
-        <div style="height:72px;position:relative;background:var(--bg);border-radius:8px;border:1px solid var(--border);overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:.68rem;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;">📅 Timeline Penggantian</div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button id="tl-prev" onclick="tlNav(-1)" style="width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">‹</button>
+            <span id="tl-pageinfo" style="font-size:.68rem;color:var(--muted);min-width:54px;text-align:center;"></span>
+            <button id="tl-next" onclick="tlNav(1)" style="width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">›</button>
+          </div>
+        </div>
+        <div style="height:104px;position:relative;background:var(--bg);border-radius:8px;border:1px solid var(--border);overflow:hidden;">
           <canvas id="c-sp-timeline" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
         </div>
       </div>
@@ -2753,6 +2760,86 @@ function openSpDetailAll(partName){
   document.getElementById('m-sp-detail').classList.add('on');
 }
 
+// ── Timeline pagination (5 per frame + slider) ──────────
+let _tlLogs=[], _tlMod=0, _tlPage=0;
+const TL_PER_PAGE=5;
+
+function tlNav(dir){
+  const totalPages=Math.max(1,Math.ceil(_tlLogs.length/TL_PER_PAGE));
+  _tlPage=Math.min(totalPages-1,Math.max(0,_tlPage+dir));
+  drawTimelineFrame();
+}
+
+function drawTimelineFrame(){
+  requestAnimationFrame(()=>{
+    const cv=document.getElementById('c-sp-timeline');
+    if(!cv)return;
+    const W=cv.getBoundingClientRect().width||400, H=104;
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=W*dpr; cv.height=H*dpr;
+    const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+    const dk=document.documentElement.getAttribute('data-theme')==='dark';
+    ctx.clearRect(0,0,W,H);
+
+    const totalPages=Math.max(1,Math.ceil(_tlLogs.length/TL_PER_PAGE));
+    // Update page info + tombol disabled state
+    const info=document.getElementById('tl-pageinfo');
+    if(info)info.textContent=_tlLogs.length?`${_tlPage+1} / ${totalPages}`:'-';
+    const prevB=document.getElementById('tl-prev'), nextB=document.getElementById('tl-next');
+    if(prevB){prevB.style.opacity=_tlPage<=0?'.35':'1';prevB.style.pointerEvents=_tlPage<=0?'none':'auto';}
+    if(nextB){nextB.style.opacity=_tlPage>=totalPages-1?'.35':'1';nextB.style.pointerEvents=_tlPage>=totalPages-1?'none':'auto';}
+
+    if(!_tlLogs.length){
+      ctx.fillStyle=dk?'#8aa4bc':'#5a7a90'; ctx.font='13px sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('Belum ada data',W/2,H/2); return;
+    }
+
+    // Ambil 5 item untuk frame ini (urut lama→baru)
+    const start=_tlPage*TL_PER_PAGE;
+    const slice=_tlLogs.slice(start,start+TL_PER_PAGE);
+    const n=slice.length;
+    const mod=_tlMod;
+
+    const PAD={l:34,r:34,t:30,b:26};
+    const TW=W-PAD.l-PAD.r;
+    const CY=PAD.t+(H-PAD.t-PAD.b)/2;
+
+    // Garis dasar
+    ctx.strokeStyle=dk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
+    ctx.lineWidth=2; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(PAD.l,CY); ctx.lineTo(PAD.l+TW,CY); ctx.stroke();
+
+    // Garis modus (dashed)
+    const modY=PAD.t-8;
+    ctx.strokeStyle='rgba(0,102,204,.4)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(PAD.l,modY); ctx.lineTo(PAD.l+TW,modY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,102,204,.7)'; ctx.font='bold 10px sans-serif';
+    ctx.textAlign='right'; ctx.textBaseline='alphabetic';
+    ctx.fillText(`Modus ${mod}h`,PAD.l+TW,modY-3);
+
+    // Titik-titik (lebih besar, teks lebih besar)
+    slice.forEach((log,i)=>{
+      const x=PAD.l+(n>1?TW*i/(n-1):TW/2);
+      const jPct=mod>0?Math.min(+log.jm/mod,1.3):0.5;
+      const r=7+jPct*4;
+      const col=jPct>=1?'#dc2626':jPct>=0.8?'#d97706':'#059669';
+      // Dot
+      ctx.beginPath(); ctx.arc(x,CY,r,0,Math.PI*2);
+      ctx.fillStyle=col; ctx.fill();
+      ctx.strokeStyle=dk?'rgba(0,0,0,.4)':'rgba(255,255,255,.85)';
+      ctx.lineWidth=2; ctx.stroke();
+      // Jam label di atas (lebih besar)
+      ctx.fillStyle=col; ctx.font='bold 12px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+      ctx.fillText(log.jm+'h', x, CY-r-7);
+      // Tanggal format "11-Jan-26" di bawah
+      ctx.fillStyle=dk?'#9fb6cc':'#5a7a90'; ctx.font='600 10px sans-serif'; ctx.textBaseline='top';
+      ctx.fillText(fD(log.date), x, CY+r+7);
+    });
+  });
+}
+
 function openSpDetail(impIdx, partName){
   const logs = spLog
     .filter(s => +s.i === impIdx && s.nm === partName)
@@ -2782,59 +2869,12 @@ function openSpDetail(impIdx, partName){
       <div style="font-size:.65rem;color:var(--text2);font-weight:600;">${s.label}</div>
     </div>`).join('');
 
-  // ── Timeline canvas ──────────────────────────────────
-  requestAnimationFrame(()=>{
-    const cv = document.getElementById('c-sp-timeline');
-    if(!cv) return;
-    const W=cv.getBoundingClientRect().width||400, H=72;
-    const dpr=Math.min(window.devicePixelRatio||1,2);
-    cv.width=W*dpr; cv.height=H*dpr;
-    const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-    const dk=document.documentElement.getAttribute('data-theme')==='dark';
-    ctx.clearRect(0,0,W,H);
-
-    if(!logs.length || impIdx===-1){ ctx.fillStyle='var(--muted)'; ctx.font='12px sans-serif';
-      ctx.textAlign='center'; ctx.fillText('Belum ada data',W/2,H/2); return; }
-
-    // Timeline: dots on a horizontal line, sized by jam pakai
-    const PAD={l:20,r:20,t:14,b:22};
-    const TW=W-PAD.l-PAD.r;
-    const CY=PAD.t+(H-PAD.t-PAD.b)/2;
-
-    // Draw base line
-    ctx.strokeStyle=dk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
-    ctx.lineWidth=2; ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(PAD.l,CY); ctx.lineTo(PAD.l+TW,CY); ctx.stroke();
-
-    // Modus line (dashed)
-    const modPct = mod > 0 ? 1 : 0;
-    ctx.strokeStyle='rgba(0,102,204,.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-    const modY=CY-18;
-    ctx.beginPath(); ctx.moveTo(PAD.l,modY); ctx.lineTo(PAD.l+TW,modY); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='rgba(0,102,204,.6)'; ctx.font='bold 8px sans-serif';
-    ctx.textAlign='right'; ctx.fillText(`Modus ${mod}h`,PAD.l+TW,modY-2);
-
-    // Dots
-    logs.forEach((log,i)=>{
-      const x = PAD.l + (logs.length>1 ? TW*i/(logs.length-1) : TW/2);
-      const jPct = mod>0 ? Math.min(+log.jm/mod, 1.3) : 0.5;
-      const r = 4+jPct*4;
-      const col = jPct>=1?'#dc2626':jPct>=0.8?'#d97706':'#059669';
-      // Dot
-      ctx.beginPath(); ctx.arc(x,CY,r,0,Math.PI*2);
-      ctx.fillStyle=col; ctx.fill();
-      ctx.strokeStyle=dk?'rgba(0,0,0,.4)':'rgba(255,255,255,.8)';
-      ctx.lineWidth=1.5; ctx.stroke();
-      // Jam label above
-      ctx.fillStyle=col; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
-      ctx.fillText(log.jm+'h', x, CY-r-3);
-      // Date below
-      const [yy,mm,dd]=log.date.split('-');
-      ctx.fillStyle=dk?'#8aa4bc':'#5a7a90'; ctx.font='7px sans-serif';
-      ctx.fillText(`${+dd}/${+mm}`, x, CY+r+9);
-    });
-  });
+  // ── Timeline (paginated: 5 per frame, slider kiri-kanan) ──
+  // Simpan state global supaya tombol navigasi bisa render ulang
+  _tlLogs = logs;
+  _tlMod = mod;
+  _tlPage = Math.max(0, Math.ceil(logs.length/5)-1); // mulai dari frame terbaru
+  drawTimelineFrame();
 
   // ── Restore table header for single-impeller view ─────
   const thead2=document.querySelector('#m-sp-detail thead tr');
