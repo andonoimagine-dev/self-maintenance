@@ -1293,6 +1293,32 @@ tr:hover td{background:var(--accent-bg);}
           <canvas id="c-sp-timeline" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
         </div>
       </div>
+
+      <!-- Timeline MULTI-BARIS (per impeller) — untuk view "Semua History" -->
+      <div id="tlrow-wrap" style="display:none;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:.68rem;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;">📅 Timeline per Impeller</div>
+          <div style="position:relative;">
+            <button id="tlrow-filter-btn" onclick="tlRowToggleFilter()" style="font-size:.68rem;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;">
+              🔽 Filter Impeller <span id="tlrow-filter-count" style="background:var(--accent);color:#fff;border-radius:10px;padding:1px 7px;font-size:.62rem;"></span>
+            </button>
+            <div id="tlrow-filter-dd" style="display:none;position:absolute;right:0;top:34px;z-index:20;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.25);padding:10px;width:200px;max-height:280px;overflow-y:auto;">
+              <div style="display:flex;gap:6px;margin-bottom:8px;">
+                <button onclick="tlRowFilterAll(true)" style="flex:1;font-size:.66rem;padding:5px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);cursor:pointer;font-weight:600;">Semua</button>
+                <button onclick="tlRowFilterAll(false)" style="flex:1;font-size:.66rem;padding:5px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);cursor:pointer;font-weight:600;">Kosongkan</button>
+              </div>
+              <div id="tlrow-filter-list"></div>
+            </div>
+          </div>
+        </div>
+        <div style="position:relative;background:var(--bg);border-radius:8px;border:1px solid var(--border);">
+          <div id="tlrow-scroll" style="max-height:280px;overflow-y:auto;padding:6px 0;"></div>
+        </div>
+        <div style="font-size:.62rem;color:var(--muted);margin-top:5px;display:flex;gap:12px;flex-wrap:wrap;">
+          <span>🟢 &lt;80%</span><span>🟠 80-99%</span><span>🔴 ≥100% modus</span>
+          <span style="margin-left:auto;">Geser ↕ untuk lihat impeller lain (5 baris/frame)</span>
+        </div>
+      </div>
       <!-- History table -->
       <div style="font-size:.68rem;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">📋 Riwayat Lengkap</div>
       <div style="max-height:260px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);">
@@ -2665,48 +2691,24 @@ function openSpDetailAll(partName){
       <div style="font-size:.65rem;color:var(--text2);font-weight:600;">${s.label}</div>
     </div>`).join('');
 
-  // Timeline
-  requestAnimationFrame(()=>{
-    const cv=document.getElementById('c-sp-timeline');
-    if(!cv)return;
-    const W=cv.getBoundingClientRect().width||400, H=72;
-    const dpr=Math.min(window.devicePixelRatio||1,2);
-    cv.width=W*dpr; cv.height=H*dpr;
-    const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-    const dk=document.documentElement.getAttribute('data-theme')==='dark';
-    ctx.clearRect(0,0,W,H);
-    if(!logs.length){
-      ctx.fillStyle='var(--muted)';ctx.font='12px sans-serif';
-      ctx.textAlign='center';ctx.fillText('Belum ada data',W/2,H/2);return;
-    }
-    const PAD={l:20,r:20,t:14,b:22};
-    const TW=W-PAD.l-PAD.r, CY=PAD.t+(H-PAD.t-PAD.b)/2;
-    ctx.strokeStyle=dk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
-    ctx.lineWidth=2;ctx.setLineDash([]);
-    ctx.beginPath();ctx.moveTo(PAD.l,CY);ctx.lineTo(PAD.l+TW,CY);ctx.stroke();
-    // Modus line
-    ctx.strokeStyle='rgba(0,102,204,.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-    const modY=CY-18;
-    ctx.beginPath();ctx.moveTo(PAD.l,modY);ctx.lineTo(PAD.l+TW,modY);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='rgba(0,102,204,.6)';ctx.font='bold 8px sans-serif';
-    ctx.textAlign='right';ctx.fillText(`Modus ${mod}h`,PAD.l+TW,modY-2);
-    logs.forEach((log,i)=>{
-      const x=PAD.l+(logs.length>1?TW*i/(logs.length-1):TW/2);
-      const jPct=mod>0?Math.min(+log.jm/mod,1.3):0.5;
-      const r=4+jPct*4;
-      const col=jPct>=1?'#dc2626':jPct>=0.8?'#d97706':'#059669';
-      ctx.beginPath();ctx.arc(x,CY,r,0,Math.PI*2);
-      ctx.fillStyle=col;ctx.fill();
-      ctx.strokeStyle=dk?'rgba(0,0,0,.4)':'rgba(255,255,255,.8)';
-      ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle=col;ctx.font='bold 8px sans-serif';ctx.textAlign='center';
-      ctx.fillText(log.jm+'h',x,CY-r-3);
-      const[yy,mm,dd]=log.date.split('-');
-      ctx.fillStyle=dk?'#8aa4bc':'#5a7a90';ctx.font='7px sans-serif';
-      ctx.fillText(`${+dd}/${+mm}`,x,CY+r+9);
-    });
-  });
+  // Timeline MULTI-BARIS per impeller (sembunyikan canvas tunggal, tampilkan multi-baris)
+  const single=document.getElementById('c-sp-timeline')?.closest('div[style*="margin-bottom:12px"]');
+  // Sembunyikan blok timeline canvas tunggal
+  const tlSingleWrap=document.getElementById('c-sp-timeline')?.parentElement?.parentElement;
+  if(tlSingleWrap)tlSingleWrap.style.display='none';
+  const tlRowWrap=document.getElementById('tlrow-wrap');
+  if(tlRowWrap)tlRowWrap.style.display='block';
+
+  // Setup data per impeller
+  _tlrPart=partName;
+  _tlrMod=mod;
+  const impSet=[...new Set(logs.map(l=>+l.i))].sort((a,b)=>a-b);
+  _tlrImpellers=impSet;
+  // Default: tampilkan semua impeller yang punya history
+  _tlrSelected=new Set(impSet);
+  _tlrScroll=0;
+  tlRowBuildFilter();
+  tlRowRender();
 
   // Table — show all impellers, latest first
   const tb=document.getElementById('msd-tb');
@@ -2758,6 +2760,104 @@ function openSpDetailAll(partName){
   } else { nextEl.innerHTML=''; }
 
   document.getElementById('m-sp-detail').classList.add('on');
+}
+
+
+// ============================================================
+// TIMELINE MULTI-BARIS PER IMPELLER (view "Semua History")
+// ============================================================
+let _tlrPart='', _tlrMod=0, _tlrImpellers=[], _tlrSelected=new Set(), _tlrScroll=0;
+const TLR_PER_FRAME=5;
+
+function tlRowBuildFilter(){
+  const list=document.getElementById('tlrow-filter-list');
+  if(!list)return;
+  list.innerHTML=_tlrImpellers.map(ii=>{
+    const nm=nms[ii]||`IMP-${String(ii+1).padStart(2,'0')}`;
+    const checked=_tlrSelected.has(ii)?'checked':'';
+    return`<label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:.76rem;border-radius:6px;">
+      <input type="checkbox" ${checked} onchange="tlRowToggleImp(${ii})" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent);">
+      <span>${nm}</span>
+    </label>`;
+  }).join('')||'<div style="font-size:.72rem;color:var(--muted);padding:6px;">Tidak ada impeller</div>';
+  tlRowUpdateCount();
+}
+
+function tlRowUpdateCount(){
+  const el=document.getElementById('tlrow-filter-count');
+  if(el)el.textContent=`${_tlrSelected.size}/${_tlrImpellers.length}`;
+}
+
+function tlRowToggleFilter(){
+  const dd=document.getElementById('tlrow-filter-dd');
+  if(dd)dd.style.display=dd.style.display==='none'?'block':'none';
+}
+
+function tlRowToggleImp(ii){
+  if(_tlrSelected.has(ii))_tlrSelected.delete(ii);
+  else _tlrSelected.add(ii);
+  _tlrScroll=0;
+  tlRowUpdateCount();
+  tlRowRender();
+}
+
+function tlRowFilterAll(on){
+  _tlrSelected = on ? new Set(_tlrImpellers) : new Set();
+  _tlrScroll=0;
+  tlRowBuildFilter();
+  tlRowRender();
+}
+
+function tlRowNav(dir){
+  const visible=_tlrImpellers.filter(ii=>_tlrSelected.has(ii));
+  const maxStart=Math.max(0,visible.length-TLR_PER_FRAME);
+  _tlrScroll=Math.min(maxStart,Math.max(0,_tlrScroll+dir));
+  tlRowRender();
+}
+
+function tlRowRender(){
+  const wrap=document.getElementById('tlrow-scroll');
+  if(!wrap)return;
+  const mod=_tlrMod;
+  const dk=document.documentElement.getAttribute('data-theme')==='dark';
+  const visible=_tlrImpellers.filter(ii=>_tlrSelected.has(ii));
+
+  if(!visible.length){
+    wrap.innerHTML='<div style="font-size:.78rem;color:var(--muted);text-align:center;padding:24px;">Pilih impeller di filter untuk menampilkan timeline</div>';
+    return;
+  }
+
+  // Tiap impeller = 1 baris dengan mini-timeline horizontal (maks 5 titik terakhir)
+  wrap.innerHTML=visible.map(ii=>{
+    const nm=nms[ii]||`IMP-${String(ii+1).padStart(2,'0')}`;
+    const logs=spLog.filter(s=>+s.i===ii&&s.nm===_tlrPart).sort((a,b)=>a.date.localeCompare(b.date));
+    const last5=logs.slice(-5);
+    // Status terkini
+    const d=daysSP(ii,_tlrPart);
+    const used=d!=null?estJ(d):0;
+    const pct=mod>0?Math.round(used/mod*100):0;
+    const stCol=pct>=100?'#dc2626':pct>=80?'#d97706':'#059669';
+
+    const dots=last5.map(log=>{
+      const jPct=mod>0?Math.min(+log.jm/mod,1.3):0.5;
+      const col=jPct>=1?'#dc2626':jPct>=0.8?'#d97706':'#059669';
+      return`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0;">
+        <div style="font-size:.7rem;font-weight:700;color:${col};white-space:nowrap;">${log.jm}h</div>
+        <div style="width:14px;height:14px;border-radius:50%;background:${col};border:2px solid ${dk?'#1a2942':'#fff'};box-shadow:0 1px 3px rgba(0,0,0,.2);"></div>
+        <div style="font-size:.6rem;color:var(--muted);white-space:nowrap;">${fD(log.date)}</div>
+      </div>`;
+    }).join('<div style="flex:0 0 12px;height:2px;background:var(--border);margin-top:20px;"></div>');
+
+    return`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);">
+      <div style="width:78px;flex-shrink:0;">
+        <div style="font-size:.74rem;font-weight:700;color:var(--accent);">${nm}</div>
+        <div style="font-size:.62rem;font-weight:700;color:${stCol};">${pct}% modus</div>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:${last5.length<3?'flex-start':'space-between'};gap:${last5.length<3?'16px':'0'};min-width:0;overflow:hidden;">
+        ${dots||'<span style="font-size:.7rem;color:var(--muted);">Belum ada data</span>'}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── Timeline pagination (5 per frame + slider) ──────────
@@ -2876,7 +2976,11 @@ function openSpDetail(impIdx, partName){
     </div>`).join('');
 
   // ── Timeline (sliding window: selalu 5 per frame, geser kiri-kanan) ──
-  // Simpan state global supaya tombol navigasi bisa render ulang
+  // Tampilkan canvas tunggal, sembunyikan multi-baris
+  const tlSingleWrap2=document.getElementById('c-sp-timeline')?.parentElement?.parentElement;
+  if(tlSingleWrap2)tlSingleWrap2.style.display='';
+  const tlRowWrap2=document.getElementById('tlrow-wrap');
+  if(tlRowWrap2)tlRowWrap2.style.display='none';
   _tlLogs = logs;
   _tlMod = mod;
   _tlStart = Math.max(0, logs.length-5); // mulai dari 5 data terbaru
