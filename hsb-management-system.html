@@ -2761,12 +2761,13 @@ function openSpDetailAll(partName){
 }
 
 // ── Timeline pagination (5 per frame + slider) ──────────
-let _tlLogs=[], _tlMod=0, _tlPage=0;
+let _tlLogs=[], _tlMod=0, _tlStart=0;
 const TL_PER_PAGE=5;
 
 function tlNav(dir){
-  const totalPages=Math.max(1,Math.ceil(_tlLogs.length/TL_PER_PAGE));
-  _tlPage=Math.min(totalPages-1,Math.max(0,_tlPage+dir));
+  // Geser window per 1 data. Selalu tampil 5 (kecuali total < 5).
+  const maxStart=Math.max(0,_tlLogs.length-TL_PER_PAGE);
+  _tlStart=Math.min(maxStart,Math.max(0,_tlStart+dir));
   drawTimelineFrame();
 }
 
@@ -2781,13 +2782,19 @@ function drawTimelineFrame(){
     const dk=document.documentElement.getAttribute('data-theme')==='dark';
     ctx.clearRect(0,0,W,H);
 
-    const totalPages=Math.max(1,Math.ceil(_tlLogs.length/TL_PER_PAGE));
-    // Update page info + tombol disabled state
+    const maxStart=Math.max(0,_tlLogs.length-TL_PER_PAGE);
+    // Update info posisi + tombol disabled state
     const info=document.getElementById('tl-pageinfo');
-    if(info)info.textContent=_tlLogs.length?`${_tlPage+1} / ${totalPages}`:'-';
+    if(info){
+      if(!_tlLogs.length)info.textContent='-';
+      else{
+        const from=_tlStart+1, to=Math.min(_tlStart+TL_PER_PAGE,_tlLogs.length);
+        info.textContent=`${from}-${to} / ${_tlLogs.length}`;
+      }
+    }
     const prevB=document.getElementById('tl-prev'), nextB=document.getElementById('tl-next');
-    if(prevB){prevB.style.opacity=_tlPage<=0?'.35':'1';prevB.style.pointerEvents=_tlPage<=0?'none':'auto';}
-    if(nextB){nextB.style.opacity=_tlPage>=totalPages-1?'.35':'1';nextB.style.pointerEvents=_tlPage>=totalPages-1?'none':'auto';}
+    if(prevB){prevB.style.opacity=_tlStart<=0?'.35':'1';prevB.style.pointerEvents=_tlStart<=0?'none':'auto';}
+    if(nextB){nextB.style.opacity=_tlStart>=maxStart?'.35':'1';nextB.style.pointerEvents=_tlStart>=maxStart?'none':'auto';}
 
     if(!_tlLogs.length){
       ctx.fillStyle=dk?'#8aa4bc':'#5a7a90'; ctx.font='13px sans-serif';
@@ -2795,9 +2802,8 @@ function drawTimelineFrame(){
       ctx.fillText('Belum ada data',W/2,H/2); return;
     }
 
-    // Ambil 5 item untuk frame ini (urut lama→baru)
-    const start=_tlPage*TL_PER_PAGE;
-    const slice=_tlLogs.slice(start,start+TL_PER_PAGE);
+    // Ambil window 5 item untuk frame ini (urut lama→baru)
+    const slice=_tlLogs.slice(_tlStart,_tlStart+TL_PER_PAGE);
     const n=slice.length;
     const mod=_tlMod;
 
@@ -2869,11 +2875,11 @@ function openSpDetail(impIdx, partName){
       <div style="font-size:.65rem;color:var(--text2);font-weight:600;">${s.label}</div>
     </div>`).join('');
 
-  // ── Timeline (paginated: 5 per frame, slider kiri-kanan) ──
+  // ── Timeline (sliding window: selalu 5 per frame, geser kiri-kanan) ──
   // Simpan state global supaya tombol navigasi bisa render ulang
   _tlLogs = logs;
   _tlMod = mod;
-  _tlPage = Math.max(0, Math.ceil(logs.length/5)-1); // mulai dari frame terbaru
+  _tlStart = Math.max(0, logs.length-5); // mulai dari 5 data terbaru
   drawTimelineFrame();
 
   // ── Restore table header for single-impeller view ─────
