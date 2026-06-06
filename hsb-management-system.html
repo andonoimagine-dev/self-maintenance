@@ -289,6 +289,7 @@ tr:hover td{background:var(--accent-bg);}
   z-index:9999;transition:opacity .3s,transform .3s;
   box-shadow:0 4px 20px rgba(0,0,0,.2);
   white-space:nowrap;
+  pointer-events:none;
 }
 
 /* FILTER BAR — dropdown style */
@@ -1529,7 +1530,7 @@ function showToast(msg, type='ok', duration=3000) {
   let t = document.getElementById('toast');
   if (!t) { t = document.createElement('div'); t.id='toast'; document.body.appendChild(t); }
   t.textContent = msg;
-  t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;transition:opacity .3s,transform .3s;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);` +
+  t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;transition:opacity .3s,transform .3s;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;` +
     (type==='ok' ? 'background:var(--ok);color:#fff;' :
      type==='warn' ? 'background:var(--warn);color:#fff;' :
      'background:var(--danger);color:#fff;');
