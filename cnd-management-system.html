@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPM CND — Casting 2 · PT AT Indonesia</title>
+<style>
+[data-theme="light"]{
+  --bg:#eef2f7;--card:#fff;--card2:#f6f8fb;
+  --border:#d8dfe9;--text:#1a2332;--text2:#3d5068;--muted:#7a93ad;
+  --accent:#0f6cbd;--accent-bg:rgba(15,108,189,.08);
+  --ok:#059669;--ok-bg:rgba(5,150,105,.1);
+  --warn:#d97706;--warn-bg:rgba(217,119,6,.1);
+  --danger:#dc2626;--danger-bg:rgba(220,38,38,.1);
+  --info:#0891b2;--info-bg:rgba(8,145,178,.1);
+  --shadow:0 1px 3px rgba(15,30,55,.06),0 4px 14px rgba(15,30,55,.06);
+  --header:rgba(238,242,247,.96);
+  --c1:#0f6cbd;--c1bg:rgba(15,108,189,.08);--c1b:rgba(15,108,189,.3);
+  --c2:#7c3aed;--c2bg:rgba(124,58,237,.08);--c2b:rgba(124,58,237,.3);
+}
+[data-theme="dark"]{
+  --bg:#0a0f17;--card:#141d2c;--card2:#0f1825;
+  --border:#1e2c44;--text:#e0eaf5;--text2:#a0b6cd;--muted:#5a7390;
+  --accent:#3b9eff;--accent-bg:rgba(59,158,255,.12);
+  --ok:#10b981;--ok-bg:rgba(16,185,129,.13);
+  --warn:#f59e0b;--warn-bg:rgba(245,158,11,.13);
+  --danger:#ef4444;--danger-bg:rgba(239,68,68,.13);
+  --info:#06b6d4;--info-bg:rgba(6,182,212,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  --header:rgba(10,15,23,.96);
+  --c1:#3b9eff;--c1bg:rgba(59,158,255,.1);--c1b:rgba(59,158,255,.3);
+  --c2:#a78bfa;--c2bg:rgba(167,139,250,.1);--c2b:rgba(167,139,250,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+*{-webkit-tap-highlight-color:transparent;}
+button,[onclick]{touch-action:manipulation;cursor:pointer;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45;min-height:100vh;}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;background:var(--header);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+@media(max-width:480px){.lg-t2{display:none;}#clk{display:none;}}
+.lg{display:flex;align-items:center;gap:12px;}
+.lg-ic{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),#0044cc);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;}
+.lg-t1{font-size:1.2rem;font-weight:800;letter-spacing:.5px;}
+.lg-t2{font-size:.7rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+.live{display:flex;align-items:center;gap:5px;background:var(--ok-bg);border:1px solid rgba(5,150,105,.3);border-radius:20px;padding:4px 11px;font-size:.7rem;color:var(--ok);font-weight:700;}
+.live-d{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:bk 1.5s infinite;}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
+#clk{font-family:'Courier New',monospace;font-size:.82rem;color:var(--accent);font-weight:600;}
+.thbtn,.fs-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-size:1rem;color:var(--text2);}
+.thbtn:hover,.fs-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* NAV */
+.nv{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:60px;z-index:99;box-shadow:var(--shadow);}
+.nv::-webkit-scrollbar{display:none;}
+.tb{flex:0 0 auto;padding:12px 14px;background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;min-height:44px;}
+@media(max-width:600px){.tb{padding:12px 10px;font-size:.7rem;gap:4px;}}
+.tb.on{color:var(--accent);border-bottom-color:var(--accent);}
+.tb:hover:not(.on){color:var(--text);}
+
+/* LAYOUT */
+.ct{padding:10px;max-width:1800px;margin:0 auto;}
+@media(min-width:600px){.ct{padding:14px;}}
+.pg{display:none;}.pg.on{display:block;}
+
+/* 2-COL GRID */
+/* ── TWO COLUMN MASTER GRID ─────────────────────────────────
+   .mc2  = 2 kolom setara (CND-1 kiri | CND-2 kanan)
+         setiap kolom adalah flex-column, card di dalamnya
+         stretch otomatis mengikuti tinggi kolom tetangga.
+────────────────────────────────────────────────────────── */
+.mc2{display:grid;grid-template-columns:1fr;gap:14px;align-items:start;}
+@media(min-width:860px){.mc2{grid-template-columns:1fr 1fr;align-items:start;}}
+
+/* Kolom dalam .mc2 adalah flex column, isi turun ke bawah */
+.mc-col{display:flex;flex-direction:column;gap:12px;}
+
+/* Semua .cd di dalam .mc-col punya height auto, tidak stretch paksa */
+.mc-col>.cd{width:100%;}
+
+/* Backward compat — .g2 dan .g3 tetap ada untuk tab lain */
+.g2{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;}
+@media(min-width:860px){.g2{grid-template-columns:1fr 1fr;align-items:start;}}
+.g2-eq{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:860px){.g2-eq{grid-template-columns:1fr 1fr;}}
+.g2-eq>.cd{display:flex;flex-direction:column;}
+.g3{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:700px){.g3{grid-template-columns:1fr 1fr;}}
+@media(min-width:1400px){.g3{grid-template-columns:1fr 1fr 1fr;}}
+.imp-wrap{flex:1;display:flex;flex-direction:column;gap:8px;}
+
+/* Mini chart dalam kolom dashboard */
+.mini-chart{height:200px;position:relative;margin-top:6px;}
+.mini-chart>canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;}
+
+/* CARD */
+.cd{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow);}
+.cd+.cd{margin-top:12px;}
+.st{font-size:.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.st::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* MACHINE PANEL HEADER */
+.mph{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;margin-bottom:12px;}
+.mph1{background:var(--c1bg);border:1px solid var(--c1b);}
+.mph2{background:var(--c2bg);border:1px solid var(--c2b);}
+.mph-lbl{font-size:.95rem;font-weight:800;letter-spacing:.5px;}
+.mph1 .mph-lbl{color:var(--c1);}
+.mph2 .mph-lbl{color:var(--c2);}
+.mph-sub{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-top:1px;}
+.mph1 .mph-sub{color:rgba(15,108,189,.55);}
+.mph2 .mph-sub{color:rgba(124,58,237,.55);}
+
+/* MACHINE BADGE */
+.mb1{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:800;background:var(--c1bg);color:var(--c1);border:1px solid var(--c1b);}
+.mb2{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:800;background:var(--c2bg);color:var(--c2);border:1px solid var(--c2b);}
+
+/* CHIPS */
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.cp{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:5px 10px;display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:var(--text2);}
+.cp .v{font-family:'Courier New',monospace;font-size:1.05rem;font-weight:700;}
+.cp.ok .v{color:var(--ok);}.cp.wn .v{color:var(--warn);}.cp.dg .v{color:var(--danger);}.cp.mu .v{color:var(--muted);}
+
+/* ALERTS */
+.al{display:flex;flex-direction:column;gap:5px;}
+.al-i{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:600;}
+.al-d{background:var(--danger-bg);border:1px solid rgba(220,38,38,.25);color:var(--danger);}
+.al-w{background:var(--warn-bg);border:1px solid rgba(217,119,6,.25);color:var(--warn);}
+.al-o{background:var(--ok-bg);border:1px solid rgba(5,150,105,.25);color:var(--ok);}
+
+/* IMPELLER CARD */
+.imp{background:var(--card2);border:2px solid var(--border);border-radius:14px;padding:18px;text-align:center;cursor:pointer;transition:transform .12s,border-color .15s;position:relative;overflow:hidden;}
+.imp:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.imp-a{font-family:'Courier New',monospace;font-size:2.8rem;font-weight:700;margin:6px 0;line-height:1;}
+.imp-s{font-size:.75rem;font-weight:700;letter-spacing:.5px;padding:4px 14px;border-radius:6px;display:inline-block;margin-top:4px;}
+.imp-attn{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--warn);color:#fff;font-size:.6rem;font-weight:900;line-height:18px;text-align:center;}
+.imp-of{border-color:var(--border)!important;opacity:.6;}
+.imp-of .imp-a{color:var(--muted);}.imp-of .imp-s{background:var(--card2);color:var(--muted);}
+.imp-ok{border-color:rgba(5,150,105,.45)!important;background:rgba(5,150,105,.04)!important;}
+.imp-ok .imp-a{color:var(--ok);}.imp-ok .imp-s{background:var(--ok-bg);color:var(--ok);}
+.imp-lo{border-color:rgba(217,119,6,.55)!important;}
+.imp-lo .imp-a{color:var(--warn);animation:bk2 1s infinite;}.imp-lo .imp-s{background:var(--warn-bg);color:var(--warn);}
+.imp-hi{border-color:rgba(220,38,38,.55)!important;box-shadow:0 0 8px rgba(220,38,38,.12)!important;}
+.imp-hi .imp-a{color:var(--danger);animation:bk2 .65s infinite;}.imp-hi .imp-s{background:var(--danger-bg);color:var(--danger);}
+@keyframes bk2{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* TROLLEY */
+.tr2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.trc{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;}
+.trc-l{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px;}
+.trc-v{font-family:'Courier New',monospace;font-size:1.7rem;font-weight:700;}
+.trc-s{font-size:.65rem;color:var(--muted);margin-top:1px;}
+.tr-tot{border-radius:9px;padding:10px 14px;font-size:.82rem;}
+
+/* CHART CARD */
+.dbc{height:260px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:var(--shadow);overflow:hidden;}
+.dbc-h{height:26px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;margin-bottom:6px;}
+.dbc-c{flex:1;min-height:0;position:relative;}
+.dbc-c>canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;}
+.dbc-f{flex-shrink:0;margin-top:6px;}
+
+/* LEGEND */
+.lgr{display:flex;gap:10px;flex-wrap:wrap;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text2);font-weight:600;}
+.lgd{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* FORMS */
+.fr{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.fg{flex:1;min-width:140px;}
+@media(max-width:380px){.fg{min-width:100%;flex:none;}}
+.fg label{display:block;font-size:.65rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;}
+@media(min-width:600px){.fg input,.fg select,.fg textarea{font-size:.85rem;}}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+.fg textarea{resize:vertical;min-height:50px;}
+
+/* TABLE */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.78rem;}
+th{background:var(--card2);color:var(--muted);padding:7px 8px;text-align:left;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-bottom:2px solid var(--border);font-size:.65rem;white-space:nowrap;}
+td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:.82rem;}
+tr:hover td{background:var(--accent-bg);}
+.bd{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:700;}
+.bd-ok{background:var(--ok-bg);color:var(--ok);}.bd-ng{background:var(--danger-bg);color:var(--danger);}.bd-wn{background:var(--warn-bg);color:var(--warn);}
+
+/* PREVENTIVE */
+.pv-sec{margin-bottom:10px;}
+.pv-sh{font-size:.68rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;padding:5px 10px;background:var(--accent-bg);border-radius:6px;margin-bottom:5px;}
+.pv-i{display:flex;align-items:center;gap:8px;padding:7px 11px;background:var(--bg);border:1px solid var(--border);border-radius:7px;margin-bottom:4px;}
+.pv-i.pok{border-color:rgba(5,150,105,.4);background:var(--ok-bg);}
+.pv-i.png{border-color:rgba(220,38,38,.4);background:var(--danger-bg);}
+.pv-l{flex:1;font-size:.8rem;}
+.pv-d{font-size:.65rem;color:var(--muted);margin-top:1px;}
+.pv-bb{display:flex;gap:5px;}
+.pv-b{border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:.7rem;font-weight:700;cursor:pointer;background:var(--card2);color:var(--muted);}
+.pv-b.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);}
+.pv-b.ng{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
+
+/* LIFETIME */
+.ltw{width:100%;background:var(--border);border-radius:4px;height:6px;margin-top:3px;}
+.lt{height:6px;border-radius:4px;}
+
+/* BUTTONS */
+.btn{padding:9px 18px;border-radius:9px;border:none;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;}
+.btn *{pointer-events:none;}
+.btn:hover{filter:brightness(.92);}
+.btn-p{background:var(--accent);color:#fff;}
+.btn-d{background:var(--danger);color:#fff;}
+.btn-w{background:var(--warn);color:#fff;}
+.btn-k{background:var(--ok);color:#fff;}
+.btn-g{background:var(--card2);border:1px solid var(--border);color:var(--text2);}
+.btn-s{padding:5px 11px;font-size:.7rem;min-height:34px;}
+.btn-wa{background:#25D366;color:#fff;}
+
+/* MODAL */
+.mv{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(2px);}
+.mv.on{display:flex;}
+.mw{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.3);}
+.mh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);border-radius:14px 14px 0 0;z-index:1;}
+.mh h3{font-size:1rem;font-weight:700;}
+.mx{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;padding:2px 6px;border-radius:5px;line-height:1;}
+.mx:hover{background:var(--danger-bg);color:var(--danger);}
+.mb{padding:14px 18px;}
+.mb label{display:block;font-size:.65rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
+.mb input,.mb select,.mb textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;margin-bottom:10px;}
+.ma{display:flex;gap:7px;flex-wrap:wrap;}
+
+/* SETTING */
+.sr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+.sr:last-child{border:none;}
+.sl{flex:1;font-weight:500;}
+.si{width:110px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;color:var(--text);font-family:'Courier New',monospace;font-size:.82rem;text-align:right;}
+
+/* FILTER BAR */
+.fbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.fbl{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;}
+.fbs{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;height:34px;min-width:90px;}
+.fbs:focus{outline:none;border-color:var(--accent);}
+.fbsep{width:1px;height:24px;background:var(--border);flex-shrink:0;}
+
+/* MISC */
+.fg-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.es{text-align:center;padding:25px;color:var(--muted);font-size:.82rem;}
+.mn{font-family:'Courier New',monospace;}
+
+/* SPINNER */
+.sp-ov{position:fixed;inset:0;z-index:9997;display:none;align-items:center;justify-content:center;background:rgba(15,25,45,.35);backdrop-filter:blur(2px);}
+.sp-ov.on{display:flex;}
+.sp-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 36px;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 8px 40px rgba(0,0,0,.35);min-width:200px;}
+.sp-ring{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--accent);border-right-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-sav{opacity:.65!important;cursor:not-allowed!important;pointer-events:none!important;}
+
+/* GT PREVIEW */
+.gtprev{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:.78rem;}
+</style>
+</head>
+<body>
+
+<div class="sp-ov" id="sp-ov">
+  <div class="sp-card"><div class="sp-ring"></div>
+    <div style="font-size:.9rem;font-weight:700;color:var(--text);" id="sp-msg">Menyimpan...</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="lg">
+    <div class="lg-ic">&#9881;</div>
+    <div><div class="lg-t1">TPM CND</div><div class="lg-t2">Casting 2 &middot; PT AT Indonesia</div></div>
+  </div>
+  <div class="hdr-r">
+    <span id="sync-lbl" onclick="syncFromSheets()" title="Klik untuk sync" style="font-size:.7rem;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:.4px;padding:4px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card);"></span>
+    <button class="thbtn" id="thbtn" onclick="tgTh()">&#127769;</button>
+    <button class="fs-btn" onclick="toggleFS()">&#9974;</button>
+    <div class="live"><span class="live-d"></span>LIVE</div>
+    <div id="clk"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nv">
+  <button class="tb on" data-t="dash">&#128202; Dashboard</button>
+  <button class="tb" data-t="prev">&#128295; Preventive</button>
+  <button class="tb" data-t="sp">&#128297; Impeller</button>
+  <button class="tb" data-t="amp">&#9889; Ampere</button>
+  <button class="tb" data-t="ss">&#128302; Steel Shot</button>
+  <button class="tb" data-t="lb">&#128465; Limbah</button>
+  <button class="tb" data-t="gt">&#128202; Gentani</button>
+  <button class="tb" data-t="set">&#9881; Setting</button>
+</div>
+
+<div class="ct">
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="p-dash" class="pg on">
+  <div class="mc2">
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph1" style="margin-bottom:10px;">
+          <div><div class="mph-lbl">&#9881; CND-1 &mdash; Impeller</div><div class="mph-sub">Klik kartu untuk detail</div></div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-k btn-s" onclick="setIO(1,true)">&#9654; ON</button>
+            <button class="btn btn-d btn-s" onclick="setIO(1,false)">&#9632; OFF</button>
+          </div>
+        </div>
+        <div id="ig1"></div>
+        <div class="bar" id="is1" style="margin-top:8px;margin-bottom:0;"></div>
+      </div>
+<div class="cd">
+        <div class="st" style="color:var(--c1);">&#128665; Trolley Hari Ini &mdash; CND-1</div>
+        <div class="tr2">
+          <div class="trc"><div class="trc-l">NSP</div><div class="trc-v" id="t1n">&#8212;</div><div class="trc-s" id="t1nk">&#8212; Kg</div></div>
+          <div class="trc"><div class="trc-l">NSM</div><div class="trc-v" id="t1m">&#8212;</div><div class="trc-s" id="t1mk">&#8212; Kg</div></div>
+        </div>
+        <div class="tr-tot" style="background:var(--c1bg);border:1px solid var(--c1b);">
+          Total: <strong id="t1tot" style="color:var(--c1);font-family:\'Courier New\',monospace;font-size:1.1rem;">&#8212;</strong> trolley &nbsp;|&nbsp;
+          <span id="t1kg" style="color:var(--info);font-family:\'Courier New\',monospace;font-weight:700;">&#8212;</span> Kg
+        </div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128202; Gentani CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div>
+        <div class="mini-chart"><canvas id="c-gt1"></canvas></div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128302; Steelshot CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('ss')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div></div>
+        <div class="mini-chart"><canvas id="c-ss1"></canvas></div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128665; Trend Trolley CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>NSP</div><div class="lgi"><div class="lgd" style="background:rgba(15,108,189,.8);"></div>NSM</div></div>
+        <div class="mini-chart"><canvas id="c-tr1"></canvas></div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128465; Limbah CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('lb')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div>
+        <div class="mini-chart"><canvas id="c-lb1d"></canvas></div>
+      </div>
+</div>
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph2" style="margin-bottom:10px;">
+          <div><div class="mph-lbl">&#9881; CND-2 &mdash; Impeller</div><div class="mph-sub">Klik kartu untuk detail</div></div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-k btn-s" onclick="setIO(2,true)">&#9654; ON</button>
+            <button class="btn btn-d btn-s" onclick="setIO(2,false)">&#9632; OFF</button>
+          </div>
+        </div>
+        <div id="ig2"></div>
+        <div class="bar" id="is2" style="margin-top:8px;margin-bottom:0;"></div>
+      </div>
+<div class="cd">
+        <div class="st" style="color:var(--c2);">&#128665; Trolley Hari Ini &mdash; CND-2</div>
+        <div class="tr2">
+          <div class="trc"><div class="trc-l">NSP</div><div class="trc-v" id="t2n">&#8212;</div><div class="trc-s" id="t2nk">&#8212; Kg</div></div>
+          <div class="trc"><div class="trc-l">NSM</div><div class="trc-v" id="t2m">&#8212;</div><div class="trc-s" id="t2mk">&#8212; Kg</div></div>
+        </div>
+        <div class="tr-tot" style="background:var(--c2bg);border:1px solid var(--c2b);">
+          Total: <strong id="t2tot" style="color:var(--c2);font-family:\'Courier New\',monospace;font-size:1.1rem;">&#8212;</strong> trolley &nbsp;|&nbsp;
+          <span id="t2kg" style="color:var(--info);font-family:\'Courier New\',monospace;font-weight:700;">&#8212;</span> Kg
+        </div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128202; Gentani CND-2</div>
+          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div>
+        <div class="mini-chart"><canvas id="c-gt2"></canvas></div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128302; Steelshot CND-2</div>
+          <button class="btn btn-g btn-s" onclick="goTab('ss')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div></div>
+        <div class="mini-chart"><canvas id="c-ss2"></canvas></div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128665; Trend Trolley CND-2</div>
+          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>NSP</div><div class="lgi"><div class="lgd" style="background:rgba(124,58,237,.8);"></div>NSM</div></div>
+        <div class="mini-chart"><canvas id="c-tr2"></canvas></div>
+      </div>
+<div class="cd">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128465; Limbah CND-2</div>
+          <button class="btn btn-g btn-s" onclick="goTab('lb')">&#8594;</button>
+        </div>
+        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div>
+        <div class="mini-chart"><canvas id="c-lb2d"></canvas></div>
+      </div>
+</div>
+</div>
+  <!-- Alert & WA — full width -->
+  <div class="cd" style="margin-top:12px;margin-bottom:10px;">
+    <div class="st">&#9888; Alert System</div>
+    <div id="al-box" class="al"></div>
+  </div>
+  <button class="btn btn-wa" onclick="waResume()" style="width:100%;justify-content:center;margin-bottom:4px;">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Kirim Resume Harian ke WhatsApp
+  </button>
+</div>
+
+<!-- ═══════════════ PREVENTIVE ═══════════════ -->
+<div id="p-prev" class="pg">
+  <div class="mc2">
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph1" style="margin-bottom:12px;">
+          <div><div class="mph-lbl">&#128295; Preventive &mdash; CND-1</div><div class="mph-sub">Weekly Check Sheet</div></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label>Minggu ke-</label><select id="p1w"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+          <div class="fg"><label>Bulan</label><input type="month" id="p1m"></div>
+          <div class="fg"><label>Tanggal</label><input type="date" id="p1d"></div>
+          <div class="fg"><label>PIC</label><input type="text" id="p1p" placeholder="Nama..."></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;">&#9675; Planning &nbsp;&#10003; OK &nbsp;&#10007; Abnormal</div>
+        <div id="pck1"></div>
+        <div class="fr" style="margin-top:8px;"><div class="fg"><label>Catatan Abnormal</label><textarea id="p1n"></textarea></div></div>
+        <div style="display:flex;gap:7px;margin-top:8px;">
+          <button class="btn btn-p btn-s" onclick="savePv(1,event)" style="flex:1;">&#128190; Simpan CND-1</button>
+          <button class="btn btn-wa btn-s" onclick="waPv(1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WA</button>
+        </div>
+      </div>
+</div>
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph2" style="margin-bottom:12px;">
+          <div><div class="mph-lbl">&#128295; Preventive &mdash; CND-2</div><div class="mph-sub">Weekly Check Sheet</div></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label>Minggu ke-</label><select id="p2w"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+          <div class="fg"><label>Bulan</label><input type="month" id="p2m"></div>
+          <div class="fg"><label>Tanggal</label><input type="date" id="p2d"></div>
+          <div class="fg"><label>PIC</label><input type="text" id="p2p" placeholder="Nama..."></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;">&#9675; Planning &nbsp;&#10003; OK &nbsp;&#10007; Abnormal</div>
+        <div id="pck2"></div>
+        <div class="fr" style="margin-top:8px;"><div class="fg"><label>Catatan Abnormal</label><textarea id="p2n"></textarea></div></div>
+        <div style="display:flex;gap:7px;margin-top:8px;">
+          <button class="btn btn-p btn-s" onclick="savePv(2,event)" style="flex:1;">&#128190; Simpan CND-2</button>
+          <button class="btn btn-wa btn-s" onclick="waPv(2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WA</button>
+        </div>
+      </div>
+</div>
+</div>
+  <div class="cd" style="margin-top:12px;">
+    <div class="st">&#128203; Riwayat Preventive</div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbl">Mesin</span>
+      <select class="fbs" id="pvfmc" onchange="rPvH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
+      <div class="fbsep"></div>
+      <span class="fbl">Periode</span>
+      <select class="fbs" id="pvfpd" onchange="rPvH()"><option value="all">Semua</option><option value="30d">30 Hari</option><option value="90d">90 Hari</option></select>
+    </div>
+    <div class="tw"><table><thead><tr><th>Mesin</th><th>Periode</th><th>Tgl</th><th>PIC</th><th>OK</th><th>NG</th><th>Catatan</th></tr></thead><tbody id="pv-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ═══════════════ IMPELLER / SPAREPART ═══════════════ -->
+<div id="p-sp" class="pg">
+  <div class="mc2">
+<div class="mc-col">
+<div class="cd"><div class="mph mph1" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128202; Lifetime &mdash; CND-1</div><div class="mph-sub">Berbasis Kg Material Diproses</div></div></div><div id="lt1"></div></div>
+</div>
+<div class="mc-col">
+<div class="cd"><div class="mph mph2" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128202; Lifetime &mdash; CND-2</div><div class="mph-sub">Berbasis Kg Material Diproses</div></div></div><div id="lt2"></div></div>
+</div>
+</div>
+  <div class="cd" style="margin-top:12px;margin-bottom:12px;">
+    <div class="st">&#128297; Input Penggantian Sparepart</div>
+    <div class="fr">
+      <div class="fg"><label>Mesin</label><select id="smc"><option value="1">CND-1</option><option value="2">CND-2</option></select></div>
+      <div class="fg"><label>Tanggal</label><input type="date" id="spd"></div>
+      <div class="fg"><label>Jenis</label><select id="spj" onchange="onSpJ()"><option value="part">Satuan</option><option value="assy">Unit Assy</option></select></div>
+    </div>
+    <div id="sp-pr">
+      <div class="fr">
+        <div class="fg"><label>Nama Part</label><select id="spnm"><option>Impeller Blade</option><option>Control Cage</option><option>Distributor</option><option>End Liner Atas</option><option>End Liner Bawah</option><option>Ceiling Liner</option><option>Front Cover</option><option>V-Belt</option><option>Motor</option></select></div>
+        <div class="fg"><label>Kg Pakai (sejak ganti terakhir)</label><input type="number" id="spkg" placeholder="cth: 48000" min="0"></div>
+        <div class="fg"><label>Qty</label><input type="number" id="spq" value="1"></div>
+        <div class="fg"><label>Kondisi Lama</label><select id="spk"><option>Aus</option><option>Pecah</option><option>Kotor</option><option>Rusak</option></select></div>
+      </div>
+    </div>
+    <div id="sp-ai" style="display:none;background:var(--info-bg);border:1px solid rgba(8,145,178,.3);border-radius:8px;padding:10px 12px;font-size:.78rem;color:var(--info);margin-bottom:8px;">
+      &#9881; <strong>Unit Assy:</strong> Blade, Cage, Distributor, Liner x2, Ceiling, Front Cover, V-Belt dicatat baru. Motor tidak termasuk.
+      <div class="fr" style="margin-top:8px;"><div class="fg"><label>Total Kg Pakai (sejak assy terakhir)</label><input type="number" id="spaj" placeholder="cth: 120000"></div></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Operator</label><input type="text" id="spop"></div>
+      <div class="fg"><label>Catatan</label><input type="text" id="spno"></div>
+    </div>
+    <button class="btn btn-p" onclick="saveSp(event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan Sparepart</button>
+  </div>
+  <div class="cd">
+    <div class="st">&#128203; History Sparepart</div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbl">Mesin</span>
+      <select class="fbs" id="spfmc" onchange="rSpH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
+      <div class="fbsep"></div>
+      <span class="fbl">Periode</span>
+      <select class="fbs" id="spfpd" onchange="rSpH()"><option value="all">Semua</option><option value="30d">30 Hari</option><option value="90d">90 Hari</option></select>
+    </div>
+    <div class="tw"><table><thead><tr><th>Tgl</th><th>Mesin</th><th>Part</th><th>Kg Pakai</th><th>Qty</th><th>Kondisi</th><th>Op</th></tr></thead><tbody id="sp-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ═══════════════ AMPERE ═══════════════ -->
+<div id="p-amp" class="pg">
+  <div class="mc2">
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph1" style="margin-bottom:10px;"><div><div class="mph-lbl">&#9889; Ampere &mdash; CND-1</div><div class="mph-sub">Range: <span id="rg1" style="color:var(--ok);font-weight:700;"></span></div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tgl &amp; Waktu</label><input type="datetime-local" id="a1dt"></div>
+          <div class="fg"><label>Shift</label><select id="a1sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>Ampere (A)</label><input type="number" id="a1a" step="0.1" placeholder="40.0" oninput="ampPv(1)"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="a1op"></div>
+        </div>
+        <div id="a1pv" style="font-size:.78rem;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
+        <div class="fr"><div class="fg"><label>Catatan</label><textarea id="a1no" style="min-height:44px;"></textarea></div></div>
+        <button class="btn btn-p" onclick="saveAmp(1,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-1</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c1);">&#128200; Trend Ampere CND-1</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="acp1" onchange="drawAC(1)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-amp1"></canvas></div></div>
+</div>
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph2" style="margin-bottom:10px;"><div><div class="mph-lbl">&#9889; Ampere &mdash; CND-2</div><div class="mph-sub">Range: <span id="rg2" style="color:var(--ok);font-weight:700;"></span></div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tgl &amp; Waktu</label><input type="datetime-local" id="a2dt"></div>
+          <div class="fg"><label>Shift</label><select id="a2sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>Ampere (A)</label><input type="number" id="a2a" step="0.1" placeholder="40.0" oninput="ampPv(2)"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="a2op"></div>
+        </div>
+        <div id="a2pv" style="font-size:.78rem;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
+        <div class="fr"><div class="fg"><label>Catatan</label><textarea id="a2no" style="min-height:44px;"></textarea></div></div>
+        <button class="btn btn-p" onclick="saveAmp(2,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-2</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c2);">&#128200; Trend Ampere CND-2</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="acp2" onchange="drawAC(2)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-amp2"></canvas></div></div>
+</div>
+</div>
+  <div class="cd" style="margin-top:12px;">
+    <div class="st">&#128203; Log Ampere</div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbl">Mesin</span><select class="fbs" id="afmc" onchange="rAH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
+      <div class="fbsep"></div>
+      <span class="fbl">Shift</span><select class="fbs" id="afsh" onchange="rAH()"><option value="all">Semua</option><option value="NSP">NSP</option><option value="NSM">NSM</option></select>
+      <div class="fbsep"></div>
+      <span class="fbl">Status</span><select class="fbs" id="afst" onchange="rAH()"><option value="all">Semua</option><option value="ok">Normal</option><option value="lo">Under</option><option value="hi">Over</option></select>
+    </div>
+    <div class="tw"><table><thead><tr><th>Waktu</th><th>Mesin</th><th>Shift</th><th>Ampere</th><th>Status</th><th>Op</th></tr></thead><tbody id="amp-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ═══════════════ STEEL SHOT ═══════════════ -->
+<div id="p-ss" class="pg">
+  <div class="mc2">
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph1" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128302; Steel Shot &mdash; CND-1</div><div class="mph-sub">SS 550 | Wire Cut</div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tanggal</label><input type="date" id="s1d"></div>
+          <div class="fg"><label>Shift</label><select id="s1sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>SS 550 (Kg)</label><input type="number" id="s150" min="0"></div>
+          <div class="fg"><label>Wire Cut (Kg)</label><input type="number" id="s1wc" min="0"></div>
+          <div class="fg"><label>SS Bekas (Kg)</label><input type="number" id="s1lb" min="0" step="0.1"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="s1op"></div>
+        </div>
+        <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="s1no" style="min-height:44px;"></textarea></div></div>
+        <button class="btn btn-p" onclick="saveSS(1,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-1</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c1);">&#128200; Trend Steelshot CND-1</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="scp1" onchange="drawSC(1)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-ss-f1"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div><div class="lgi"><div class="lgd" style="background:rgba(180,83,9,.7);"></div>SS Bekas</div></div></div>
+</div>
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph2" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128302; Steel Shot &mdash; CND-2</div><div class="mph-sub">SS 550 | Wire Cut</div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tanggal</label><input type="date" id="s2d"></div>
+          <div class="fg"><label>Shift</label><select id="s2sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>SS 550 (Kg)</label><input type="number" id="s250" min="0"></div>
+          <div class="fg"><label>Wire Cut (Kg)</label><input type="number" id="s2wc" min="0"></div>
+          <div class="fg"><label>SS Bekas (Kg)</label><input type="number" id="s2lb" min="0" step="0.1"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="s2op"></div>
+        </div>
+        <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="s2no" style="min-height:44px;"></textarea></div></div>
+        <button class="btn btn-p" onclick="saveSS(2,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-2</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c2);">&#128200; Trend Steelshot CND-2</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="scp2" onchange="drawSC(2)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-ss-f2"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div><div class="lgi"><div class="lgd" style="background:rgba(180,83,9,.7);"></div>SS Bekas</div></div></div>
+</div>
+</div>
+  <div class="cd" style="margin-top:12px;">
+    <div class="st">&#128203; History Steelshot</div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbl">Mesin</span><select class="fbs" id="ssfmc" onchange="rSSH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
+      <div class="fbsep"></div>
+      <span class="fbl">Shift</span><select class="fbs" id="ssfsh" onchange="rSSH()"><option value="all">Semua</option><option value="NSP">NSP</option><option value="NSM">NSM</option></select>
+    </div>
+    <div class="tw"><table><thead><tr><th>Tgl</th><th>Mesin</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>SS Bekas</th><th>Total</th><th>Op</th></tr></thead><tbody id="ss-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ═══════════════ LIMBAH ═══════════════ -->
+<div id="p-lb" class="pg">
+  <div class="mc2">
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph1" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128465; Limbah &mdash; CND-1</div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tanggal</label><input type="date" id="l1d"></div>
+          <div class="fg"><label>Shift</label><select id="l1sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>Pasir (Trolley)</label><input type="number" id="l1vp" step="0.5" min="0" placeholder="0"></div>
+          <div class="fg"><label>Debu (Trolley)</label><input type="number" id="l1vd" step="0.5" min="0" placeholder="0"></div>
+          <div class="fg"><label>Lokasi TPS</label><input type="text" id="l1lo" placeholder="TPS-1"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="l1op"></div>
+        </div>
+        <button class="btn btn-p" onclick="saveLB(1,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-1</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c1);">&#128200; Trend Limbah CND-1</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="lcp1" onchange="drawLC(1)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-lb1"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div></div>
+</div>
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph2" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128465; Limbah &mdash; CND-2</div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tanggal</label><input type="date" id="l2d"></div>
+          <div class="fg"><label>Shift</label><select id="l2sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>Pasir (Trolley)</label><input type="number" id="l2vp" step="0.5" min="0" placeholder="0"></div>
+          <div class="fg"><label>Debu (Trolley)</label><input type="number" id="l2vd" step="0.5" min="0" placeholder="0"></div>
+          <div class="fg"><label>Lokasi TPS</label><input type="text" id="l2lo" placeholder="TPS-1"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="l2op"></div>
+        </div>
+        <button class="btn btn-p" onclick="saveLB(2,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-2</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c2);">&#128200; Trend Limbah CND-2</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="lcp2" onchange="drawLC(2)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-lb2"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div></div>
+</div>
+</div>
+  <div class="cd" style="margin-top:12px;">
+    <div class="st">&#128203; History Limbah</div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbl">Mesin</span><select class="fbs" id="lbfmc" onchange="rLBH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
+    </div>
+    <div class="tw"><table><thead><tr><th>Tgl</th><th>Mesin</th><th>Shift</th><th>Pasir</th><th>Debu</th><th>Lokasi</th><th>Op</th></tr></thead><tbody id="lb-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ═══════════════ GENTANI ═══════════════ -->
+<div id="p-gt" class="pg">
+  <div style="font-size:.75rem;color:var(--info);background:var(--info-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;">
+    &#8505; Gentani = (SS550+WireCut) Kg &divide; (Total Trolley &times; <strong id="cap-lbl">800</strong> Kg/trolley)
+  </div>
+  <div class="mc2">
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph1" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128665; Input Trolley &mdash; CND-1</div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tanggal</label><input type="date" id="g1d"></div>
+          <div class="fg"><label>Shift</label><select id="g1sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>Trolley NSP (unit)</label><input type="number" id="g1tn" min="0" placeholder="0" oninput="gtPv(1)"></div>
+          <div class="fg"><label>Trolley NSM (unit)</label><input type="number" id="g1tm" min="0" placeholder="0" oninput="gtPv(1)"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="g1op"></div>
+        </div>
+        <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="g1no" style="min-height:44px;"></textarea></div></div>
+        <div id="gpv1" class="gtprev" style="display:none;"></div>
+        <button class="btn btn-p" onclick="saveGT(1,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-1</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c1);">&#128200; Trend Gentani CND-1</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="gcp1" onchange="drawGC(1)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-gt-f1"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div></div>
+</div>
+<div class="mc-col">
+<div class="cd">
+        <div class="mph mph2" style="margin-bottom:10px;"><div><div class="mph-lbl">&#128665; Input Trolley &mdash; CND-2</div></div></div>
+        <div class="fr">
+          <div class="fg"><label>Tanggal</label><input type="date" id="g2d"></div>
+          <div class="fg"><label>Shift</label><select id="g2sh"><option>NSP</option><option>NSM</option></select></div>
+          <div class="fg"><label>Trolley NSP (unit)</label><input type="number" id="g2tn" min="0" placeholder="0" oninput="gtPv(2)"></div>
+          <div class="fg"><label>Trolley NSM (unit)</label><input type="number" id="g2tm" min="0" placeholder="0" oninput="gtPv(2)"></div>
+          <div class="fg"><label>Operator</label><input type="text" id="g2op"></div>
+        </div>
+        <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="g2no" style="min-height:44px;"></textarea></div></div>
+        <div id="gpv2" class="gtprev" style="display:none;"></div>
+        <button class="btn btn-p" onclick="saveGT(2,event)" style="width:100%;justify-content:center;margin-top:4px;">&#128190; Simpan CND-2</button>
+      </div>
+<div class="cd"><div class="st" style="color:var(--c2);">&#128200; Trend Gentani CND-2</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="gcp2" onchange="drawGC(2)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-gt-f2"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div></div>
+</div>
+</div>
+  <div class="cd" style="margin-top:12px;">
+    <div class="st">&#128203; History Trolley &amp; Gentani</div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbl">Mesin</span><select class="fbs" id="gtfmc" onchange="rGTH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
+    </div>
+    <div class="tw"><table><thead><tr><th>Tgl</th><th>Mesin</th><th>Shift</th><th>NSP</th><th>NSM</th><th>Total Kg</th><th>SS+WC</th><th>Gentani</th><th>Status</th><th>Op</th></tr></thead><tbody id="gt-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ═══════════════ SETTING ═══════════════ -->
+<div id="p-set" class="pg">
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#9889; Range Ampere</div>
+    <div class="sr"><div class="sl">Batas Bawah (A)</div><input class="si" type="number" id="s-alo" step="0.1"></div>
+    <div class="sr"><div class="sl">Batas Atas (A)</div><input class="si" type="number" id="s-ahi" step="0.1"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128665; Kapasitas Trolley</div>
+    <div class="sr"><div class="sl">Kapasitas per Trolley (Kg)</div><input class="si" type="number" id="s-trcap" value="800"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128202; Target Gentani (Kg/Kg)</div>
+    <div class="sr"><div class="sl">Target Bawah</div><input class="si" type="number" step="0.0001" id="s-gtlo"></div>
+    <div class="sr"><div class="sl">Target Atas</div><input class="si" type="number" step="0.0001" id="s-gthi"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128297; Lifetime Default Sparepart (Ton material)</div>
+    <div id="lt-set"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveLt()">&#128190; Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128465; Range Limbah</div>
+    <div class="sr"><div class="sl">Pasir Bawah (Trolley)</div><input class="si" type="number" id="s-plo" step="0.5"></div>
+    <div class="sr"><div class="sl">Pasir Atas (Trolley)</div><input class="si" type="number" id="s-phi" step="0.5"></div>
+    <div class="sr"><div class="sl">Debu Bawah (Trolley)</div><input class="si" type="number" id="s-dlo" step="0.5"></div>
+    <div class="sr"><div class="sl">Debu Atas (Trolley)</div><input class="si" type="number" id="s-dhi" step="0.5"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
+  </div>
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128241; WhatsApp Tujuan</div>
+    <div class="sr"><div class="sl">No. WA (628xxx)</div><input class="si" type="tel" id="s-wa" placeholder="628xxxxxxxxxx" style="width:180px;text-align:left;font-family:inherit;"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveWA()">&#128190; Simpan</button>
+  </div>
+  <div class="cd"><div class="st">&#128451; Data &amp; Sync</div>
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Setup Sheets hanya perlu dijalankan <strong>sekali</strong> setelah deploy Apps Script.</div>
+    <div class="fg-r" style="flex-wrap:wrap;gap:8px;">
+      <button class="btn btn-p btn-s" onclick="setupSheets()">&#9881; Setup Sheets</button>
+      <button class="btn btn-g btn-s" onclick="syncFromSheets()">&#128260; Sync</button>
+      <button class="btn btn-g btn-s" onclick="expD()">&#128228; Export JSON</button>
+      <button class="btn btn-d btn-s" onclick="if(confirm('Reset semua data lokal?')){localStorage.clear();location.reload();}">&#128465; Reset</button>
+    </div>
+    <div style="margin-top:10px;font-size:.72rem;">Status GAS: <span id="gas-status" style="font-weight:700;"></span></div>
+  </div>
+</div>
+
+</div><!-- /ct -->
+
+<!-- MODAL IMPELLER -->
+<div class="mv" id="m-imp">
+  <div class="mw">
+    <div class="mh"><h3 id="mi-t">Impeller</h3><button class="mx" onclick="cM('m-imp')">&#215;</button></div>
+    <div class="mb">
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="btn btn-k" style="flex:1;" onclick="setImpM(true)">&#9654; ON</button>
+        <button class="btn btn-g" style="flex:1;" onclick="setImpM(false)">&#9632; OFF</button>
+      </div>
+      <label>Ampere (A)</label>
+      <input type="number" id="mia" step="0.1" style="margin-bottom:4px;">
+      <div id="miaf" style="font-size:.78rem;margin:-4px 0 10px;min-height:18px;font-weight:600;"></div>
+      <label>Catatan / Keluhan</label>
+      <textarea id="min" style="margin-bottom:12px;"></textarea>
+      <div id="milt" style="margin-bottom:12px;"></div>
+      <div class="ma">
+        <button class="btn btn-p" style="flex:1;" onclick="saveMI(event)">&#128190; Simpan</button>
+        <button class="btn btn-w btn-s" onclick="confImp()">&#10004; Konfirmasi OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+
+const K='cnd9_',M_=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'],PWD='cnd2026';
+
+// ── GOOGLE SHEETS CONFIG ────────────────────────────────────
+const GAS_URL = '';  // ← paste URL Apps Script Web App di sini
+const ONLINE  = GAS_URL.length > 0;
+
+// ── API LAYER ───────────────────────────────────────────────
+async function api(action, data={}) {
+  if (!ONLINE) return { ok: true, offline: true };
+  const params = new URLSearchParams();
+  params.set('action', action); params.set('pwd', PWD);
+  Object.entries(data).forEach(([k,v]) => params.set(k, typeof v === 'object' ? JSON.stringify(v) : String(v)));
+  try {
+    const ctrl = new AbortController();
+    const tmo  = setTimeout(() => ctrl.abort(), 15000);
+    const res  = await fetch(GAS_URL + '?' + params.toString(), {method:'GET',redirect:'follow',signal:ctrl.signal});
+    clearTimeout(tmo);
+    return JSON.parse(await res.text());
+  } catch(e) {
+    toast('⚠ Gagal sync ke Sheets', 'warn');
+    return { ok: false, offline: true };
+  }
+}
+
+// ── SETUP (panggil sekali setelah deploy) ───────────────────
+async function setupSheets() {
+  if (!ONLINE) { toast('GAS_URL belum diisi', 'warn'); return; }
+  toast('Menyiapkan sheets...', 'ok');
+  const r = await api('setup');
+  toast(r.ok ? '✅ Setup berhasil' : '❌ ' + r.error, r.ok ? 'ok' : 'warn', 5000);
+}
+
+// ── SYNC: ambil semua data dari Sheets ─────────────────────
+async function syncFromSheets() {
+  if (!ONLINE) { setSyncLbl('⚡ Lokal'); return; }
+  setSyncLbl('⟳ Sync...');
+  const r = await api('getAll');
+  if (!r.ok) { setSyncLbl('⚠ Offline'); return; }
+
+  if (Array.isArray(r.ampere) && r.ampere.length) {
+    aLog = r.ampere.map(x => ({mc:+x.mesin,dt:x.datetime,sh:x.shift,v:+x.ampere,status:x.status,op:x.operator,n:x.catatan}));
+    sv('aLog', aLog);
+  }
+  if (Array.isArray(r.sparepart) && r.sparepart.length) {
+    spL = r.sparepart.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),nm:x.nama_part,kg:+x.kg_pakai,q:+x.qty,kn:x.kondisi,j:x.jenis,op:x.operator,no:x.catatan}));
+    sv('spL', spL);
+  }
+  if (Array.isArray(r.preventive) && r.preventive.length) {
+    pvL = r.preventive.map(x => {let items={};try{items=JSON.parse(x.items_json||'{}');}catch(e){}return{mc:+x.mesin,w:x.minggu,m:x.bulan,date:String(x.tanggal||'').slice(0,10),pic:x.pic,items,n:x.catatan,okCnt:+x.ok_count,ngCnt:+x.ng_count};});
+    sv('pvL', pvL);
+  }
+  if (Array.isArray(r.limbah) && r.limbah.length) {
+    lbL = r.limbah.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,vp:+x.pasir_trolley,vd:+x.debu_trolley,lo:x.lokasi,op:x.operator}));
+    sv('lbL', lbL);
+  }
+  if (Array.isArray(r.steelshot) && r.steelshot.length) {
+    ssL = r.steelshot.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,s5:+x.ss550_kg,wc:+x.wirecut_kg,lb:+x.ssbekas_kg,op:x.operator,n:x.keterangan}));
+    sv('ssL', ssL);
+  }
+  if (Array.isArray(r.trolley) && r.trolley.length) {
+    trL = r.trolley.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,tn:+x.trolley_nsp,tm:+x.trolley_nsm,op:x.operator,n:x.keterangan}));
+    sv('trL', trL);
+  }
+  if (Array.isArray(r.imp_state) && r.imp_state.length) {
+    r.imp_state.forEach(x => {
+      const mc=+x.mesin; if(mc!==1&&mc!==2) return;
+      iSt[mc]={on:x.status_on==='TRUE'||x.status_on===true,a:x.ampere!==''?+x.ampere:null,dt:x.last_update||null,n:x.catatan||'',cf:x.confirmed==='TRUE'||x.confirmed===true};
+    });
+    sv('iSt', iSt);
+  }
+  if (r.config && typeof r.config === 'object') {
+    const c=r.config;
+    ['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi'].forEach(k=>{if(c[k]!==undefined)cfg[k]=+c[k];});
+    const ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};
+    Object.entries(ltKeys).forEach(([ck,nm])=>{if(c[ck])ltC[nm]=+c[ck];});
+    sv('cfg',cfg); sv('ltC',ltC);
+  }
+  setSyncLbl('✓ Sync');
+  const now=new Date(); setSyncLbl('✓ '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0'));
+  rDash(); rSet();
+}
+
+function setSyncLbl(txt) { const el=document.getElementById('sync-lbl'); if(el)el.textContent=txt; }
+
+function startAutoSync() {
+  if (!ONLINE) { setSyncLbl('⚡ Lokal'); return; }
+  syncFromSheets();
+  setInterval(syncFromSheets, 5 * 60 * 1000);
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden && ONLINE) syncFromSheets(); });
+
+const gl=(k,d)=>{try{const v=localStorage.getItem(K+k);return v?JSON.parse(v):d;}catch(e){return d;}};
+const sv=(k,v)=>{try{localStorage.setItem(K+k,JSON.stringify(v));}catch(e){}};
+
+let cfg=gl('cfg',{aLo:37.5,aHi:42.5,pLo:2,pHi:4,dLo:2,dHi:4,gtLo:0,gtHi:0,trCap:800});
+let ltC=gl('ltC',{'Impeller Blade':120,'Control Cage':180,'Distributor':240,'End Liner Atas':200,'End Liner Bawah':200,'Ceiling Liner':200,'Front Cover':300,'V-Belt':120,'Motor':500});
+let iSt=gl('iSt',{1:{on:true,a:null,dt:null,n:'',cf:false},2:{on:true,a:null,dt:null,n:'',cf:false}});
+let aLog=gl('aLog',[]),spL=gl('spL',[]),pvL=gl('pvL',[]),lbL=gl('lbL',[]),ssL=gl('ssL',[]),trL=gl('trL',[]);
+let _miMc=1,_pvS={1:{},2:{}};
+
+const PVI=[
+  {sec:'Impeller Unit',items:[{id:'ib',l:'Impeller Blade',d:'Keausan, retak, deformasi'},{id:'cc',l:'Control Cage',d:'Keausan, clearance'},{id:'di',l:'Distributor',d:'Keausan, kebocoran'},{id:'ela',l:'End Liner Atas',d:'Ketebalan, keausan'},{id:'elb',l:'End Liner Bawah',d:'Ketebalan, keausan'},{id:'cl',l:'Ceiling Liner',d:'Ketebalan, keausan'},{id:'fc',l:'Front Cover',d:'Keausan, kebocoran debu'},{id:'vb',l:'V-Belt',d:'Ketegangan, keausan, slip'},{id:'mo',l:'Motor',d:'Suara, panas, ampere'}]},
+  {sec:'Conveyor & Trolley',items:[{id:'ch',l:'Rantai Conveyor',d:'Keausan, lubrication'},{id:'gr',l:'Guide Rail',d:'Kerataan, deformasi'},{id:'dm',l:'Drive Motor',d:'Suara, panas, ampere'},{id:'tb',l:'Body Trolley',d:'Retak, deformasi, kebersihan'},{id:'tp',l:'Pin Trolley',d:'Keausan, kelonggaran'}]},
+  {sec:'Separator & Elevator',items:[{id:'sb',l:'Separator Blade',d:'Keausan, clearance'},{id:'sc',l:'Screen/Mesh',d:'Kebersihan, clogging'},{id:'eb',l:'Elevator Belt',d:'Kondisi, ketegangan, slip'},{id:'eu',l:'Elevator Bucket',d:'Keausan, kebocoran'}]},
+  {sec:'Dust Collector',items:[{id:'df',l:'Filter DC',d:'Kondisi, differential pressure'},{id:'dfa',l:'Fan DC',d:'Suara, ampere, vibrasi'},{id:'dh',l:'Hopper / Drain',d:'Penumpukan, buang rutin'}]},
+  {sec:'General',items:[{id:'gl',l:'Lubrication bearing',d:'Greasing sesuai jadwal'},{id:'gc',l:'Kebersihan area',d:'Tidak ada material tercecer'},{id:'gg',l:'Safety guard',d:'Semua guard & cover terpasang'},{id:'gb',l:'Baut & fastener',d:'Cek baut kritis, tidak longgar'}]},
+];
+
+// UTILS
+const dStr=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const today=()=>dStr(new Date());
+const pD=s=>{if(!s)return null;if(s instanceof Date)return isNaN(s)?null:s;const str=s.toString().trim();if(/^\d{4}-\d{2}-\d{2}/.test(str)){const[y,m,d]=str.slice(0,10).split('-');return new Date(+y,+m-1,+d);}const d=new Date(str);return isNaN(d)?null:d;};
+const pDT=s=>{if(!s)return null;const d=new Date(s.toString().trim());return isNaN(d)?null:d;};
+const fD=s=>{const d=pD(s);if(!d)return s||'-';return`${d.getDate()}-${M_[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`;};
+const fDT=s=>{if(!s)return'-';const d=pDT(s)||pD(s);if(!d||isNaN(d))return s;return`${d.getDate()}-${M_[d.getMonth()]}-${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
+const gSh=()=>{const n=new Date(),t=n.getHours()*60+n.getMinutes();return(t>=420&&t<1170)?'NSP':'NSM';};
+const gSD=sh=>{const now=new Date(),t=now.getHours()*60+now.getMinutes();if(sh==='NSM'&&t<420){const y=new Date(now);y.setDate(y.getDate()-1);return dStr(y);}return dStr(now);};
+const nowL=()=>{const d=new Date(),o=d.getTimezoneOffset(),l=new Date(d.getTime()-o*60000);return l.toISOString().slice(0,16);};
+const curMo=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
+const dtR=p=>{const n=new Date(),y=n.getFullYear(),m=n.getMonth();if(p==='cur')return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};if(p==='prev')return{f:dStr(new Date(y,m-1,1)),t:dStr(new Date(y,m,0))};if(p==='3m')return{f:dStr(new Date(y,m-2,1)),t:dStr(new Date(y,m+1,0))};return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};};
+const allD=(f,t)=>{const[fy,fm,fd]=f.split('-').map(Number);const[ty,tm,td]=t.split('-').map(Number);let c=new Date(fy,fm-1,fd);const e=new Date(ty,tm-1,td);const days=[];while(c<=e){days.push(dStr(c));c.setDate(c.getDate()+1);}return days;};
+const toast=(msg,type='ok',dur=3000)=>{let t=document.getElementById('toast');t.textContent=msg;t.style.cssText=`position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;display:block;`+(type==='ok'?'background:var(--ok);color:#fff;':type==='warn'?'background:var(--warn);color:#fff;':'background:var(--danger);color:#fff;');t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',dur);};
+const showSp=(m,btn)=>{document.getElementById('sp-ov').classList.add('on');document.getElementById('sp-msg').textContent=m;if(btn)btn.classList.add('btn-sav');};
+const hideSp=btn=>{document.getElementById('sp-ov').classList.remove('on');if(btn)btn.classList.remove('btn-sav');};
+const cM=id=>document.getElementById(id).classList.remove('on');
+const sendWA=msg=>{const wa=localStorage.getItem(K+'wa')||'';window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`,'_blank');};
+const ampS=v=>{if(v==null)return'na';if(v<cfg.aLo)return'lo';if(v>cfg.aHi)return'hi';return'ok';};
+const ssKg=(mc,dt)=>ssL.filter(r=>r.mc==mc&&r.date===dt).reduce((s,r)=>(+r.s5||0)+(+r.wc||0)+s,0);
+const trTot=(mc,dt)=>trL.filter(r=>r.mc==mc&&r.date===dt).reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+const totTon=(mc,from=null)=>trL.filter(r=>r.mc==mc&&(!from||r.date>=from)).reduce((s,r)=>s+((+r.tn||0)+(+r.tm||0))*cfg.trCap/1000,0);
+const tonSP=(mc,nm)=>{const rs=spL.filter(s=>s.mc==mc&&s.nm===nm).sort((a,b)=>b.date.localeCompare(a.date));if(!rs.length)return null;return totTon(mc,rs[0].date);};
+const modT=(mc,nm)=>{const js=spL.filter(s=>s.mc==mc&&s.nm===nm).map(s=>+s.kg/1000).filter(j=>j>0);if(!js.length)return ltC[nm]||120;const r=js.map(j=>Math.round(j/10)*10);const f={};r.forEach(j=>f[j]=(f[j]||0)+1);return+Object.entries(f).sort((a,b)=>b[1]-a[1])[0][0];};
+const needA=mc=>{const s=iSt[mc];if(!s||s.cf)return false;for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm);if(t==null)continue;if(t/modT(mc,nm)>=.8)return true;}if(s.n&&s.n.trim())return true;if(s.on&&s.a!=null){const st=ampS(s.a);if(st==='hi'||st==='lo')return true;}return false;};
+
+// CLOCK + THEME
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(tick,1000);tick();
+function tgTh(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';localStorage.setItem(K+'theme',t);}
+(()=>{const t=localStorage.getItem(K+'theme')||'light';document.documentElement.setAttribute('data-theme',t);document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';})();
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
+
+// TAB NAV
+function goTab(t){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+t).classList.add('on');
+  document.querySelectorAll('.tb').forEach(b=>{if(b.dataset.t===t)b.classList.add('on');});
+  ({dash:rDash,prev:rPrev,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,gt:rGt,set:rSet})[t]?.();
+}
+document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.t)));
+
+// CHARTS
+let _ch={};
+const cv=()=>{const dk=document.documentElement.getAttribute('data-theme')==='dark';return{tx:dk?'rgba(160,182,205,.8)':'rgba(100,120,140,.8)',gr:dk?'rgba(30,44,68,.6)':'rgba(216,223,233,.5)'}};
+function rC(id,type,lbl,ds,opts={}){
+  if(_ch[id])_ch[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  const c=cv();
+  _ch[id]=new Chart(ctx,{type,data:{labels:lbl,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:ds.length>1,labels:{color:c.tx,font:{size:10},boxWidth:10}},...(opts.plugins||{})},scales:{x:{ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},...(opts.scales||{})},...opts}});
+}
+
+// DASHBOARD
+function rDash(){rIG(1);rIG(2);rTT(1);rTT(2);rAl();drawDash();}
+
+function rIG(mc){
+  const s=iSt[mc]||{on:true,a:null,dt:null,n:'',cf:false};
+  const aS=s.on?ampS(s.a):null;
+  const cls='imp '+(s.on?(aS==='ok'?'imp-ok':aS==='hi'?'imp-hi':aS==='lo'?'imp-lo':'imp-ok'):'imp-of');
+  const attn=needA(mc);
+  const aLbl=s.a!=null?s.a.toFixed(1)+'A':'—';
+  const sLbl=s.on?(aS==='ok'?'NORMAL':aS==='hi'?'OVER':aS==='lo'?'UNDER':'ON'):'OFF';
+  document.getElementById('ig'+mc).innerHTML=`
+    <div class="${cls}" onclick="openImpM(${mc})">
+      ${attn?'<div class="imp-attn">!</div>':''}
+      <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Impeller Unit</div>
+      <div class="imp-a">${aLbl}</div>
+      <div class="imp-s">${sLbl}</div>
+      ${s.n?`<div style="font-size:.65rem;color:var(--warn);margin-top:5px;">⚠ ${s.n.slice(0,45)}</div>`:''}
+      ${s.dt?`<div style="font-size:.6rem;color:var(--muted);margin-top:4px;">⏱ ${fDT(s.dt)}</div>`:''}
+    </div>`;
+  document.getElementById('is'+mc).innerHTML=`
+    <div class="cp ${s.on?'ok':''}"><span class="v">${s.on?'ON':'OFF'}</span> Status</div>
+    <div class="cp ${aS==='ok'?'ok':aS==='hi'?'dg':aS==='lo'?'wn':'mu'}"><span class="v">${s.a!=null?s.a.toFixed(1):'—'}A</span> Ampere</div>
+    <div class="cp mu"><span class="v">${cfg.aLo}–${cfg.aHi}</span> Range</div>`;
+}
+
+function rTT(mc){
+  const td=today();
+  const n=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+  const m=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+  const tot=n+m,kg=tot*cfg.trCap;
+  const q=(id,v)=>{document.getElementById(id).textContent=v;};
+  q('t'+mc+'n',n||'—');q('t'+mc+'m',m||'—');
+  q('t'+mc+'nk',n?(n*cfg.trCap).toLocaleString('id-ID')+' Kg':'— Kg');
+  q('t'+mc+'mk',m?(m*cfg.trCap).toLocaleString('id-ID')+' Kg':'— Kg');
+  q('t'+mc+'tot',tot||'—');q('t'+mc+'kg',tot?kg.toLocaleString('id-ID')+' Kg':'—');
+}
+
+function rAl(){
+  const al=[];
+  [1,2].forEach(mc=>{
+    const s=iSt[mc];if(!s)return;
+    const aS=s.on?ampS(s.a):null;
+    if(aS==='hi')al.push({c:'al-d',t:`⚠ CND-${mc}: Ampere OVER (${s.a?.toFixed(1)}A > ${cfg.aHi}A)`});
+    if(aS==='lo')al.push({c:'al-w',t:`⚠ CND-${mc}: Ampere UNDER (${s.a?.toFixed(1)}A < ${cfg.aLo}A)`});
+    for(const nm of Object.keys(ltC)){
+      const t=tonSP(mc,nm);if(t==null)continue;
+      const md=modT(mc,nm),p=t/md;
+      if(p>=1)al.push({c:'al-d',t:`🔴 CND-${mc} ${nm}: Lifetime HABIS (${t.toFixed(0)}/${md} Ton)`});
+      else if(p>=.8)al.push({c:'al-w',t:`🟡 CND-${mc} ${nm}: Segera ganti (${Math.round(p*100)}%)`});
+    }
+  });
+  document.getElementById('al-box').innerHTML=al.length?al.map(a=>`<div class="al-i ${a.c}">${a.t}</div>`).join(''):'<div class="al-i al-o">✅ Semua sistem CND-1 & CND-2 normal</div>';
+}
+
+function drawDash(){
+  const{f,t}=dtR('cur'),days=allD(f,t),lbl=days.map(d=>d.slice(5)),c=cv();
+  const bS={scales:{x:{stacked:true,ticks:{color:c.tx,maxTicksLimit:8},grid:{display:false}},y:{stacked:true,grid:{color:c.gr},ticks:{color:c.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}};
+  const lS={scales:{x:{ticks:{color:c.tx,maxTicksLimit:8},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}};
+
+  [1,2].forEach(mc=>{
+    const col=mc===1?'rgba(15,108,189,':'rgba(124,58,237,';
+    const col2=mc===1?'rgba(8,145,178,':'rgba(167,139,250,';
+
+    // Gentani (Harian bar + Akumulasi line)
+    let aK=0,aS=0;const gD=[],gA=[];
+    days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/tK).toFixed(4):null);gA.push(aK>0&&aS>0?+(aS/aK).toFixed(4):null);});
+    rC('c-gt'+mc,'bar',lbl,[
+      {label:'Harian',data:gD,backgroundColor:col2+'.55)',type:'bar',yAxisID:'y'},
+      {label:'Akum',data:gA,borderColor:col+'.85)',borderWidth:2,type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2,yAxisID:'y'},
+    ],{scales:{x:{ticks:{color:c.tx,maxTicksLimit:8},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}});
+
+    // Steelshot (SS550 + Wire Cut stacked)
+    rC('c-ss'+mc,'bar',lbl,[
+      {label:'SS 550',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.s5||0),0)||null),backgroundColor:'rgba(124,58,237,.65)',stack:'s'},
+      {label:'Wire Cut',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.wc||0),0)||null),backgroundColor:'rgba(5,150,105,.65)',stack:'s'},
+    ],bS);
+
+    // Trolley trend NSP vs NSM
+    rC('c-tr'+mc,'bar',lbl,[
+      {label:'NSP',data:days.map(d=>trL.filter(r=>r.mc==mc&&r.date===d&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0)||null),backgroundColor:'rgba(8,145,178,.7)',stack:'s'},
+      {label:'NSM',data:days.map(d=>trL.filter(r=>r.mc==mc&&r.date===d&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0)||null),backgroundColor:col+'.6)',stack:'s'},
+    ],bS);
+
+    // Limbah
+    rC('c-lb'+mc+'d','bar',lbl,[
+      {label:'Pasir',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vp||0),0)||null),backgroundColor:'rgba(217,119,6,.7)',stack:'s'},
+      {label:'Debu',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vd||0),0)||null),backgroundColor:'rgba(8,145,178,.65)',stack:'s'},
+    ],bS);
+  });
+}
+
+function setIO(mc,on){iSt[mc].on=on;if(!on)iSt[mc].a=null;sv('iSt',iSt);rIG(mc);toast(`CND-${mc} ${on?'ON':'OFF'}`);}
+
+function waResume(){
+  const td=today(),now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  let msg=`📊 *RESUME TPM CND*\n📅 ${fD(td)} · Shift ${gSh()} · ${jam}\n`;
+  [1,2].forEach(mc=>{
+    const s=iSt[mc]||{};const aS=s.on?ampS(s.a):null;
+    const n=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+    const m=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+    const tot=n+m,tK=tot*cfg.trCap,ss=ssKg(mc,td);
+    const gt=tK>0&&ss>0?(ss/tK).toFixed(4):'—';
+    const ic=aS==='ok'?'✅':aS==='hi'?'🔴':aS==='lo'?'🟡':'➖';
+    msg+=`\n━━ *CND-${mc}* ━━\n⚙ Impeller: ${s.on?'ON':'OFF'} | ${s.a!=null?s.a.toFixed(1)+'A':'—'} ${ic}\n`;
+    msg+=`🚛 Trolley: NSP ${n} + NSM ${m} = *${tot}* (${tK.toLocaleString('id-ID')} Kg)\n`;
+    msg+=`🔮 SS+WC: *${ss.toLocaleString('id-ID')} Kg*\n📊 Gentani: *${gt}*\n`;
+  });
+  msg+=`━━━━━━━━━━━━━━━━━━━\n_${fD(td)} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+
+// IMPELLER MODAL
+function openImpM(mc){
+  _miMc=mc;
+  const s=iSt[mc]||{on:true,a:null,dt:null,n:'',cf:false};
+  const col=mc===1?'var(--c1)':'var(--c2)';
+  document.getElementById('mi-t').innerHTML=`<span style="color:${col};">⚙ CND-${mc}</span> — Impeller`;
+  document.getElementById('mia').value=s.a!=null?s.a:'';
+  document.getElementById('min').value=s.n||'';
+  miAP();
+  let h='';
+  for(const nm of Object.keys(ltC)){
+    const t=tonSP(mc,nm),md=modT(mc,nm),p=t!=null?Math.min(t/md,1):0;
+    const col2=p>=1?'var(--danger)':p>=.8?'var(--warn)':'var(--ok)';
+    h+=`<div style="margin-bottom:7px;font-size:.75rem;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span>${nm}</span><span style="color:${col2};font-weight:700;">${t!=null?t.toFixed(1):'—'} / ${md} Ton</span></div><div class="ltw"><div class="lt" style="width:${Math.round(p*100)}%;background:${col2};"></div></div></div>`;
+  }
+  document.getElementById('milt').innerHTML=h;
+  document.getElementById('m-imp').classList.add('on');
+}
+function miAP(){const v=parseFloat(document.getElementById('mia').value);const el=document.getElementById('miaf');if(isNaN(v)){el.textContent='';return;}const s=ampS(v);el.textContent=s==='ok'?'✅ Normal':s==='hi'?`🔴 OVER > ${cfg.aHi}A`:`🟡 UNDER < ${cfg.aLo}A`;el.style.color=s==='ok'?'var(--ok)':s==='hi'?'var(--danger)':'var(--warn)';}
+document.getElementById('mia').addEventListener('input',miAP);
+function setImpM(on){iSt[_miMc].on=on;if(!on)iSt[_miMc].a=null;sv('iSt',iSt);rIG(_miMc);toast(`CND-${_miMc} ${on?'ON':'OFF'}`);}
+function confImp(){iSt[_miMc].cf=true;iSt[_miMc].n='';sv('iSt',iSt);cM('m-imp');rIG(_miMc);rAl();toast(`CND-${_miMc} OK`);}
+function saveMI(e){
+  const btn=e?.target;showSp('Menyimpan...',btn);
+  setTimeout(async()=>{
+    const a=parseFloat(document.getElementById('mia').value),n=document.getElementById('min').value.trim();
+    const ts=new Date().toISOString(),sh=gSh();
+    if(!isNaN(a)){iSt[_miMc].a=a;iSt[_miMc].dt=ts;const entry={mc:_miMc,dt:ts,sh,v:a,op:'',status:ampS(a),n};aLog.push(entry);sv('aLog',aLog);await api('addAmpere',{mc:_miMc,dt:ts,sh,v:a,op:'',status:ampS(a),n});}
+    iSt[_miMc].n=n;iSt[_miMc].cf=false;sv('iSt',iSt);
+    await api('updateImpState',{mc:_miMc,on:iSt[_miMc].on,a:iSt[_miMc].a,dt:iSt[_miMc].dt,n,cf:false});
+    hideSp(btn);cM('m-imp');rIG(_miMc);rAl();toast('Tersimpan');
+  },400);
+}
+
+// PREVENTIVE
+function rPrev(){
+  const sh=gSh(),td=today(),mo=curMo();
+  [1,2].forEach(mc=>{
+    const d=document.getElementById('p'+mc+'d');if(!d.value)d.value=gSD(sh);
+    const m=document.getElementById('p'+mc+'m');if(!m.value)m.value=mo;
+    renderPck(mc);
+  });
+  rPvH();
+}
+function renderPck(mc){
+  let h='';
+  PVI.forEach(sec=>{
+    h+=`<div class="pv-sec"><div class="pv-sh">${sec.sec}</div>`;
+    sec.items.forEach(it=>{
+      h+=`<div class="pv-i" id="pvi${mc}${it.id}"><div class="pv-l"><div style="font-weight:600;">${it.l}</div><div class="pv-d">${it.d}</div></div><div class="pv-bb"><button class="pv-b" onclick="sPVI(${mc},'${it.id}','ok',this)">✓ OK</button><button class="pv-b" onclick="sPVI(${mc},'${it.id}','ng',this)">✗ NG</button><button class="pv-b" onclick="sPVI(${mc},'${it.id}',null,this)">○</button></div></div>`;
+    });
+    h+='</div>';
+  });
+  document.getElementById('pck'+mc).innerHTML=h;_pvS[mc]={};
+}
+function sPVI(mc,id,v,btn){
+  _pvS[mc][id]=v;
+  const r=document.getElementById('pvi'+mc+id);
+  r.className='pv-i'+(v==='ok'?' pok':v==='ng'?' png':'');
+  r.querySelectorAll('.pv-b').forEach(b=>b.className='pv-b');
+  if(v&&btn)btn.className='pv-b '+(v==='ok'?'ok':'ng');
+}
+function savePv(mc,e){
+  const btn=e?.target;
+  const w=document.getElementById('p'+mc+'w').value,m=document.getElementById('p'+mc+'m').value,d=document.getElementById('p'+mc+'d').value,pic=document.getElementById('p'+mc+'p').value.trim(),n=document.getElementById('p'+mc+'n').value.trim();
+  if(!d){toast('Tanggal wajib','warn');return;}if(!pic){toast('PIC wajib','warn');return;}
+  let ok=0,ng=0;const items={};
+  PVI.forEach(sec=>sec.items.forEach(it=>{const v=_pvS[mc][it.id]||null;items[it.id]=v;if(v==='ok')ok++;if(v==='ng')ng++;}));
+  showSp('Menyimpan...',btn);
+  setTimeout(async()=>{
+    pvL.push({mc,w,m,date:d,pic,items,n,okCnt:ok,ngCnt:ng});sv('pvL',pvL);
+    await api('addPreventive',{mc,w,m,date:d,pic,okCnt:ok,ngCnt:ng,items_json:JSON.stringify(items),n});
+    hideSp(btn);toast(`✅ Preventive CND-${mc} tersimpan`);renderPck(mc);document.getElementById('p'+mc+'p').value='';document.getElementById('p'+mc+'n').value='';rPvH();
+  },400);
+}
+function rPvH(){
+  const mcf=document.getElementById('pvfmc').value,pdf=document.getElementById('pvfpd').value;
+  let rows=[...pvL].sort((a,b)=>b.date.localeCompare(a.date));
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
+  if(pdf==='30d'){const c=new Date();c.setDate(c.getDate()-30);rows=rows.filter(r=>pD(r.date)>=c);}
+  if(pdf==='90d'){const c=new Date();c.setDate(c.getDate()-90);rows=rows.filter(r=>pD(r.date)>=c);}
+  document.getElementById('pv-tb').innerHTML=rows.length?rows.map(r=>`<tr><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>Mgg ${r.w} · ${r.m||'—'}</td><td>${fD(r.date)}</td><td>${r.pic}</td><td style="color:var(--ok);font-weight:700;">${r.okCnt||0}</td><td style="color:${r.ngCnt?'var(--danger)':'var(--muted)'};font-weight:700;">${r.ngCnt||0}</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.n||'—'}</td></tr>`).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+}
+function waPv(mc){
+  const w=document.getElementById('p'+mc+'w').value,d=document.getElementById('p'+mc+'d').value,pic=document.getElementById('p'+mc+'p').value||'—';
+  let ok=0,ng=0,ngL=[];
+  PVI.forEach(sec=>sec.items.forEach(it=>{const v=_pvS[mc][it.id];if(v==='ok')ok++;if(v==='ng'){ng++;ngL.push(it.l);}}));
+  const tot=PVI.reduce((s,sec)=>s+sec.items.length,0);
+  let msg=`🔧 *PREVENTIVE CND-${mc}*\n📅 Mgg ${w} | ${fD(d)} | PIC: ${pic}\n━━━━━━━━━━━━━━━━━━━\n✅ OK: *${ok}/${tot}*\n❌ NG: *${ng}*`;
+  if(ngL.length)msg+=`\n\n*Item NG:*\n${ngL.map(x=>`  • ${x}`).join('\n')}`;
+  const n=document.getElementById('p'+mc+'n').value.trim();if(n)msg+=`\n\n📝 ${n}`;
+  msg+=`\n━━━━━━━━━━━━━━━━━━━\n_${fD(d)} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+
+// SPAREPART
+function rSp(){if(!document.getElementById('spd').value)document.getElementById('spd').value=today();rLtAll();rSpH();}
+function onSpJ(){const j=document.getElementById('spj').value;document.getElementById('sp-pr').style.display=j==='assy'?'none':'block';document.getElementById('sp-ai').style.display=j==='assy'?'block':'none';}
+function rLtAll(){rLtMc(1);rLtMc(2);}
+function rLtMc(mc){
+  let h='';
+  for(const nm of Object.keys(ltC)){
+    const md=modT(mc,nm),t=tonSP(mc,nm),p=t!=null?Math.min(t/md,1):0;
+    const col=p>=1?'var(--danger)':p>=.8?'var(--warn)':'var(--ok)';
+    const rs=spL.filter(s=>s.mc==mc&&s.nm===nm).sort((a,b)=>b.date.localeCompare(a.date));
+    h+=`<div style="margin-bottom:9px;padding:9px 11px;background:var(--card2);border:1px solid var(--border);border-radius:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:.8rem;font-weight:700;">${nm}</span><span style="color:${col};font-weight:700;font-size:.78rem;">${t!=null?t.toFixed(1):'—'} / ${md} Ton (${Math.round(p*100)}%)</span></div><div class="ltw"><div class="lt" style="width:${Math.round(p*100)}%;background:${col};"></div></div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;">Terakhir: ${rs.length?fD(rs[0].date):'Belum ada'}</div></div>`;
+  }
+  document.getElementById('lt'+mc).innerHTML=h;
+}
+function saveSp(e){
+  const btn=e?.target,mc=+document.getElementById('smc').value,d=document.getElementById('spd').value,j=document.getElementById('spj').value,op=document.getElementById('spop').value.trim(),no=document.getElementById('spno').value.trim();
+  if(!d){toast('Tanggal wajib','warn');return;}
+  showSp('Menyimpan...',btn);
+  setTimeout(async()=>{
+    let rows=[];
+    if(j==='assy'){const kg=+document.getElementById('spaj').value||0;['Impeller Blade','Control Cage','Distributor','End Liner Atas','End Liner Bawah','Ceiling Liner','Front Cover','V-Belt'].forEach(nm=>{spL.push({mc,date:d,nm,kg,q:1,kn:'Assy',j:'assy',op,no});rows.push({mc,date:d,nm,kg,q:1,kn:'Assy',j:'assy',op,no});});}
+    else{const nm=document.getElementById('spnm').value,kg=+document.getElementById('spkg').value||0,q=+document.getElementById('spq').value||1,kn=document.getElementById('spk').value;const r={mc,date:d,nm,kg,q,kn,j:'part',op,no};spL.push(r);rows=[r];}
+    sv('spL',spL);
+    await api('addSparepart',{rows_json:JSON.stringify(rows)});
+    hideSp(btn);toast('✅ Sparepart tersimpan');rLtAll();rSpH();
+  },400);
+}
+function rSpH(){
+  const mcf=document.getElementById('spfmc').value,pdf=document.getElementById('spfpd').value;
+  let rows=[...spL].sort((a,b)=>b.date.localeCompare(a.date));
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
+  if(pdf==='30d'){const c=new Date();c.setDate(c.getDate()-30);rows=rows.filter(r=>pD(r.date)>=c);}
+  if(pdf==='90d'){const c=new Date();c.setDate(c.getDate()-90);rows=rows.filter(r=>pD(r.date)>=c);}
+  document.getElementById('sp-tb').innerHTML=rows.length?rows.map(r=>`<tr><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.nm}</td><td>${r.kg?(r.kg/1000).toFixed(1)+' Ton':'—'}</td><td>${r.q}</td><td>${r.kn||'—'}</td><td>${r.op||'—'}</td></tr>`).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+}
+
+// AMPERE
+function rAmp(){
+  const sh=gSh();
+  [1,2].forEach(mc=>{if(!document.getElementById('a'+mc+'dt').value)document.getElementById('a'+mc+'dt').value=nowL();document.getElementById('a'+mc+'sh').value=sh;});
+  document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=`${cfg.aLo}–${cfg.aHi}A`;
+  drawAC(1);drawAC(2);rAH();
+}
+function ampPv(mc){const v=parseFloat(document.getElementById('a'+mc+'a').value);const el=document.getElementById('a'+mc+'pv');if(isNaN(v)){el.textContent='';return;}const s=ampS(v);el.textContent=s==='ok'?`✅ Normal (${cfg.aLo}–${cfg.aHi}A)`:s==='hi'?`🔴 OVER > ${cfg.aHi}A`:`🟡 UNDER < ${cfg.aLo}A`;el.style.color=s==='ok'?'var(--ok)':s==='hi'?'var(--danger)':'var(--warn)';}
+function saveAmp(mc,e){
+  const btn=e?.target,dt=document.getElementById('a'+mc+'dt').value,sh=document.getElementById('a'+mc+'sh').value,v=parseFloat(document.getElementById('a'+mc+'a').value),op=document.getElementById('a'+mc+'op').value.trim(),n=document.getElementById('a'+mc+'no').value.trim();
+  if(!dt){toast('Waktu wajib','warn');return;}if(isNaN(v)){toast('Ampere wajib','warn');return;}
+  showSp('Menyimpan...',btn);
+  const status=ampS(v);
+  const entry={mc,dt:new Date(dt).toISOString(),sh,v,op,status,n};
+  aLog.push(entry);sv('aLog',aLog);
+  iSt[mc].a=v;iSt[mc].dt=new Date(dt).toISOString();sv('iSt',iSt);
+  Promise.all([
+    api('addAmpere',{mc,dt:entry.dt,sh,v,op,status,n}),
+    api('updateImpState',{mc,on:iSt[mc].on,a:v,dt:iSt[mc].dt,n:iSt[mc].n,cf:iSt[mc].cf})
+  ]).then(()=>{hideSp(btn);toast(`✅ Ampere CND-${mc} tersimpan`);document.getElementById('a'+mc+'a').value='';document.getElementById('a'+mc+'pv').textContent='';rIG(mc);rAH();});
+}
+function drawAC(mc){
+  const{f,t}=dtR(document.getElementById('acp'+mc).value),days=allD(f,t),c=cv();
+  const ds=days.map(d=>{const vs=aLog.filter(r=>r.mc==mc&&(r.dt||'').slice(0,10)===d);return vs.length?vs.reduce((s,r)=>s+r.v,0)/vs.length:null;});
+  rC('c-amp'+mc,'line',days.map(d=>d.slice(5)),[{label:'Ampere',data:ds,borderColor:mc===1?'rgba(15,108,189,.8)':'rgba(124,58,237,.8)',backgroundColor:mc===1?'rgba(15,108,189,.1)':'rgba(124,58,237,.1)',tension:.3,fill:true,spanGaps:true,pointRadius:3}],{plugins:{legend:{display:false}},scales:{x:{ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx}}}});
+}
+function rAH(){
+  const mcf=document.getElementById('afmc').value,shf=document.getElementById('afsh').value,stf=document.getElementById('afst').value;
+  let rows=[...aLog].sort((a,b)=>(b.dt||'').localeCompare(a.dt||'')).slice(0,120);
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);if(shf!=='all')rows=rows.filter(r=>r.sh===shf);if(stf!=='all')rows=rows.filter(r=>r.status===stf);
+  document.getElementById('amp-tb').innerHTML=rows.length?rows.map(r=>`<tr><td style="font-size:.7rem;">${fDT(r.dt)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td style="font-family:'Courier New',monospace;font-weight:700;">${r.v?.toFixed(1)||'—'}A</td><td><span class="bd ${r.status==='ok'?'bd-ok':r.status==='hi'?'bd-ng':'bd-wn'}">${r.status==='ok'?'NORMAL':r.status==='hi'?'OVER':'UNDER'}</span></td><td>${r.op||'—'}</td></tr>`).join(''):'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
+}
+
+// STEEL SHOT
+function rSs(){const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('s'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('s'+mc+'sh').value=sh;});drawSC(1);drawSC(2);rSSH();}
+function saveSS(mc,e){
+  const btn=e?.target,d=document.getElementById('s'+mc+'d').value,sh=document.getElementById('s'+mc+'sh').value,s5=+document.getElementById('s'+mc+'50').value||0,wc=+document.getElementById('s'+mc+'wc').value||0,lb=+document.getElementById('s'+mc+'lb').value||0,op=document.getElementById('s'+mc+'op').value.trim(),n=document.getElementById('s'+mc+'no').value.trim();
+  if(!d){toast('Tanggal wajib','warn');return;}
+  showSp('Menyimpan...',btn);
+  setTimeout(async()=>{ssL.push({mc,date:d,sh,s5,wc,lb,op,n});sv('ssL',ssL);await api('addSteelshot',{mc,date:d,sh,s5,wc,lb,op,n});hideSp(btn);toast(`✅ Steelshot CND-${mc} tersimpan`);document.getElementById('s'+mc+'50').value='';document.getElementById('s'+mc+'wc').value='';document.getElementById('s'+mc+'lb').value='';drawSC(mc);rSSH();},400);
+}
+function drawSC(mc){
+  const{f,t}=dtR(document.getElementById('scp'+mc).value),days=allD(f,t),c=cv();
+  rC('c-ss-f'+mc,'bar',days.map(d=>d.slice(5)),[
+    {label:'SS 550',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.s5||0),0)||null),backgroundColor:'rgba(124,58,237,.65)',stack:'s'},
+    {label:'Wire Cut',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.wc||0),0)||null),backgroundColor:'rgba(5,150,105,.65)',stack:'s'},
+    {label:'SS Bekas',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.lb||0),0)||null),backgroundColor:'rgba(180,83,9,.5)',stack:'b'},
+  ],{scales:{x:{stacked:true,ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{stacked:true,grid:{color:c.gr},ticks:{color:c.tx}}},plugins:{legend:{labels:{color:c.tx,font:{size:10},boxWidth:10}}}});
+}
+function rSSH(){
+  const mcf=document.getElementById('ssfmc').value,shf=document.getElementById('ssfsh').value;
+  let rows=[...ssL].sort((a,b)=>b.date.localeCompare(a.date));
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);if(shf!=='all')rows=rows.filter(r=>r.sh===shf);
+  document.getElementById('ss-tb').innerHTML=rows.length?rows.map(r=>`<tr><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td>${r.s5||0}</td><td>${r.wc||0}</td><td>${r.lb||0}</td><td style="font-weight:700;">${(+r.s5||0)+(+r.wc||0)+(+r.lb||0)}</td><td>${r.op||'—'}</td></tr>`).join(''):'<tr><td colspan="8" class="es">Belum ada data</td></tr>';
+}
+
+// LIMBAH
+function rLb(){const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('l'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('l'+mc+'sh').value=sh;});drawLC(1);drawLC(2);rLBH();}
+function saveLB(mc,e){
+  const btn=e?.target,d=document.getElementById('l'+mc+'d').value,sh=document.getElementById('l'+mc+'sh').value,vp=+document.getElementById('l'+mc+'vp').value||0,vd=+document.getElementById('l'+mc+'vd').value||0,lo=document.getElementById('l'+mc+'lo').value.trim(),op=document.getElementById('l'+mc+'op').value.trim();
+  if(!d){toast('Tanggal wajib','warn');return;}
+  showSp('Menyimpan...',btn);
+  setTimeout(async()=>{lbL.push({mc,date:d,sh,vp,vd,lo,op});sv('lbL',lbL);await api('addLimbah',{mc,date:d,sh,vp,vd,lo,op});hideSp(btn);toast(`✅ Limbah CND-${mc} tersimpan`);drawLC(mc);rLBH();},400);
+}
+function drawLC(mc){
+  const{f,t}=dtR(document.getElementById('lcp'+mc).value),days=allD(f,t),c=cv();
+  rC('c-lb'+mc,'bar',days.map(d=>d.slice(5)),[
+    {label:'Pasir',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vp||0),0)||null),backgroundColor:'rgba(217,119,6,.65)',stack:'s'},
+    {label:'Debu',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vd||0),0)||null),backgroundColor:'rgba(8,145,178,.65)',stack:'s'},
+  ],{scales:{x:{stacked:true,ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{stacked:true,grid:{color:c.gr},ticks:{color:c.tx}}},plugins:{legend:{labels:{color:c.tx,font:{size:10},boxWidth:10}}}});
+}
+function rLBH(){
+  const mcf=document.getElementById('lbfmc').value;
+  let rows=[...lbL].sort((a,b)=>b.date.localeCompare(a.date));
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
+  document.getElementById('lb-tb').innerHTML=rows.length?rows.map(r=>`<tr><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td>${r.vp||0}</td><td>${r.vd||0}</td><td>${r.lo||'—'}</td><td>${r.op||'—'}</td></tr>`).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+}
+
+// GENTANI
+function rGt(){
+  const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('g'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('g'+mc+'sh').value=sh;});
+  const el=document.getElementById('cap-lbl');if(el)el.textContent=cfg.trCap;
+  drawGC(1);drawGC(2);rGTH();
+}
+function gtPv(mc){
+  const d=document.getElementById('g'+mc+'d').value||today(),tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0;
+  const tot=tn+tm,tK=tot*cfg.trCap,ss=ssKg(mc,d),gt=tK>0&&ss>0?ss/tK:null;
+  const box=document.getElementById('gpv'+mc);
+  if(tot===0){box.style.display='none';return;}
+  const ic=gt==null?'':cfg.gtHi>0&&gt>cfg.gtHi?'🔴':cfg.gtLo>0&&gt<cfg.gtLo?'🟡':'🟢';
+  box.style.display='block';
+  box.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;"><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL TROLLEY</div><div style="font-size:1.3rem;font-weight:700;color:var(--accent);">${tot}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL KG</div><div style="font-size:1.3rem;font-weight:700;color:var(--info);">${tK.toLocaleString('id-ID')}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">GENTANI</div><div style="font-size:1.3rem;font-weight:700;color:var(--ok);">${gt!=null?gt.toFixed(4):'—'}</div></div></div><div style="font-size:.65rem;color:var(--muted);margin-top:5px;text-align:center;">${ic} SS+WC: ${ss.toLocaleString('id-ID')} Kg · ${cfg.trCap} Kg/trolley</div>`;
+}
+function saveGT(mc,e){
+  const btn=e?.target,d=document.getElementById('g'+mc+'d').value,sh=document.getElementById('g'+mc+'sh').value,tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0,op=document.getElementById('g'+mc+'op').value.trim(),n=document.getElementById('g'+mc+'no').value.trim();
+  if(!d){toast('Tanggal wajib','warn');return;}
+  showSp('Menyimpan...',btn);
+  setTimeout(async()=>{trL.push({mc,date:d,sh,tn,tm,op,n});sv('trL',trL);await api('addTrolley',{mc,date:d,sh,tn,tm,trCap:cfg.trCap,op,n});hideSp(btn);toast(`✅ Trolley CND-${mc} tersimpan`);document.getElementById('g'+mc+'tn').value='';document.getElementById('g'+mc+'tm').value='';document.getElementById('gpv'+mc).style.display='none';drawGC(mc);rGTH();rTT(mc);},400);
+}
+function drawGC(mc){
+  const{f,t}=dtR(document.getElementById('gcp'+mc).value),days=allD(f,t),c=cv();
+  let aK=0,aS=0;const gD=[],gA=[];
+  days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/tK).toFixed(4):null);gA.push(aK>0&&aS>0?+(aS/aK).toFixed(4):null);});
+  rC('c-gt-f'+mc,'bar',days.map(d=>d.slice(5)),[
+    {label:'Harian',data:gD,backgroundColor:mc===1?'rgba(8,145,178,.6)':'rgba(124,58,237,.6)',type:'bar'},
+    {label:'Akumulasi',data:gA,borderColor:mc===1?'rgba(15,108,189,.8)':'rgba(167,139,250,.8)',type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2},
+  ],{scales:{x:{ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx}}},plugins:{legend:{labels:{color:c.tx,font:{size:10},boxWidth:10}}}});
+}
+function rGTH(){
+  const mcf=document.getElementById('gtfmc').value;
+  let rows=[...trL].sort((a,b)=>b.date.localeCompare(a.date));
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
+  document.getElementById('gt-tb').innerHTML=rows.length?rows.map(r=>{
+    const mc=r.mc,tot=(+r.tn||0)+(+r.tm||0),tK=tot*cfg.trCap,ss=ssKg(mc,r.date),gt=tK>0&&ss>0?ss/tK:null;
+    const lo=cfg.gtLo,hi=cfg.gtHi,gSt=gt==null?'—':hi>0&&gt>hi?'TINGGI':lo>0&&gt<lo?'RENDAH':'Normal';
+    const gC=gt==null?'var(--muted)':hi>0&&gt>hi?'var(--danger)':lo>0&&gt<lo?'var(--warn)':'var(--ok)';
+    return`<tr><td>${fD(r.date)}</td><td><span class="mb${mc}">CND-${mc}</span></td><td>${r.sh}</td><td>${r.tn||0}</td><td>${r.tm||0}</td><td>${tK.toLocaleString('id-ID')}</td><td>${ss.toLocaleString('id-ID')}</td><td style="font-family:'Courier New',monospace;font-weight:700;color:${gC};">${gt!=null?gt.toFixed(4):'—'}</td><td style="color:${gC};font-weight:700;">${gSt}</td><td>${r.op||'—'}</td></tr>`;
+  }).join(''):'<tr><td colspan="10" class="es">Belum ada data</td></tr>';
+}
+
+// SETTING
+function rSet(){
+  document.getElementById('s-alo').value=cfg.aLo;document.getElementById('s-ahi').value=cfg.aHi;
+  document.getElementById('s-trcap').value=cfg.trCap||800;
+  document.getElementById('s-gtlo').value=cfg.gtLo||0;document.getElementById('s-gthi').value=cfg.gtHi||0;
+  document.getElementById('s-plo').value=cfg.pLo||2;document.getElementById('s-phi').value=cfg.pHi||4;
+  document.getElementById('s-dlo').value=cfg.dLo||2;document.getElementById('s-dhi').value=cfg.dHi||4;
+  document.getElementById('s-wa').value=localStorage.getItem(K+'wa')||'';
+  const gsel=document.getElementById('gas-status');
+  if(gsel)gsel.innerHTML=ONLINE?'<span style="color:var(--ok);">✅ Terhubung ke Google Sheets</span>':'<span style="color:var(--warn);">⚠ Offline — isi GAS_URL di HTML lalu upload ulang</span>';
+  let h='';
+  for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');h+=`<div class="sr"><div class="sl">${nm}</div><input class="si" type="number" id="lt-${kk}" value="${ltC[nm]}" min="1"><span style="font-size:.7rem;color:var(--muted);margin-left:4px;">Ton</span></div>`;}
+  document.getElementById('lt-set').innerHTML=h;
+}
+function saveCfg(){
+  cfg.aLo=+document.getElementById('s-alo').value||37.5;cfg.aHi=+document.getElementById('s-ahi').value||42.5;
+  cfg.trCap=+document.getElementById('s-trcap').value||800;
+  cfg.gtLo=+document.getElementById('s-gtlo').value||0;cfg.gtHi=+document.getElementById('s-gthi').value||0;
+  cfg.pLo=+document.getElementById('s-plo').value||2;cfg.pHi=+document.getElementById('s-phi').value||4;
+  cfg.dLo=+document.getElementById('s-dlo').value||2;cfg.dHi=+document.getElementById('s-dhi').value||4;
+  sv('cfg',cfg);
+  api('updateConfig',{pairs_json:JSON.stringify({aLo:cfg.aLo,aHi:cfg.aHi,trCap:cfg.trCap,gtLo:cfg.gtLo,gtHi:cfg.gtHi,pLo:cfg.pLo,pHi:cfg.pHi,dLo:cfg.dLo,dHi:cfg.dHi})});
+  toast('✅ Konfigurasi tersimpan');
+  const cl=document.getElementById('cap-lbl');if(cl)cl.textContent=cfg.trCap;
+  document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=`${cfg.aLo}–${cfg.aHi}A`;
+}
+function saveLt(){
+  for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');const el=document.getElementById('lt-'+kk);if(el)ltC[nm]=+el.value||1;}
+  sv('ltC',ltC);
+  const ltPairs={};Object.entries(ltC).forEach(([nm,v])=>{ltPairs['lt_'+nm.replace(/\s+/g,'_')]=v;});
+  api('updateConfig',{pairs_json:JSON.stringify(ltPairs)});
+  toast('✅ Lifetime tersimpan');
+}
+function saveWA(){localStorage.setItem(K+'wa',document.getElementById('s-wa').value.trim());toast('✅ No. WA tersimpan');}
+function expD(){const b=new Blob([JSON.stringify({cfg,ltC,iSt,aLog,spL,pvL,lbL,ssL,trL},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`cnd-backup-${today()}.json`;a.click();}
+
+// AUTO REFRESH
+setInterval(()=>{if(document.getElementById('p-dash').classList.contains('on')){rIG(1);rIG(2);rTT(1);rTT(2);rAl();drawDash();}},30000);
+
+// INIT / LOGIN
+function initApp(){
+  startAutoSync();
+  rDash();rSet();
+  const sh=gSh(),td=gSD(sh),nl=nowL(),mo=curMo();
+  [['s1d',td],['s2d',td],['l1d',td],['l2d',td],['g1d',td],['g2d',td],['p1d',td],['p2d',td],['a1dt',nl],['a2dt',nl],['p1m',mo],['p2m',mo],['s1sh',sh],['s2sh',sh],['l1sh',sh],['l2sh',sh],['a1sh',sh],['a2sh',sh],['g1sh',sh],['g2sh',sh]].forEach(([id,val])=>{const el=document.getElementById(id);if(el&&!el.value)el.value=val;});
+}
+function showLogin(){
+  const ex=document.getElementById('ls');if(ex)ex.remove();
+  const div=document.createElement('div');div.id='ls';
+  div.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  div.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);text-align:center;">
+    <div style="width:56px;height:56px;background:linear-gradient(135deg,#0f6cbd,#0044cc);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;margin:0 auto 16px;">⚙</div>
+    <div style="font-size:1.4rem;font-weight:800;margin-bottom:4px;">TPM CND</div>
+    <div style="font-size:.75rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px;">Casting 2 · PT AT Indonesia</div>
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <div style="flex:1;background:var(--c1bg);border:1px solid var(--c1b);border-radius:8px;padding:8px;font-size:.75rem;font-weight:800;color:var(--c1);">⚙ CND-1</div>
+      <div style="flex:1;background:var(--c2bg);border:1px solid var(--c2b);border-radius:8px;padding:8px;font-size:.75rem;font-weight:800;color:var(--c2);">⚙ CND-2</div>
+    </div>
+    <input id="pi" type="password" placeholder="Password..." autofocus style="width:100%;background:var(--bg);border:2px solid var(--border);border-radius:9px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:1rem;margin-bottom:10px;text-align:center;letter-spacing:4px;" onkeydown="if(event.key==='Enter')doLogin()">
+    <div id="pe" style="font-size:.78rem;color:var(--danger);min-height:18px;margin-bottom:10px;"></div>
+    <button onclick="doLogin()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:13px;font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;">Masuk →</button>
+    <div style="font-size:.7rem;color:var(--muted);margin-top:14px;">CND Monitor v2 · ${new Date().getFullYear()}</div>
+  </div>`;
+  document.body.appendChild(div);
+  setTimeout(()=>document.getElementById('pi')?.focus(),100);
+}
+function doLogin(){
+  const pwd=document.getElementById('pi').value;
+  if(pwd===PWD){sessionStorage.setItem(K+'pwd',pwd);document.getElementById('ls')?.remove();initApp();}
+  else{document.getElementById('pe').textContent='⚠ Password salah';document.getElementById('pi').value='';document.getElementById('pi').focus();}
+}
+if(!sessionStorage.getItem(K+'pwd'))showLogin();else initApp();
+
+</script>
+</body>
+</html>
