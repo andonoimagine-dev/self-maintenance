@@ -1559,6 +1559,19 @@ async function flushQueue() {
 // ============================================================
 // TOAST NOTIFICATION
 // ============================================================
+// Arahkan & sorot kolom yang wajib diisi (highlight sementara + fokus)
+function focusField(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  try{ el.focus({preventScroll:false}); }catch(e){ try{el.focus();}catch(_){} }
+  try{ el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+  // Sorot merah sementara
+  const prevBorder=el.style.borderColor, prevShadow=el.style.boxShadow;
+  el.style.borderColor='var(--danger)';
+  el.style.boxShadow='0 0 0 3px rgba(220,38,38,.18)';
+  setTimeout(()=>{ el.style.borderColor=prevBorder; el.style.boxShadow=prevShadow; }, 1800);
+}
+
 function showToast(msg, type='ok', duration=3000) {
   let t = document.getElementById('toast');
   if (!t) { t = document.createElement('div'); t.id='toast'; document.body.appendChild(t); }
@@ -3041,39 +3054,49 @@ function openSpDetail(impIdx, partName){
 }
 
 async function saveSp(ev){
-  showSpinner('Menyimpan sparepart...',ev?.currentTarget);
+  // VALIDASI DULU sebelum spinner — supaya tidak loading menggantung
   const date=document.getElementById('sp-d').value;const i=+document.getElementById('sp-i').value;
   const j=document.getElementById('sp-j').value;const op=document.getElementById('sp-op').value||'Op';
   const no=document.getElementById('sp-no').value;
-  if(!date){hideSpinner();showToast('Tanggal wajib','warn');return;}
+  if(!date){showToast('Tanggal wajib diisi','warn');focusField('sp-d');return;}
   const rows=[];
+  let pushData;
   if(j==='assy'){
     const jm=+document.getElementById('sp-aj').value||0;
-    if(!jm){showToast('Jam running wajib','warn');return;}
-    SP_PT.filter(n=>n!=='Motor').forEach(nm=>{
-      spLog.push({date,i,nm,q:1,jm,kn:'Aus',op,no:'Unit Assy',j:'assy'});
-      rows.push({date,impeller_idx:i,impeller_name:nms[i],nama_part:nm,jam_pakai:jm,qty:1,kondisi:'Aus',jenis:'assy',operator:op,catatan:'Unit Assy'});
-    });
-    st[i].cf=false;
+    if(!jm){showToast('Jam running wajib diisi','warn');focusField('sp-aj');return;}
+    pushData=()=>{
+      SP_PT.filter(n=>n!=='Motor').forEach(nm=>{
+        spLog.push({date,i,nm,q:1,jm,kn:'Aus',op,no:'Unit Assy',j:'assy'});
+        rows.push({date,impeller_idx:i,impeller_name:nms[i],nama_part:nm,jam_pakai:jm,qty:1,kondisi:'Aus',jenis:'assy',operator:op,catatan:'Unit Assy'});
+      });
+      st[i].cf=false;
+    };
   }else{
     const nm=document.getElementById('sp-nm').value;const jm=+document.getElementById('sp-jm').value;
     const q=+document.getElementById('sp-q').value||1;const kn=document.getElementById('sp-k').value;
-    if(!jm){showToast('Jam wajib','warn');return;}
-    spLog.push({date,i,nm,q,jm,kn,op,no,j:'part'});
-    rows.push({date,impeller_idx:i,impeller_name:nms[i],nama_part:nm,jam_pakai:jm,qty:q,kondisi:kn,jenis:'part',operator:op,catatan:no});
-    st[i].cf=false;
+    if(!jm){showToast('Jam pakai wajib diisi','warn');focusField('sp-jm');return;}
+    pushData=()=>{
+      spLog.push({date,i,nm,q,jm,kn,op,no,j:'part'});
+      rows.push({date,impeller_idx:i,impeller_name:nms[i],nama_part:nm,jam_pakai:jm,qty:q,kondisi:kn,jenis:'part',operator:op,catatan:no});
+      st[i].cf=false;
+    };
   }
+  // Lolos validasi → baru tampilkan spinner
+  showSpinner('Menyimpan sparepart...',ev?.currentTarget);
+  pushData();
   sv('spLog',spLog);sv('st',st);
   pushToSheets('saveSparepart',rows);
   hideSpinner();rSp();rAlerts();showToast('✅ Sparepart tersimpan!','ok');
 }
 async function saveHg(ev){
-  showSpinner('Menyimpan data hanger...',ev?.currentTarget);
+  // VALIDASI DULU sebelum spinner
   const date=document.getElementById('hg-d').value;const id=+document.getElementById('hg-n').value;
   const tp=document.getElementById('hg-tp').value;const jm=+document.getElementById('hg-jm').value;
   const kn=document.getElementById('hg-k').value;const op=document.getElementById('hg-op').value||'Op';
   const n=document.getElementById('hg-no').value;
-  if(!date||!jm){showToast('Tanggal & jam wajib','warn');return;}
+  if(!date){showToast('Tanggal wajib diisi','warn');focusField('hg-d');return;}
+  if(!jm){showToast('Jam pakai wajib diisi','warn');focusField('hg-jm');return;}
+  showSpinner('Menyimpan data hanger...',ev?.currentTarget);
   hLog.push({date,id,tp,jm,kn,op,n});hSt[id-1].s='ok';hSt[id-1].n='';hSt[id-1].cf=false;
   sv('hLog',hLog);sv('hSt',hSt);
   pushToSheets('saveHanger',[{date,hanger_id:id,tipe:tp,jam_pakai:jm,kondisi:kn,operator:op,catatan:n}]);
@@ -3795,8 +3818,8 @@ async function saveGt(ev){
   const ik=+document.getElementById('gt-ik').value||0;
   const op=document.getElementById('gt-op').value||'Op';
   const no=document.getElementById('gt-no').value;
-  if(!d){showToast('Tanggal wajib diisi','warn');return;}
-  if(ik<=0){showToast('Ikomi harus lebih dari 0','warn');return;}
+  if(!d){showToast('Tanggal wajib diisi','warn');focusField('gt-d');return;}
+  if(ik<=0){showToast('Ikomi harus lebih dari 0','warn');focusField('gt-ik');return;}
   showSpinner('Menyimpan ikomi...');
   const rec={date:d,sh,ik,op,n:no};
   ikomiLog.push(rec);
@@ -4203,7 +4226,6 @@ function rLb(){
   }).join('')||'<tr><td colspan="7" class="es">Tidak ada data sesuai filter</td></tr>';
 }
 async function saveLb(ev){
-  showSpinner('Menyimpan data limbah...',ev?.currentTarget);
   const date=document.getElementById('lb-d').value;
   const sh=document.getElementById('lb-sh').value;
   const vp=+document.getElementById('lb-vp').value||0;
@@ -4211,8 +4233,9 @@ async function saveLb(ev){
   const l=document.getElementById('lb-l').value;
   const op=document.getElementById('lb-op').value||'Op';
   const k=document.getElementById('lb-kt').value;
-  if(!date){hideSpinner();showToast('Tanggal wajib diisi','warn');return;}
-  if(!vp&&!vd){hideSpinner();showToast('Isi minimal salah satu volume (Pasir atau Debu)','warn');return;}
+  if(!date){showToast('Tanggal wajib diisi','warn');focusField('lb-d');return;}
+  if(!vp&&!vd){showToast('Isi minimal salah satu volume (Pasir atau Debu)','warn');focusField('lb-vp');return;}
+  showSpinner('Menyimpan data limbah...',ev?.currentTarget);
   const rows=[];
   if(vp>0){
     lbLog.push({date,sh,j:'Pasir',v:vp,l,op,k});
@@ -4462,7 +4485,6 @@ async function syncOneRow(action,params){
   return !!r.ok;
 }
 async function saveSs(ev){
-  showSpinner('Menyimpan data steelshot...',ev?.currentTarget);
   const date=document.getElementById('ss-d').value;
   const sh=document.getElementById('ss-sh').value;
   const s5=+document.getElementById('ss-50').value||0;
@@ -4470,7 +4492,8 @@ async function saveSs(ev){
   const lb=+document.getElementById('ss-lb').value||0;
   const op=document.getElementById('ss-op').value||'Op';
   const n=document.getElementById('ss-no').value;
-  if(!date){hideSpinner();showToast('Tanggal wajib','warn');return;}
+  if(!date){showToast('Tanggal wajib diisi','warn');focusField('ss-d');return;}
+  showSpinner('Menyimpan data steelshot...',ev?.currentTarget);
   ssLog.push({date,sh,s5,wc,lb,op,n});sv('ssLog',ssLog);
   pushToSheets('saveSteelshot',[{
     date,shift:sh,
