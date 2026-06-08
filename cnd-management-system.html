@@ -663,7 +663,7 @@ tr:hover td{background:var(--accent-bg);}
 <!-- ═══════════════ GENTANI ═══════════════ -->
 <div id="p-gt" class="pg">
   <div style="font-size:.75rem;color:var(--info);background:var(--info-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;">
-    &#8505; Gentani = (SS550+WireCut) Kg &divide; (Total Trolley &times; <strong id="cap-lbl">800</strong> Kg/trolley)
+    &#8505; Gentani = (SS550+WireCut) Kg &divide; (Total Trolley &times; <strong id="cap-lbl">800</strong> Kg/trolley) &divide; 1000 &nbsp;&rarr; satuan <strong>Kg/Ton</strong>
   </div>
   <div class="mc2">
 <div class="mc-col">
@@ -704,7 +704,7 @@ tr:hover td{background:var(--accent-bg);}
     <div class="fbar" style="margin-bottom:10px;">
       <span class="fbl">Mesin</span><select class="fbs" id="gtfmc" onchange="rGTH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
     </div>
-    <div class="tw"><table><thead><tr><th>Tgl</th><th>Mesin</th><th>Shift</th><th>NSP</th><th>NSM</th><th>Total Kg</th><th>SS+WC</th><th>Gentani</th><th>Status</th><th>Op</th></tr></thead><tbody id="gt-tb"></tbody></table></div>
+    <div class="tw"><table><thead><tr><th>Tgl</th><th>Mesin</th><th>Shift</th><th>NSP</th><th>NSM</th><th>Total Kg</th><th>SS+WC</th><th>Gentani (Kg/Ton)</th><th>Status</th><th>Op</th></tr></thead><tbody id="gt-tb"></tbody></table></div>
   </div>
 </div>
 
@@ -719,9 +719,9 @@ tr:hover td{background:var(--accent-bg);}
     <div class="sr"><div class="sl">Kapasitas per Trolley (Kg)</div><input class="si" type="number" id="s-trcap" value="800"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
   </div>
-  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128202; Target Gentani (Kg/Kg)</div>
-    <div class="sr"><div class="sl">Target Bawah</div><input class="si" type="number" step="0.0001" id="s-gtlo"></div>
-    <div class="sr"><div class="sl">Target Atas</div><input class="si" type="number" step="0.0001" id="s-gthi"></div>
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128202; Target Gentani (Kg/Ton)</div>
+    <div class="sr"><div class="sl">Target Bawah</div><input class="si" type="number" step="0.01" id="s-gtlo"></div>
+    <div class="sr"><div class="sl">Target Atas</div><input class="si" type="number" step="0.01" id="s-gthi"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
   </div>
   <div class="cd" style="margin-bottom:12px;"><div class="st">&#128297; Lifetime Default Sparepart (Ton material)</div>
@@ -783,7 +783,7 @@ tr:hover td{background:var(--accent-bg);}
 const K='cnd9_',M_=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'],PWD='cnd2026';
 
 // ── GOOGLE SHEETS CONFIG ────────────────────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbz9Qj1DR7qQOkXyHfEHDeWlFXvcEtOgKHl0JCJoca96G_b68z1lWEIHMgKsZGBjfGNz/exec';  // ← paste URL Apps Script Web App di sini
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbz9Qj1DR7qQOkXyHfEHDeWlFXvcEtOgKHl0JCJoca96G_b68z1lWEIHMgKsZGBjfGNz/exec';
 const ONLINE  = GAS_URL.length > 0;
 
 // ── API LAYER ───────────────────────────────────────────────
@@ -1006,7 +1006,7 @@ function drawDash(){
 
     // Gentani (Harian bar + Akumulasi line)
     let aK=0,aS=0;const gD=[],gA=[];
-    days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/tK).toFixed(4):null);gA.push(aK>0&&aS>0?+(aS/aK).toFixed(4):null);});
+    days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/(tK/1000)).toFixed(2):null);gA.push(aK>0&&aS>0?+(aS/(aK/1000)).toFixed(2):null);});
     rC('c-gt'+mc,'bar',lbl,[
       {label:'Harian',data:gD,backgroundColor:col2+'.55)',type:'bar',yAxisID:'y'},
       {label:'Akum',data:gA,borderColor:col+'.85)',borderWidth:2,type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2,yAxisID:'y'},
@@ -1042,7 +1042,7 @@ function waResume(){
     const n=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
     const m=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
     const tot=n+m,tK=tot*cfg.trCap,ss=ssKg(mc,td);
-    const gt=tK>0&&ss>0?(ss/tK).toFixed(4):'—';
+    const gt=tK>0&&ss>0?(ss/(tK/1000)).toFixed(2)+' Kg/Ton':'—';
     const ic=aS==='ok'?'✅':aS==='hi'?'🔴':aS==='lo'?'🟡':'➖';
     msg+=`\n━━ *CND-${mc}* ━━\n⚙ Impeller: ${s.on?'ON':'OFF'} | ${s.a!=null?s.a.toFixed(1)+'A':'—'} ${ic}\n`;
     msg+=`🚛 Trolley: NSP ${n} + NSM ${m} = *${tot}* (${tK.toLocaleString('id-ID')} Kg)\n`;
@@ -1269,12 +1269,12 @@ function rGt(){
 }
 function gtPv(mc){
   const d=document.getElementById('g'+mc+'d').value||today(),tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0;
-  const tot=tn+tm,tK=tot*cfg.trCap,ss=ssKg(mc,d),gt=tK>0&&ss>0?ss/tK:null;
+  const tot=tn+tm,tK=tot*cfg.trCap,ss=ssKg(mc,d),gt=tK>0&&ss>0?ss/(tK/1000):null;
   const box=document.getElementById('gpv'+mc);
   if(tot===0){box.style.display='none';return;}
   const ic=gt==null?'':cfg.gtHi>0&&gt>cfg.gtHi?'🔴':cfg.gtLo>0&&gt<cfg.gtLo?'🟡':'🟢';
   box.style.display='block';
-  box.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;"><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL TROLLEY</div><div style="font-size:1.3rem;font-weight:700;color:var(--accent);">${tot}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL KG</div><div style="font-size:1.3rem;font-weight:700;color:var(--info);">${tK.toLocaleString('id-ID')}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">GENTANI</div><div style="font-size:1.3rem;font-weight:700;color:var(--ok);">${gt!=null?gt.toFixed(4):'—'}</div></div></div><div style="font-size:.65rem;color:var(--muted);margin-top:5px;text-align:center;">${ic} SS+WC: ${ss.toLocaleString('id-ID')} Kg · ${cfg.trCap} Kg/trolley</div>`;
+  box.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;"><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL TROLLEY</div><div style="font-size:1.3rem;font-weight:700;color:var(--accent);">${tot}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL KG</div><div style="font-size:1.3rem;font-weight:700;color:var(--info);">${tK.toLocaleString('id-ID')}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">GENTANI (Kg/Ton)</div><div style="font-size:1.3rem;font-weight:700;color:var(--ok);">${gt!=null?gt.toFixed(2):'—'}</div></div></div><div style="font-size:.65rem;color:var(--muted);margin-top:5px;text-align:center;">${ic} SS+WC: ${ss.toLocaleString('id-ID')} Kg · ${cfg.trCap} Kg/trolley</div>`;
 }
 function saveGT(mc,e){
   const btn=e?.target,d=document.getElementById('g'+mc+'d').value,sh=document.getElementById('g'+mc+'sh').value,tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0,op=document.getElementById('g'+mc+'op').value.trim(),n=document.getElementById('g'+mc+'no').value.trim();
@@ -1285,7 +1285,7 @@ function saveGT(mc,e){
 function drawGC(mc){
   const{f,t}=dtR(document.getElementById('gcp'+mc).value),days=allD(f,t),c=cv();
   let aK=0,aS=0;const gD=[],gA=[];
-  days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/tK).toFixed(4):null);gA.push(aK>0&&aS>0?+(aS/aK).toFixed(4):null);});
+  days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/(tK/1000)).toFixed(2):null);gA.push(aK>0&&aS>0?+(aS/(aK/1000)).toFixed(2):null);});
   rC('c-gt-f'+mc,'bar',days.map(d=>d.slice(5)),[
     {label:'Harian',data:gD,backgroundColor:mc===1?'rgba(8,145,178,.6)':'rgba(124,58,237,.6)',type:'bar'},
     {label:'Akumulasi',data:gA,borderColor:mc===1?'rgba(15,108,189,.8)':'rgba(167,139,250,.8)',type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2},
@@ -1296,10 +1296,10 @@ function rGTH(){
   let rows=[...trL].sort((a,b)=>b.date.localeCompare(a.date));
   if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
   document.getElementById('gt-tb').innerHTML=rows.length?rows.map(r=>{
-    const mc=r.mc,tot=(+r.tn||0)+(+r.tm||0),tK=tot*cfg.trCap,ss=ssKg(mc,r.date),gt=tK>0&&ss>0?ss/tK:null;
+    const mc=r.mc,tot=(+r.tn||0)+(+r.tm||0),tK=tot*cfg.trCap,ss=ssKg(mc,r.date),gt=tK>0&&ss>0?ss/(tK/1000):null;
     const lo=cfg.gtLo,hi=cfg.gtHi,gSt=gt==null?'—':hi>0&&gt>hi?'TINGGI':lo>0&&gt<lo?'RENDAH':'Normal';
     const gC=gt==null?'var(--muted)':hi>0&&gt>hi?'var(--danger)':lo>0&&gt<lo?'var(--warn)':'var(--ok)';
-    return`<tr><td>${fD(r.date)}</td><td><span class="mb${mc}">CND-${mc}</span></td><td>${r.sh}</td><td>${r.tn||0}</td><td>${r.tm||0}</td><td>${tK.toLocaleString('id-ID')}</td><td>${ss.toLocaleString('id-ID')}</td><td style="font-family:'Courier New',monospace;font-weight:700;color:${gC};">${gt!=null?gt.toFixed(4):'—'}</td><td style="color:${gC};font-weight:700;">${gSt}</td><td>${r.op||'—'}</td></tr>`;
+    return`<tr><td>${fD(r.date)}</td><td><span class="mb${mc}">CND-${mc}</span></td><td>${r.sh}</td><td>${r.tn||0}</td><td>${r.tm||0}</td><td>${tK.toLocaleString('id-ID')}</td><td>${ss.toLocaleString('id-ID')}</td><td style="font-family:'Courier New',monospace;font-weight:700;color:${gC};">${gt!=null?gt.toFixed(2):'—'}</td><td style="color:${gC};font-weight:700;">${gSt}</td><td>${r.op||'—'}</td></tr>`;
   }).join(''):'<tr><td colspan="10" class="es">Belum ada data</td></tr>';
 }
 
