@@ -480,7 +480,11 @@ tr:hover td{background:var(--accent-bg);}
 </div>
 </div>
   <div class="cd" style="margin-top:12px;">
-    <div class="st">&#128203; Riwayat Preventive</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="st" style="margin:0;flex:1;">&#128203; Riwayat Preventive</div>
+      <button id="preventive-edit-btn" onclick="histToggleEdit('preventive')" title="Mode Edit Data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="preventive-edit-ban" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;color:var(--warn);font-weight:600;">✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('preventive')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button></div>
     <div class="fbar" style="margin-bottom:10px;">
       <span class="fbl">Mesin</span>
       <select class="fbs" id="pvfmc" onchange="rPvH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
@@ -531,7 +535,11 @@ tr:hover td{background:var(--accent-bg);}
   </div>
   </div>
   <div class="cd">
-    <div class="st">&#128203; History Sparepart</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="st" style="margin:0;flex:1;">&#128203; History Sparepart</div>
+      <button id="sparepart-edit-btn" onclick="histToggleEdit('sparepart')" title="Mode Edit Data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="sparepart-edit-ban" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;color:var(--warn);font-weight:600;">✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('sparepart')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button></div>
     <div class="fbar" style="margin-bottom:10px;">
       <span class="fbl">Mesin</span>
       <select class="fbs" id="spfmc" onchange="rSpH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
@@ -584,7 +592,11 @@ tr:hover td{background:var(--accent-bg);}
 </div>
 </div>
   <div class="cd" style="margin-top:12px;">
-    <div class="st">&#128203; Log Ampere</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="st" style="margin:0;flex:1;">&#128203; Log Ampere</div>
+      <button id="ampere-edit-btn" onclick="histToggleEdit('ampere')" title="Mode Edit Data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="ampere-edit-ban" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;color:var(--warn);font-weight:600;">✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('ampere')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button></div>
     <div class="fbar" style="margin-bottom:10px;">
       <span class="fbl">Mesin</span><select class="fbs" id="afmc" onchange="rAH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
       <div class="fbsep"></div>
@@ -639,7 +651,11 @@ tr:hover td{background:var(--accent-bg);}
 </div>
 </div>
   <div class="cd" style="margin-top:12px;">
-    <div class="st">&#128203; History Steelshot</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="st" style="margin:0;flex:1;">&#128203; History Steelshot</div>
+      <button id="steelshot-edit-btn" onclick="histToggleEdit('steelshot')" title="Mode Edit Data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="steelshot-edit-ban" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;color:var(--warn);font-weight:600;">✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('steelshot')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button></div>
     <div class="fbar" style="margin-bottom:10px;">
       <span class="fbl">Mesin</span><select class="fbs" id="ssfmc" onchange="rSSH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
       <div class="fbsep"></div>
@@ -727,7 +743,11 @@ tr:hover td{background:var(--accent-bg);}
 
   <!-- History DC -->
   <div class="cd" style="margin-bottom:12px;">
-    <div class="st" style="color:var(--c2);">&#128203; History Dust Collector</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128203; History Dust Collector</div>
+      <button id="dustcollector-edit-btn" onclick="histToggleEdit('dustcollector')" title="Mode Edit Data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="dustcollector-edit-ban" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;color:var(--warn);font-weight:600;">✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('dustcollector')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button></div>
     <div class="tw"><table>
       <thead><tr><th>Tgl</th><th>Shift</th><th>Jumlah (Karung)</th><th>Status</th><th>Op</th><th>Keterangan</th></tr></thead>
       <tbody id="dc-tb"></tbody>
@@ -735,7 +755,11 @@ tr:hover td{background:var(--accent-bg);}
   </div>
 
   <div class="cd" style="margin-top:12px;">
-    <div class="st">&#128203; History Limbah</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="st" style="margin:0;flex:1;">&#128203; History Limbah</div>
+      <button id="limbah-edit-btn" onclick="histToggleEdit('limbah')" title="Mode Edit Data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="limbah-edit-ban" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;color:var(--warn);font-weight:600;">✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('limbah')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button></div>
     <div class="fbar" style="margin-bottom:10px;">
       <span class="fbl">Mesin</span><select class="fbs" id="lbfmc" onchange="rLBH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
     </div>
@@ -789,7 +813,11 @@ tr:hover td{background:var(--accent-bg);}
 </div>
 </div>
   <div class="cd" style="margin-top:12px;">
-    <div class="st">&#128203; History Trolley &amp; Gentani</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="st" style="margin:0;flex:1;">&#128203; History Trolley &amp; Gentani</div>
+      <button id="gentani-edit-btn" onclick="histToggleEdit('gentani')" title="Mode Edit Data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="gentani-edit-ban" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;color:var(--warn);font-weight:600;">✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('gentani')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button></div>
     <div class="fbar" style="margin-bottom:10px;">
       <span class="fbl">Mesin</span><select class="fbs" id="gtfmc" onchange="rGTH()"><option value="all">Semua</option><option value="1">CND-1</option><option value="2">CND-2</option></select>
     </div>
@@ -855,10 +883,10 @@ tr:hover td{background:var(--accent-bg);}
         <button class="btn btn-g" style="flex:1;" onclick="setImpM(false)">&#9632; OFF</button>
       </div>
       <label>Ampere (A)</label>
-      <input type="number" id="mia" step="0.1" style="margin-bottom:4px;">
+      <input type="number" id="mia" step="0.1" style="margin-bottom:4px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;">
       <div id="miaf" style="font-size:.78rem;margin:-4px 0 10px;min-height:18px;font-weight:600;"></div>
       <label>Catatan / Keluhan</label>
-      <textarea id="min" style="margin-bottom:12px;"></textarea>
+      <textarea id="min" style="margin-bottom:12px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;min-height:52px;resize:vertical;"></textarea>
       <div id="milt" style="margin-bottom:12px;"></div>
       <div class="ma">
         <button class="btn btn-p" style="flex:1;" onclick="saveMI(event)">&#128190; Simpan</button>
@@ -867,1204 +895,6 @@ tr:hover td{background:var(--accent-bg);}
     </div>
   </div>
 </div>
-
-<div id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-
-const K='cnd9_',M_=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'],PWD='cnd2026';
-
-// ── GOOGLE SHEETS CONFIG ────────────────────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbz9Qj1DR7qQOkXyHfEHDeWlFXvcEtOgKHl0JCJoca96G_b68z1lWEIHMgKsZGBjfGNz/exec';
-const ONLINE  = GAS_URL.length > 0;
-
-// ── API LAYER ───────────────────────────────────────────────
-async function api(action, data={}) {
-  if (!ONLINE) return { ok: true, offline: true };
-  const params = new URLSearchParams();
-  params.set('action', action); params.set('pwd', PWD);
-  Object.entries(data).forEach(([k,v]) => params.set(k, typeof v === 'object' ? JSON.stringify(v) : String(v)));
-  try {
-    const ctrl = new AbortController();
-    const tmo  = setTimeout(() => ctrl.abort(), 15000);
-    const res  = await fetch(GAS_URL + '?' + params.toString(), {method:'GET',redirect:'follow',signal:ctrl.signal});
-    clearTimeout(tmo);
-    return JSON.parse(await res.text());
-  } catch(e) {
-    toast('⚠ Gagal sync ke Sheets', 'warn');
-    return { ok: false, offline: true };
-  }
-}
-
-// ── SETUP (panggil sekali setelah deploy) ───────────────────
-async function setupSheets() {
-  if (!ONLINE) { toast('GAS_URL belum diisi', 'warn'); return; }
-  toast('Menyiapkan sheets...', 'ok');
-  const r = await api('setup');
-  toast(r.ok ? '✅ Setup berhasil' : '❌ ' + r.error, r.ok ? 'ok' : 'warn', 5000);
-}
-
-// ── SYNC: ambil semua data dari Sheets ─────────────────────
-async function syncFromSheets() {
-  if (!ONLINE) { setSyncLbl('⚡ Lokal'); return; }
-  setSyncLbl('⟳ Sync...');
-  const r = await api('getAll');
-  if (!r.ok) { setSyncLbl('⚠ Offline'); return; }
-
-  if (Array.isArray(r.ampere) && r.ampere.length) {
-    aLog = r.ampere.map(x => ({mc:+x.mesin,dt:x.datetime,sh:x.shift,v:+x.ampere,status:x.status,op:x.operator,n:x.catatan}));
-    sv('aLog', aLog);
-  }
-  if (Array.isArray(r.sparepart) && r.sparepart.length) {
-    spL = r.sparepart.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),nm:x.nama_part,kg:+x.kg_pakai,q:+x.qty,kn:x.kondisi,j:x.jenis,op:x.operator,no:x.catatan}));
-    sv('spL', spL);
-  }
-  if (Array.isArray(r.preventive) && r.preventive.length) {
-    pvL = r.preventive.map(x => {let items={};try{items=JSON.parse(x.items_json||'{}');}catch(e){}return{mc:+x.mesin,w:x.minggu,m:x.bulan,date:String(x.tanggal||'').slice(0,10),pic:x.pic,items,n:x.catatan,okCnt:+x.ok_count,ngCnt:+x.ng_count};});
-    sv('pvL', pvL);
-  }
-  if (Array.isArray(r.limbah) && r.limbah.length) {
-    lbL = r.limbah.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,vp:+x.pasir_trolley,vd:+x.debu_trolley,lo:x.lokasi,op:x.operator}));
-    sv('lbL', lbL);
-  }
-  if (Array.isArray(r.steelshot) && r.steelshot.length) {
-    ssL = r.steelshot.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,s5:+x.ss550_kg,wc:+x.wirecut_kg,lb:+x.ssbekas_kg,op:x.operator,n:x.keterangan}));
-    sv('ssL', ssL);
-  }
-  // DC log (mc==0)
-  if (Array.isArray(r.limbah) && r.limbah.length) {
-    const dcRows=r.limbah.filter(x=>+x.mesin===0);
-    if(dcRows.length){dcL=dcRows.map(x=>({date:String(x.tanggal||'').slice(0,10),sh:x.shift,vdc:+x.vdc_kg||0,op:x.operator,n:x.keterangan||''}));sv('dcL',dcL);}
-  }
-  if (Array.isArray(r.trolley) && r.trolley.length) {
-    trL = r.trolley.map(x => ({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,tn:+x.trolley_nsp,tm:+x.trolley_nsm,op:x.operator,n:x.keterangan}));
-    sv('trL', trL);
-  }
-  if (Array.isArray(r.imp_state) && r.imp_state.length) {
-    r.imp_state.forEach(x => {
-      const mc=+x.mesin; if(mc!==1&&mc!==2) return;
-      iSt[mc]={on:x.status_on==='TRUE'||x.status_on===true,a:x.ampere!==''?+x.ampere:null,dt:x.last_update||null,n:x.catatan||'',cf:x.confirmed==='TRUE'||x.confirmed===true};
-    });
-    sv('iSt', iSt);
-  }
-  if (r.config && typeof r.config === 'object') {
-    const c=r.config;
-    ['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi'].forEach(k=>{if(c[k]!==undefined)cfg[k]=+c[k];});
-    const ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};
-    Object.entries(ltKeys).forEach(([ck,nm])=>{if(c[ck])ltC[nm]=+c[ck];});
-    sv('cfg',cfg); sv('ltC',ltC);
-  }
-  setSyncLbl('✓ Sync');
-  const now=new Date(); setSyncLbl('✓ '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0'));
-  rDash(); rSet();
-}
-
-function setSyncLbl(txt) { const el=document.getElementById('sync-lbl'); if(el)el.textContent=txt; }
-
-function startAutoSync() {
-  if (!ONLINE) { setSyncLbl('⚡ Lokal'); return; }
-  syncFromSheets();
-  setInterval(syncFromSheets, 5 * 60 * 1000);
-}
-document.addEventListener('visibilitychange', () => { if(!document.hidden && ONLINE) syncFromSheets(); });
-
-const gl=(k,d)=>{try{const v=localStorage.getItem(K+k);return v?JSON.parse(v):d;}catch(e){return d;}};
-const sv=(k,v)=>{try{localStorage.setItem(K+k,JSON.stringify(v));}catch(e){}};
-
-let cfg=gl('cfg',{aLo:37.5,aHi:42.5,pLo:2,pHi:4,dLo:2,dHi:4,dcLo:0,dcHi:0,gtLo:0,gtHi:0,trCap:800});
-let ltC=gl('ltC',{'Impeller Blade':120,'Control Cage':180,'Distributor':240,'End Liner Atas':200,'End Liner Bawah':200,'Ceiling Liner':200,'Front Cover':300,'V-Belt':120,'Motor':500});
-let iSt=gl('iSt',{1:{on:true,a:null,dt:null,n:'',cf:false},2:{on:true,a:null,dt:null,n:'',cf:false}});
-let aLog=gl('aLog',[]),spL=gl('spL',[]),pvL=gl('pvL',[]),lbL=gl('lbL',[]),ssL=gl('ssL',[]),trL=gl('trL',[]);
-let _miMc=1,_pvS={1:{},2:{}};
-let dcL=gl('dcL',[]);  // Dust Collector log — 1 unit untuk CND-1 & CND-2
-
-const PVI=[
-  {sec:'Impeller Unit',items:[{id:'ib',l:'Impeller Blade',d:'Keausan, retak, deformasi'},{id:'cc',l:'Control Cage',d:'Keausan, clearance'},{id:'di',l:'Distributor',d:'Keausan, kebocoran'},{id:'ela',l:'End Liner Atas',d:'Ketebalan, keausan'},{id:'elb',l:'End Liner Bawah',d:'Ketebalan, keausan'},{id:'cl',l:'Ceiling Liner',d:'Ketebalan, keausan'},{id:'fc',l:'Front Cover',d:'Keausan, kebocoran debu'},{id:'vb',l:'V-Belt',d:'Ketegangan, keausan, slip'},{id:'mo',l:'Motor',d:'Suara, panas, ampere'}]},
-  {sec:'Conveyor & Trolley',items:[{id:'ch',l:'Rantai Conveyor',d:'Keausan, lubrication'},{id:'gr',l:'Guide Rail',d:'Kerataan, deformasi'},{id:'dm',l:'Drive Motor',d:'Suara, panas, ampere'},{id:'tb',l:'Body Trolley',d:'Retak, deformasi, kebersihan'},{id:'tp',l:'Pin Trolley',d:'Keausan, kelonggaran'}]},
-  {sec:'Separator & Elevator',items:[{id:'sb',l:'Separator Blade',d:'Keausan, clearance'},{id:'sc',l:'Screen/Mesh',d:'Kebersihan, clogging'},{id:'eb',l:'Elevator Belt',d:'Kondisi, ketegangan, slip'},{id:'eu',l:'Elevator Bucket',d:'Keausan, kebocoran'}]},
-  {sec:'Dust Collector',items:[{id:'df',l:'Filter DC',d:'Kondisi, differential pressure'},{id:'dfa',l:'Fan DC',d:'Suara, ampere, vibrasi'},{id:'dh',l:'Hopper / Drain',d:'Penumpukan, buang rutin'}]},
-  {sec:'General',items:[{id:'gl',l:'Lubrication bearing',d:'Greasing sesuai jadwal'},{id:'gc',l:'Kebersihan area',d:'Tidak ada material tercecer'},{id:'gg',l:'Safety guard',d:'Semua guard & cover terpasang'},{id:'gb',l:'Baut & fastener',d:'Cek baut kritis, tidak longgar'}]},
-];
-
-// UTILS
-const dStr=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const today=()=>dStr(new Date());
-const pD=s=>{if(!s)return null;if(s instanceof Date)return isNaN(s)?null:s;const str=s.toString().trim();if(/^\d{4}-\d{2}-\d{2}/.test(str)){const[y,m,d]=str.slice(0,10).split('-');return new Date(+y,+m-1,+d);}const d=new Date(str);return isNaN(d)?null:d;};
-const pDT=s=>{if(!s)return null;const d=new Date(s.toString().trim());return isNaN(d)?null:d;};
-const fD=s=>{const d=pD(s);if(!d)return s||'-';return`${d.getDate()}-${M_[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`;};
-const fDT=s=>{if(!s)return'-';const d=pDT(s)||pD(s);if(!d||isNaN(d))return s;return`${d.getDate()}-${M_[d.getMonth()]}-${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
-const gSh=()=>{const n=new Date(),t=n.getHours()*60+n.getMinutes();return(t>=420&&t<1170)?'NSP':'NSM';};
-const gSD=sh=>{const now=new Date(),t=now.getHours()*60+now.getMinutes();if(sh==='NSM'&&t<420){const y=new Date(now);y.setDate(y.getDate()-1);return dStr(y);}return dStr(now);};
-const nowL=()=>{const d=new Date(),o=d.getTimezoneOffset(),l=new Date(d.getTime()-o*60000);return l.toISOString().slice(0,16);};
-const curMo=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
-const dtR=p=>{const n=new Date(),y=n.getFullYear(),m=n.getMonth();if(p==='cur')return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};if(p==='prev')return{f:dStr(new Date(y,m-1,1)),t:dStr(new Date(y,m,0))};if(p==='3m')return{f:dStr(new Date(y,m-2,1)),t:dStr(new Date(y,m+1,0))};return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};};
-const allD=(f,t)=>{const[fy,fm,fd]=f.split('-').map(Number);const[ty,tm,td]=t.split('-').map(Number);let c=new Date(fy,fm-1,fd);const e=new Date(ty,tm-1,td);const days=[];while(c<=e){days.push(dStr(c));c.setDate(c.getDate()+1);}return days;};
-const toast=(msg,type='ok',dur=3000)=>{let t=document.getElementById('toast');t.textContent=msg;t.style.cssText=`position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;display:block;`+(type==='ok'?'background:var(--ok);color:#fff;':type==='warn'?'background:var(--warn);color:#fff;':'background:var(--danger);color:#fff;');t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',dur);};
-const showSp=(m,btn)=>{document.getElementById('sp-ov').classList.add('on');document.getElementById('sp-msg').textContent=m;if(btn)btn.classList.add('btn-sav');};
-const hideSp=btn=>{document.getElementById('sp-ov').classList.remove('on');if(btn)btn.classList.remove('btn-sav');};
-const cM=id=>document.getElementById(id).classList.remove('on');
-const sendWA=msg=>{const wa=localStorage.getItem(K+'wa')||'';window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`,'_blank');};
-const ampS=v=>{if(v==null)return'na';if(v<cfg.aLo)return'lo';if(v>cfg.aHi)return'hi';return'ok';};
-const ssKg=(mc,dt)=>ssL.filter(r=>r.mc==mc&&r.date===dt).reduce((s,r)=>(+r.s5||0)+(+r.wc||0)+s,0);
-const trTot=(mc,dt)=>trL.filter(r=>r.mc==mc&&r.date===dt).reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
-const totTon=(mc,from=null)=>trL.filter(r=>r.mc==mc&&(!from||r.date>=from)).reduce((s,r)=>s+((+r.tn||0)+(+r.tm||0))*cfg.trCap/1000,0);
-const tonSP=(mc,nm)=>{const rs=spL.filter(s=>s.mc==mc&&s.nm===nm).sort((a,b)=>b.date.localeCompare(a.date));if(!rs.length)return null;return totTon(mc,rs[0].date);};
-const modT=(mc,nm)=>{const js=spL.filter(s=>s.mc==mc&&s.nm===nm).map(s=>+s.kg/1000).filter(j=>j>0);if(!js.length)return ltC[nm]||120;const r=js.map(j=>Math.round(j/10)*10);const f={};r.forEach(j=>f[j]=(f[j]||0)+1);return+Object.entries(f).sort((a,b)=>b[1]-a[1])[0][0];};
-const needA=mc=>{const s=iSt[mc];if(!s||s.cf)return false;for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm);if(t==null)continue;if(t/modT(mc,nm)>=.8)return true;}if(s.n&&s.n.trim())return true;if(s.on&&s.a!=null){const st=ampS(s.a);if(st==='hi'||st==='lo')return true;}return false;};
-
-// CLOCK + THEME
-function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-setInterval(tick,1000);tick();
-function tgTh(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';localStorage.setItem(K+'theme',t);}
-(()=>{const t=localStorage.getItem(K+'theme')||'light';document.documentElement.setAttribute('data-theme',t);document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';})();
-function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
-
-// TAB NAV
-function goTab(t){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('p-'+t).classList.add('on');
-  document.querySelectorAll('.tb').forEach(b=>{if(b.dataset.t===t)b.classList.add('on');});
-  ({dash:rDash,prev:rPrev,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,gt:rGt,set:rSet})[t]?.();
-}
-document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.t)));
-
-// CHARTS
-let _ch={};
-const cv=()=>{const dk=document.documentElement.getAttribute('data-theme')==='dark';return{tx:dk?'rgba(160,182,205,.8)':'rgba(100,120,140,.8)',gr:dk?'rgba(30,44,68,.6)':'rgba(216,223,233,.5)'}};
-function rC(id,type,lbl,ds,opts={}){
-  if(_ch[id])_ch[id].destroy();
-  const ctx=document.getElementById(id);if(!ctx)return;
-  const c=cv();
-  _ch[id]=new Chart(ctx,{type,data:{labels:lbl,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:ds.length>1,labels:{color:c.tx,font:{size:10},boxWidth:10}},...(opts.plugins||{})},scales:{x:{ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},...(opts.scales||{})},...opts}});
-}
-
-// DASHBOARD
-function rDash(){rIG(1);rIG(2);rTT(1);rTT(2);rAl();drawDash();}
-
-function rIG(mc){
-  const s=iSt[mc]||{on:true,a:null,dt:null,n:'',cf:false};
-  const aS=s.on?ampS(s.a):null;
-  const cls='imp '+(s.on?(aS==='ok'?'imp-ok':aS==='hi'?'imp-hi':aS==='lo'?'imp-lo':'imp-ok'):'imp-of');
-  const attn=needA(mc);
-  const aLbl=s.a!=null?s.a.toFixed(1)+'A':'—';
-  const sLbl=s.on?(aS==='ok'?'NORMAL':aS==='hi'?'OVER':aS==='lo'?'UNDER':'ON'):'OFF';
-  document.getElementById('ig'+mc).innerHTML=`
-    <div class="${cls}" onclick="openImpM(${mc})">
-      ${attn?'<div class="imp-attn">!</div>':''}
-      <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Impeller Unit</div>
-      <div class="imp-a">${aLbl}</div>
-      <div class="imp-s">${sLbl}</div>
-      ${s.n?`<div style="font-size:.65rem;color:var(--warn);margin-top:5px;">⚠ ${s.n.slice(0,45)}</div>`:''}
-      ${s.dt?`<div style="font-size:.6rem;color:var(--muted);margin-top:4px;">⏱ ${fDT(s.dt)}</div>`:''}
-    </div>`;
-  document.getElementById('is'+mc).innerHTML=`
-    <div class="cp ${s.on?'ok':''}"><span class="v">${s.on?'ON':'OFF'}</span> Status</div>
-    <div class="cp ${aS==='ok'?'ok':aS==='hi'?'dg':aS==='lo'?'wn':'mu'}"><span class="v">${s.a!=null?s.a.toFixed(1):'—'}A</span> Ampere</div>
-    <div class="cp mu"><span class="v">${cfg.aLo}–${cfg.aHi}</span> Range</div>`;
-}
-
-function rTT(mc){
-  const td=today();
-  const n=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
-  const m=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
-  const tot=n+m,kg=tot*cfg.trCap;
-  const q=(id,v)=>{document.getElementById(id).textContent=v;};
-  q('t'+mc+'n',n||'—');q('t'+mc+'m',m||'—');
-  q('t'+mc+'nk',n?(n*cfg.trCap).toLocaleString('id-ID')+' Kg':'— Kg');
-  q('t'+mc+'mk',m?(m*cfg.trCap).toLocaleString('id-ID')+' Kg':'— Kg');
-  q('t'+mc+'tot',tot||'—');q('t'+mc+'kg',tot?kg.toLocaleString('id-ID')+' Kg':'—');
-}
-
-function rAl(){
-  const al=[];
-  [1,2].forEach(mc=>{
-    const s=iSt[mc];if(!s)return;
-    const aS=s.on?ampS(s.a):null;
-    if(aS==='hi')al.push({c:'al-d',t:`⚠ CND-${mc}: Ampere OVER (${s.a?.toFixed(1)}A > ${cfg.aHi}A)`});
-    if(aS==='lo')al.push({c:'al-w',t:`⚠ CND-${mc}: Ampere UNDER (${s.a?.toFixed(1)}A < ${cfg.aLo}A)`});
-    for(const nm of Object.keys(ltC)){
-      const t=tonSP(mc,nm);if(t==null)continue;
-      const md=modT(mc,nm),p=t/md;
-      if(p>=1)al.push({c:'al-d',t:`🔴 CND-${mc} ${nm}: Lifetime HABIS (${t.toFixed(0)}/${md} Ton)`});
-      else if(p>=.8)al.push({c:'al-w',t:`🟡 CND-${mc} ${nm}: Segera ganti (${Math.round(p*100)}%)`});
-    }
-  });
-  document.getElementById('al-box').innerHTML=al.length?al.map(a=>`<div class="al-i ${a.c}">${a.t}</div>`).join(''):'<div class="al-i al-o">✅ Semua sistem CND-1 & CND-2 normal</div>';
-}
-
-function drawDash(){
-  const{f,t}=dtR('cur'),days=allD(f,t),lbl=days.map(d=>d.slice(5)),c=cv();
-  const bS={scales:{x:{stacked:true,ticks:{color:c.tx,maxTicksLimit:8},grid:{display:false}},y:{stacked:true,grid:{color:c.gr},ticks:{color:c.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}};
-  const lS={scales:{x:{ticks:{color:c.tx,maxTicksLimit:8},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}};
-
-  [1,2].forEach(mc=>{
-    const col=mc===1?'rgba(15,108,189,':'rgba(124,58,237,';
-    const col2=mc===1?'rgba(8,145,178,':'rgba(167,139,250,';
-
-    // Gentani (Harian bar + Akumulasi line)
-    let aK=0,aS=0;const gD=[],gA=[];
-    days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/(tK/1000)).toFixed(2):null);gA.push(aK>0&&aS>0?+(aS/(aK/1000)).toFixed(2):null);});
-    rC('c-gt'+mc,'bar',lbl,[
-      {label:'Harian',data:gD,backgroundColor:col2+'.55)',type:'bar',yAxisID:'y'},
-      {label:'Akum',data:gA,borderColor:col+'.85)',borderWidth:2,type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2,yAxisID:'y'},
-    ],{scales:{x:{ticks:{color:c.tx,maxTicksLimit:8},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}});
-
-    // Steelshot (SS550 + Wire Cut stacked)
-    rC('c-ss'+mc,'bar',lbl,[
-      {label:'SS 550',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.s5||0),0)||null),backgroundColor:'rgba(124,58,237,.65)',stack:'s'},
-      {label:'Wire Cut',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.wc||0),0)||null),backgroundColor:'rgba(5,150,105,.65)',stack:'s'},
-    ],bS);
-
-    // Trolley trend NSP vs NSM
-    rC('c-tr'+mc,'bar',lbl,[
-      {label:'NSP',data:days.map(d=>trL.filter(r=>r.mc==mc&&r.date===d&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0)||null),backgroundColor:'rgba(8,145,178,.7)',stack:'s'},
-      {label:'NSM',data:days.map(d=>trL.filter(r=>r.mc==mc&&r.date===d&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0)||null),backgroundColor:col+'.6)',stack:'s'},
-    ],bS);
-
-    // Limbah CND (Pasir + Debu)
-    rC('c-lb'+mc+'d','bar',lbl,[
-      {label:'Pasir',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vp||0),0)||null),backgroundColor:'rgba(217,119,6,.7)',stack:'s'},
-      {label:'Debu',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vd||0),0)||null),backgroundColor:'rgba(8,145,178,.65)',stack:'s'},
-    ],bS);
-  });
-  // DC shared
-  drawDCdash();
-}
-
-function setIO(mc,on){iSt[mc].on=on;if(!on)iSt[mc].a=null;sv('iSt',iSt);rIG(mc);toast(`CND-${mc} ${on?'ON':'OFF'}`);}
-
-// ============================================================
-// WA PICKER ENGINE — Pilih Mesin, Tanggal & Shift sebelum kirim
-// ============================================================
-let _waFn   = null;   // report type: 'resume'|'preventive'|'sparepart'|'ampere'|'steelshot'|'limbah'|'gentani'
-let _waMc   = 1;      // mesin: 1 | 2 | 'both'
-let _waDate = null;   // YYYY-MM-DD
-let _waSh   = 'NSP';  // 'NSP' | 'NSM' | 'BOTH'
-let _waNote = '';
-
-function openWAPicker(reportType, defaultMc){
-  _waFn   = reportType;
-  _waMc   = defaultMc || 1;
-  const now = new Date();
-  _waDate = dStr(now);
-  _waSh   = gSh();
-  document.getElementById('wa-pick-date').value = _waDate;
-  // Titles
-  const titles = {
-    resume:     '📊 Resume Harian CND',
-    preventive: '🔧 Laporan Preventive',
-    sparepart:  '🔩 Laporan Sparepart',
-    ampere:     '⚡ Laporan Ampere',
-    steelshot:  '🔮 Laporan Steelshot',
-    limbah:     '🗑 Laporan Limbah',
-    gentani:    '📊 Laporan Gentani',
-  };
-  document.getElementById('wa-picker-title').textContent = titles[reportType]||'📤 Kirim Laporan WA';
-  // Hide mesin selector for 'resume' (selalu keduanya) or 'sparepart' (sudah ada di form)
-  const noMc = ['resume','dc'];  // DC tidak per-mesin
-  const mcRow = document.getElementById('wa-pick-mc-row');
-  if(mcRow) mcRow.style.display = noMc.includes(reportType)?'none':'block';
-  // Hide shift selector for reports that don't need it
-  const noShift = ['sparepart','preventive'];  // DC perlu shift
-  const shiftRow = document.getElementById('wa-pick-shift-row');
-  if(shiftRow) shiftRow.style.display = noShift.includes(reportType)?'none':'block';
-  // Set active mesin button
-  waPickMc(_waMc);
-  // Set active shift button
-  waPickShift(_waSh);
-  // Reset note
-  const noteEl = document.getElementById('wa-pick-note');
-  if(noteEl){ noteEl.value=''; }
-  _waNote = '';
-  waPickPreview();
-  document.getElementById('m-wa-picker').classList.add('on');
-}
-
-function waPickMc(mc){
-  _waMc = mc;
-  ['1','2','b'].forEach(x=>{
-    const btn = document.getElementById('wa-pick-mc'+(x==='b'?'b':x));
-    if(!btn) return;
-    const active = (x==='b'&&mc==='both') || (x!=='b'&&mc==+x);
-    btn.style.background = active ? (mc===1?'var(--c1)':mc===2?'var(--c2)':'var(--accent)') : 'var(--card2)';
-    btn.style.color      = active ? '#fff' : 'var(--text2)';
-    btn.style.border     = active ? 'none' : '1px solid var(--border)';
-  });
-  waPickPreview();
-}
-
-function waPickDate(offset){
-  const d = new Date();
-  d.setDate(d.getDate() + offset);
-  _waDate = dStr(d);
-  document.getElementById('wa-pick-date').value = _waDate;
-  waPickPreview();
-}
-document.getElementById('wa-pick-date')?.addEventListener('change', function(){
-  _waDate = this.value;
-  waPickPreview();
-});
-
-function waPickShift(sh){
-  _waSh = sh;
-  ['NSP','NSM','BOTH'].forEach(s=>{
-    const btn = document.getElementById('wa-pick-'+s.toLowerCase());
-    if(!btn) return;
-    const active = s === sh;
-    btn.style.background = active ? 'var(--accent)' : 'var(--card2)';
-    btn.style.color      = active ? '#fff' : 'var(--text2)';
-    btn.style.border     = active ? 'none' : '1px solid var(--border)';
-  });
-  waPickPreview();
-}
-
-function waPickPreview(){
-  const el = document.getElementById('wa-pick-preview');
-  if(!el) return;
-  const [y,m,d] = (_waDate||'').split('-');
-  const tglStr = _waDate ? `${+d}-${M_[+m-1]}-${y}` : '-';
-  const mcLabel = _waMc==='both'?'CND-1 & CND-2':`CND-${_waMc}`;
-  const shifts  = _waSh==='BOTH'?['NSP','NSM']:[_waSh];
-  let counts = '';
-  const mcList = _waMc==='both'?[1,2]:[+_waMc];
-  if(_waFn==='steelshot'){
-    mcList.forEach(mc=>{ shifts.forEach(sh=>{
-      const n=ssL.filter(r=>r.mc==mc&&r.date===_waDate&&r.sh===sh).length;
-      counts+=`CND-${mc} ${sh}: ${n} record  `;
-    });});
-  } else if(_waFn==='limbah'){
-    mcList.forEach(mc=>{ shifts.forEach(sh=>{
-      const n=lbL.filter(r=>r.mc==mc&&r.date===_waDate&&r.sh===sh).length;
-      counts+=`CND-${mc} ${sh}: ${n} record  `;
-    });});
-  } else if(_waFn==='ampere'){
-    mcList.forEach(mc=>{
-      const n=aLog.filter(r=>r.mc==mc&&(r.dt||'').slice(0,10)===_waDate).length;
-      counts+=`CND-${mc}: ${n} record  `;
-    });
-  } else if(_waFn==='sparepart'){
-    mcList.forEach(mc=>{
-      const n=spL.filter(r=>r.mc==mc&&r.date===_waDate).length;
-      counts+=`CND-${mc}: ${n} penggantian  `;
-    });
-  } else if(_waFn==='gentani'){
-    mcList.forEach(mc=>{
-      const n=trL.filter(r=>r.mc==mc&&r.date===_waDate).length;
-      counts+=`CND-${mc}: ${n} record  `;
-    });
-  } else if(_waFn==='preventive'){
-    mcList.forEach(mc=>{
-      const n=pvL.filter(r=>r.mc==mc&&r.date===_waDate).length;
-      counts+=`CND-${mc}: ${n} check  `;
-    });
-  } else if(_waFn==='dc'){
-    shifts.forEach(sh=>{
-      const n=dcL.filter(r=>r.date===_waDate&&r.sh===sh).length;
-      counts+=`${sh}: ${n} record  `;
-    });
-  } else if(_waFn==='resume'){
-    counts=`Semua mesin — data hari ${tglStr}`;
-  }
-  el.innerHTML=`<strong>📅 ${tglStr}</strong>  |  <strong>${mcLabel}</strong>  |  <strong>Shift: ${_waSh}</strong><br>
-    <span style="color:var(--ok);margin-top:4px;display:block;">${counts||'— belum ada data untuk tanggal ini'}</span>`;
-}
-
-function waPickSend(){
-  _waNote = (document.getElementById('wa-pick-note')?.value||'').trim();
-  const shifts = _waSh==='BOTH'?['NSP','NSM']:[_waSh];
-  const mcList = _waMc==='both'?[1,2]:[+_waMc];
-  switch(_waFn){
-    case 'resume':     waResume(_waDate);           break;
-    case 'preventive': mcList.forEach(mc=>waPv(mc,_waDate)); break;
-    case 'sparepart':  mcList.forEach(mc=>waSp(mc,_waDate)); break;
-    case 'ampere':     mcList.forEach(mc=>waAmp(mc,_waDate,shifts)); break;
-    case 'steelshot':  mcList.forEach(mc=>waSS(mc,_waDate,shifts)); break;
-    case 'limbah':     mcList.forEach(mc=>waLB(mc,_waDate,shifts)); break;
-    case 'gentani':    mcList.forEach(mc=>waGT(mc,_waDate,shifts)); break;
-    case 'dc':         waDC(_waDate, shifts); break;
-  }
-  cM('m-wa-picker');
-}
-
-function waResume(reportDate){
-  const td=reportDate||today(),now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  const sh=gSh();
-  // Determine overall health
-  const alerts=[];
-  let hasIssue=false;
-  let msg=`🏭 *RESUME TPM CND — DAILY REPORT*\n`;
-  msg+=`📅 ${fD(td)}  🕐 ${jam}\n`;
-  msg+=`🔄 Shift Aktif: *${sh}*\n`;
-  msg+=`📤 Dikirim: ${jam}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
-  [1,2].forEach(mc=>{
-    const s=iSt[mc]||{};
-    const aS=s.on?ampS(s.a):null;
-    const aIcon=aS==='ok'?'✅':aS==='hi'?'🔴':aS==='lo'?'🟡':'➖';
-    if(aS==='hi'||aS==='lo') hasIssue=true;
-    const trN=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
-    const trM=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
-    const trTot2=trN+trM,trKg=trTot2*cfg.trCap,trTon=trKg/1000;
-    const ss=ssKg(mc,td);
-    const gt=trKg>0&&ss>0?(ss/(trKg/1000)).toFixed(2)+' Kg/Ton':'—';
-    const gtLo=+cfg.gtLo||0,gtHi=+cfg.gtHi||0;
-    const gtVal=trKg>0&&ss>0?ss/(trKg/1000):null;
-    const gtIcon=gtVal==null?'➖':gtHi>0&&gtVal>gtHi?'🔴':gtLo>0&&gtVal<gtLo?'🟡':'🟢';
-    if(gtIcon==='🔴'||gtIcon==='🟡') hasIssue=true;
-    // Limbah hari ini
-    const lbPasir=lbL.filter(r=>r.mc==mc&&r.date===td).reduce((s,r)=>s+(+r.vp||0),0);
-    const lbDebu=lbL.filter(r=>r.mc==mc&&r.date===td).reduce((s,r)=>s+(+r.vd||0),0);
-    const lbIcon=(lbPasir>cfg.pHi||lbDebu>cfg.dHi)?'🔴':(lbPasir>0||lbDebu>0)?'🟢':'➖';
-    // Lifetime alerts
-    const ltAlerts=[];
-    for(const nm of Object.keys(ltC)){
-      const t=tonSP(mc,nm);if(t==null)continue;
-      const md=modT(mc,nm),p=t/md;
-      if(p>=1){ltAlerts.push(`  🔴 ${nm}: HABIS`);hasIssue=true;}
-      else if(p>=0.8){ltAlerts.push(`  🟡 ${nm}: ${Math.round(p*100)}%`);hasIssue=true;}
-    }
-    msg+=`\n⚙ *CND-${mc}*\n`;
-    msg+=`  Impeller : ${s.on?'ON':'OFF'} | ${s.a!=null?s.a.toFixed(1)+'A':'—'} ${aIcon} | ${aS==='ok'?'NORMAL':aS==='hi'?'OVER':aS==='lo'?'UNDER':'—'}\n`;
-    msg+=`  Range    : ${cfg.aLo}–${cfg.aHi} A\n`;
-    msg+=`\n  🚛 Trolley: NSP ${trN} + NSM ${trM} = *${trTot2}* unit\n`;
-    msg+=`  Material : *${trTon.toFixed(2)} Ton* (${trKg.toLocaleString('id-ID')} Kg)\n`;
-    msg+=`\n  🔮 Steelshot (SS+WC) : *${ss.toLocaleString('id-ID')} Kg*\n`;
-    msg+=`  📊 Gentani           : *${gt}* ${gtIcon}\n`;
-    msg+=`  🎯 Target Gentani    : ${cfg.gtLo||'—'}–${cfg.gtHi||'—'} Kg/Ton\n`;
-    msg+=`\n  🗑 Limbah Pasir : ${lbPasir} Trolley (std: ${cfg.pLo}–${cfg.pHi}) ${lbIcon}\n`;
-    msg+=`     Limbah Debu  : ${lbDebu} Trolley (std: ${cfg.dLo}–${cfg.dHi})\n`;
-    if(ltAlerts.length){msg+=`\n  ⚠ Lifetime Alert:\n${ltAlerts.join('\n')}\n`;}
-    msg+=`─────────────────────\n`;
-  });
-  msg+=`\n${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'ADA KONDISI YANG PERLU PERHATIAN':'SEMUA CND NORMAL'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(td)} ${jam} — TPM CND Casting 2_`;
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  sendWA(msg);
-}
-
-function waPv(mc, reportDate){
-  const w=document.getElementById('p'+mc+'w').value;
-  const m=document.getElementById('p'+mc+'m').value;
-  const d=reportDate||document.getElementById('p'+mc+'d').value;
-  const pic=document.getElementById('p'+mc+'p').value||'—';
-  const n=document.getElementById('p'+mc+'n').value.trim();
-  const now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  // Count from current state
-  let ok=0,ng=0,pend=0;const ngItems=[];
-  PVI.forEach(sec=>sec.items.forEach(it=>{
-    const v=_pvS[mc][it.id];
-    if(v==='ok')ok++;
-    else if(v==='ng'){ng++;ngItems.push(it.l);}
-    else pend++;
-  }));
-  const tot=ok+ng+pend;
-  const pct=tot>0?Math.round(ok/tot*100):0;
-  // Month name
-  const [my,mm]=m?m.split('-'):['',''];
-  const mStr=mm?M_[+mm-1]+' '+my:'—';
-  let msg=`🔧 *LAPORAN PREVENTIVE CHECK*\n`;
-  msg+=`📅 ${fD(d)}  🕐 ${jam}\n`;
-  msg+=`🏭 Mesin: *CND-${mc}*\n`;
-  msg+=`📋 Periode: Minggu ${w} — ${mStr}\n`;
-  msg+=`👤 PIC: ${pic}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`✅ OK      : ${ok} item (${pct}%)\n`;
-  msg+=`❌ NG      : ${ng} item\n`;
-  msg+=`○  Pending : ${pend} item\n`;
-  msg+=`   Total   : ${tot} item\n`;
-  if(ngItems.length){
-    msg+=`\n⚠ *Item NG — Perlu Tindakan:*\n`;
-    ngItems.forEach(x=>{ msg+=`  • ${x}\n`; });
-  }
-  if(n) msg+=`\n📝 *Catatan Abnormal:*\n${n}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`${ng>0?'🔴':pend>0?'🟡':'🟢'} *KESIMPULAN: ${ng>0?`ADA ${ng} ITEM NG — TINDAKAN DIPERLUKAN`:pend>0?'ADA ITEM BELUM DICEK':'SEMUA ITEM OK'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(d)} ${jam} — TPM CND Casting 2_`;
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  sendWA(msg);
-}
-
-function waSp(reportMc, reportDate){
-  const mc=reportMc||+document.getElementById('smc').value;
-  const d=reportDate||document.getElementById('spd').value;
-  if(!d){toast('Isi tanggal dulu','warn');return;}
-  const j=document.getElementById('spj').value;
-  const nm=j==='assy'?'UNIT ASSY':document.getElementById('spnm').value;
-  const kg=+(j==='assy'?document.getElementById('spaj').value:document.getElementById('spkg').value)||0;
-  const op=document.getElementById('spop').value||'—';
-  const no=document.getElementById('spno').value||'';
-  const now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  // Cek lifetime warnings for this machine
-  const warns=[];
-  for(const nm2 of Object.keys(ltC)){
-    const t=tonSP(mc,nm2);if(t==null)continue;
-    const md=modT(mc,nm2),p=t/md;
-    if(p>=1) warns.push(`  ⚠ ${nm2}: HABIS (${t.toFixed(0)}/${md} Ton)`);
-    else if(p>=0.8) warns.push(`  📌 ${nm2}: ${Math.round(p*100)}% (Segera cek)`);
-  }
-  let msg=`🔩 *LAPORAN PENGGANTIAN SPAREPART*\n`;
-  msg+=`📅 ${fD(d)}  🕐 ${jam}\n`;
-  msg+=`🏭 Mesin: *CND-${mc}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`• Part: *${nm}*\n`;
-  msg+=`  Kg Pakai: *${(kg/1000).toFixed(2)} Ton* (${kg.toLocaleString('id-ID')} Kg)\n`;
-  msg+=`  Jenis: ${j==='assy'?'Unit Assy':'Satuan'}\n`;
-  msg+=`  Operator: ${op}\n`;
-  if(no) msg+=`  Catatan: ${no}\n`;
-  if(warns.length){
-    msg+=`\n🔔 *Status Lifetime CND-${mc}:*\n${warns.join('\n')}\n`;
-  }
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`${warns.some(w=>w.includes('HABIS'))?'🔴':warns.length?'🟡':'🟢'} *KESIMPULAN: ${warns.some(w=>w.includes('HABIS'))?'ADA LIFETIME HABIS':warns.length?'PERLU PERHATIAN':'SEMUA LIFETIME OK'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(d)} ${jam} — TPM CND Casting 2_`;
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  sendWA(msg);
-}
-
-// ── WA AMPERE ─────────────────────────────────────────────────
-function waAmp(mc, reportDate, reportShifts){
-  const dt=document.getElementById('a'+mc+'dt').value;
-  const sh=document.getElementById('a'+mc+'sh').value;
-  const v=parseFloat(document.getElementById('a'+mc+'a').value);
-  const op=document.getElementById('a'+mc+'op').value||'—';
-  const n=document.getElementById('a'+mc+'no').value||'';
-  const now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  const d=reportDate||(dt?dt.slice(0,10):today());
-  const jamInput=dt?dt.slice(11,16):'—';
-  const s=impSt[mc]||{};
-  const aS=isNaN(v)?'na':ampS(v);
-  const icon=aS==='ok'?'✅':aS==='hi'?'🔴':aS==='lo'?'🟡':'➖';
-  const statTxt=aS==='ok'?'NORMAL':aS==='hi'?`OVER batas atas ${cfg.aHi}A`:aS==='lo'?`UNDER batas bawah ${cfg.aLo}A`:'Belum diinput';
-  // Last 5 readings for this machine
-  const last5=[...aLog].filter(r=>r.mc==mc).sort((a,b)=>(b.dt||'').localeCompare(a.dt||'')).slice(0,5);
-  let msg=`⚡ *LAPORAN AMPERE IMPELLER*\n`;
-  msg+=`📅 ${fD(d)}  🕐 ${jamInput}\n`;
-  msg+=`🏭 Mesin: *CND-${mc}*  |  Shift: ${sh}\n`;
-  msg+=`📤 Dikirim: ${jam}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`Range Normal: *${cfg.aLo}–${cfg.aHi} A*\n\n`;
-  msg+=`⚙ *Impeller Unit*\n`;
-  msg+=`  Status: ${s.on?'ON':'OFF'}\n`;
-  msg+=`  Ampere: *${isNaN(v)?'—':v.toFixed(1)} A* ${icon}\n`;
-  msg+=`  ${icon} *${statTxt}*\n`;
-  if(op!=='—') msg+=`  Operator: ${op}\n`;
-  if(n) msg+=`  Catatan: ${n}\n`;
-  if(last5.length>1){
-    msg+=`\n📈 *5 Pembacaan Terakhir:*\n`;
-    last5.forEach(r=>{
-      const ic=r.status==='ok'?'✅':r.status==='hi'?'🔴':'🟡';
-      msg+=`  ${ic} ${fDT(r.dt).slice(0,14)} — ${r.v?.toFixed(1)}A (${r.sh})\n`;
-    });
-  }
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`${aS==='hi'||aS==='lo'?'🔴':'🟢'} *KESIMPULAN: ${aS==='ok'?'AMPERE NORMAL':aS==='hi'?'AMPERE OVER — SEGERA CEK':aS==='lo'?'AMPERE UNDER — SEGERA CEK':'—'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(d)} ${jam} — TPM CND Casting 2_`;
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  sendWA(msg);
-}
-
-// ── WA STEEL SHOT ─────────────────────────────────────────────
-function waSS(mc, reportDate, reportShifts){
-  const d=reportDate||document.getElementById('s'+mc+'d').value;
-  const sh=(reportShifts&&reportShifts.length===1)?reportShifts[0]:document.getElementById('s'+mc+'sh').value;
-  const s5=+document.getElementById('s'+mc+'50').value||0;
-  const wc=+document.getElementById('s'+mc+'wc').value||0;
-  const lb=+document.getElementById('s'+mc+'lb').value||0;
-  const op=document.getElementById('s'+mc+'op').value||'—';
-  const no=document.getElementById('s'+mc+'no').value||'';
-  const now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  const totalInput=s5+wc;
-  // Status check vs target (jika ada)
-  function stCheck(val,lo,hi,unit='Kg'){
-    if(!lo&&!hi) return '➖ Tidak ada standar';
-    if(val===0)  return '⬜ Belum ada input';
-    if(hi>0&&val>hi) return `🔴 *OUT STANDARD* (di atas ${hi} ${unit})`;
-    if(lo>0&&val<lo) return `🟡 *OUT STANDARD* (di bawah ${lo} ${unit})`;
-    return '🟢 Normal';
-  }
-  const stSS  = stCheck(s5, cfg.sLo||0, cfg.sHi||0);
-  const stWC  = stCheck(wc, cfg.wLo||0, cfg.wHi||0);
-  const stBekas= stCheck(lb, cfg.lsLo||0, cfg.lsHi||0);
-  const hasOut=[stSS,stWC,stBekas].some(x=>x.includes('OUT'));
-  const allOk =[stSS,stWC,stBekas].every(x=>x.includes('Normal')||x.includes('standar')||x.includes('input'));
-  let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n`;
-  msg+=`📅 ${fD(d)}  🕐 ${jam}\n`;
-  msg+=`🏭 Mesin: *CND-${mc}*  |  Shift: ${sh}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`*SS 550*\n`;
-  msg+=`  Input ${sh}: *${s5} Kg*\n`;
-  if(cfg.sLo||cfg.sHi) msg+=`  Standar: ${cfg.sLo||0}–${cfg.sHi||0} Kg\n`;
-  msg+=`  Status: ${stSS}\n\n`;
-  msg+=`*Wire Cut*\n`;
-  msg+=`  Input ${sh}: *${wc} Kg*\n`;
-  if(cfg.wLo||cfg.wHi) msg+=`  Standar: ${cfg.wLo||0}–${cfg.wHi||0} Kg\n`;
-  msg+=`  Status: ${stWC}\n\n`;
-  msg+=`*SS Bekas*\n`;
-  msg+=`  Input ${sh}: *${lb} Kg*\n`;
-  msg+=`  Status: ${stBekas}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`💰 *Total Input (SS+WC): ${totalInput} Kg*\n`;
-  if(no) msg+=`📝 Catatan: ${no}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'ADA ITEM OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(d)} ${jam} — TPM CND Casting 2_`;
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  sendWA(msg);
-}
-
-// ── WA LIMBAH ─────────────────────────────────────────────────
-function waLB(mc, reportDate, reportShifts){
-  const d=reportDate||document.getElementById('l'+mc+'d').value;
-  const sh=(reportShifts&&reportShifts.length===1)?reportShifts[0]:document.getElementById('l'+mc+'sh').value;
-  const vp=+document.getElementById('l'+mc+'vp').value||0;
-  const vd=+document.getElementById('l'+mc+'vd').value||0;
-  const lo2=document.getElementById('l'+mc+'lo').value||'—';
-  const op=document.getElementById('l'+mc+'op').value||'—';
-  const now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  function lbStat(val,lo,hi){
-    if(val===0) return '⬜ Belum ada input';
-    if(hi>0&&val>hi) return `🔴 *OUT STANDARD* (di atas ${hi} Trolley)`;
-    if(lo>0&&val<lo) return `🟡 *OUT STANDARD* (di bawah ${lo} Trolley)`;
-    return '🟢 Normal';
-  }
-  const stPasir=lbStat(vp,cfg.pLo,cfg.pHi);
-  const stDebu =lbStat(vd,cfg.dLo,cfg.dHi);
-  const hasOut=[stPasir,stDebu].some(x=>x.includes('OUT'));
-  const allOk =[stPasir,stDebu].every(x=>x.includes('Normal')||x.includes('input'));
-  let msg=`🗑 *LAPORAN LIMBAH HARIAN*\n`;
-  msg+=`📅 ${fD(d)}  🕐 ${jam}\n`;
-  msg+=`🏭 Mesin: *CND-${mc}*  |  Shift: ${sh}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`*Pasir (Trolley)*\n`;
-  msg+=`  Total ${sh}: *${vp} Trolley*\n`;
-  msg+=`  Standar: ${cfg.pLo||0}–${cfg.pHi||0} Trolley\n`;
-  msg+=`  Status: ${stPasir}\n\n`;
-  msg+=`*Debu (Trolley)*\n`;
-  msg+=`  Total ${sh}: *${vd} Trolley*\n`;
-  msg+=`  Standar: ${cfg.dLo||0}–${cfg.dHi||0} Trolley\n`;
-  msg+=`  Status: ${stDebu}\n\n`;
-  msg+=`Total Limbah: *${vp+vd} Trolley*\n`;
-  msg+=`Lokasi TPS: ${lo2}  |  Operator: ${op}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'ADA ITEM OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(d)} ${jam} — TPM CND Casting 2_`;
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  sendWA(msg);
-}
-
-// ── WA GENTANI ────────────────────────────────────────────────
-function waGT(mc, reportDate, reportShifts){
-  const d=reportDate||document.getElementById('g'+mc+'d').value||today();
-  const sh=(reportShifts&&reportShifts.length===1)?reportShifts[0]:document.getElementById('g'+mc+'sh').value;
-  const tn=+document.getElementById('g'+mc+'tn').value||0;
-  const tm=+document.getElementById('g'+mc+'tm').value||0;
-  const op=document.getElementById('g'+mc+'op').value||'—';
-  const now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  const tot=tn+tm,totKg=tot*cfg.trCap,totTon=totKg/1000;
-  // Harian
-  const ssKgH=ssKg(mc,d);
-  const gtHari=totKg>0&&ssKgH>0?ssKgH/(totKg/1000):null;
-  // Akumulasi bulan
-  const [ry,rm]=d.split('-');
-  const fb=`${ry}-${rm}-01`;
-  let accKg=0,accTon=0;
-  allD(fb,d).forEach(dt=>{
-    const tK2=trTot(mc,dt)*cfg.trCap;
-    accKg+=ssKg(mc,dt);accTon+=tK2/1000;
-  });
-  const gtAkum=accTon>0?accKg/accTon:null;
-  const lo=+cfg.gtLo||0,hi=+cfg.gtHi||0;
-  function gstat(v){
-    if(v==null)return '➖ Belum ada data';
-    if(hi>0&&v>hi)return `🔴 *TINGGI* (di atas ${hi} Kg/Ton)`;
-    if(lo>0&&v<lo)return `🟡 *RENDAH* (di bawah ${lo} Kg/Ton)`;
-    return '🟢 Normal';
-  }
-  const stHari=gstat(gtHari),stAkum=gstat(gtAkum);
-  const hasIssue=stHari.includes('TINGGI')||stHari.includes('RENDAH')||stAkum.includes('TINGGI')||stAkum.includes('RENDAH');
-  let msg=`📊 *LAPORAN GENTANI STEELSHOT*\n`;
-  msg+=`📅 ${fD(d)}  🕐 ${jam}\n`;
-  msg+=`🏭 Mesin: *CND-${mc}*  |  Shift: ${sh}\n`;
-  msg+=`📤 Dikirim: ${jam}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`_Gentani = (SS550 + Wire Cut) Kg ÷ (Total Trolley × ${cfg.trCap} Kg/1000)_\n\n`;
-  msg+=`*GENTANI HARI INI*\n`;
-  msg+=`  Trolley NSP: *${tn}* unit\n`;
-  msg+=`  Trolley NSM: *${tm}* unit\n`;
-  msg+=`  Total: *${tot} trolley* → *${totTon.toFixed(2)} Ton*\n`;
-  msg+=`  Steelshot (SS+WC): *${ssKgH.toLocaleString('id-ID')} Kg*\n`;
-  msg+=`  Gentani: *${gtHari!=null?gtHari.toFixed(2)+' Kg/Ton':'—'}*\n`;
-  msg+=`  Status: ${stHari}\n\n`;
-  msg+=`*AKUMULASI BULAN INI* (s/d ${fD(d)})\n`;
-  msg+=`  Total Steelshot: *${accKg.toLocaleString('id-ID')} Kg*\n`;
-  msg+=`  Total Material: *${accTon.toFixed(2)} Ton*\n`;
-  msg+=`  Gentani Akum: *${gtAkum!=null?gtAkum.toFixed(2)+' Kg/Ton':'—'}*\n`;
-  msg+=`  Status: ${stAkum}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`🎯 Target: ${lo||'—'} s/d ${hi||'—'} Kg/Ton\n`;
-  msg+=`${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'PERLU PERHATIAN':'GENTANI NORMAL'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(d)} ${jam} — TPM CND Casting 2_`;
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  sendWA(msg);
-}
-
-
-// ============================================================
-// PREVENTIVE
-// ============================================================
-function rPrev(){
-  const sh=gSh(),td=today(),mo=curMo();
-  [1,2].forEach(mc=>{
-    const d=document.getElementById('p'+mc+'d');if(!d.value)d.value=gSD(sh);
-    const m=document.getElementById('p'+mc+'m');if(!m.value)m.value=mo;
-    renderPck(mc);
-  });
-  rPvH();
-}
-function renderPck(mc){
-  let h='';
-  PVI.forEach(sec=>{
-    h+=`<div class="pv-sec"><div class="pv-sh">${sec.sec}</div>`;
-    sec.items.forEach(it=>{
-      h+=`<div class="pv-i" id="pvi${mc}${it.id}"><div class="pv-l"><div style="font-weight:600;">${it.l}</div><div class="pv-d">${it.d}</div></div><div class="pv-bb"><button class="pv-b" onclick="sPVI(${mc},'${it.id}','ok',this)">✓ OK</button><button class="pv-b" onclick="sPVI(${mc},'${it.id}','ng',this)">✗ NG</button><button class="pv-b" onclick="sPVI(${mc},'${it.id}',null,this)">○</button></div></div>`;
-    });
-    h+='</div>';
-  });
-  document.getElementById('pck'+mc).innerHTML=h;_pvS[mc]={};
-}
-function sPVI(mc,id,v,btn){
-  _pvS[mc][id]=v;
-  const r=document.getElementById('pvi'+mc+id);
-  r.className='pv-i'+(v==='ok'?' pok':v==='ng'?' png':'');
-  r.querySelectorAll('.pv-b').forEach(b=>b.className='pv-b');
-  if(v&&btn)btn.className='pv-b '+(v==='ok'?'ok':'ng');
-}
-function savePv(mc,e){
-  const btn=e?.target;
-  const w=document.getElementById('p'+mc+'w').value,m=document.getElementById('p'+mc+'m').value,d=document.getElementById('p'+mc+'d').value,pic=document.getElementById('p'+mc+'p').value.trim(),n=document.getElementById('p'+mc+'n').value.trim();
-  if(!d){toast('Tanggal wajib','warn');return;}if(!pic){toast('PIC wajib','warn');return;}
-  let ok=0,ng=0;const items={};
-  PVI.forEach(sec=>sec.items.forEach(it=>{const v=_pvS[mc][it.id]||null;items[it.id]=v;if(v==='ok')ok++;if(v==='ng')ng++;}));
-  showSp('Menyimpan...',btn);
-  setTimeout(async()=>{
-    pvL.push({mc,w,m,date:d,pic,items,n,okCnt:ok,ngCnt:ng});sv('pvL',pvL);
-    await api('addPreventive',{mc,w,m,date:d,pic,okCnt:ok,ngCnt:ng,items_json:JSON.stringify(items),n});
-    hideSp(btn);toast(`✅ Preventive CND-${mc} tersimpan`);renderPck(mc);document.getElementById('p'+mc+'p').value='';document.getElementById('p'+mc+'n').value='';rPvH();
-  },400);
-}
-function rPvH(){
-  const mcf=document.getElementById('pvfmc').value,pdf=document.getElementById('pvfpd').value;
-  let rows=[...pvL].sort((a,b)=>b.date.localeCompare(a.date));
-  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
-  if(pdf==='30d'){const cx=new Date();cx.setDate(cx.getDate()-30);rows=rows.filter(r=>pD(r.date)>=cx);}
-  if(pdf==='90d'){const cx=new Date();cx.setDate(cx.getDate()-90);rows=rows.filter(r=>pD(r.date)>=cx);}
-  document.getElementById('pv-tb').innerHTML=rows.length?rows.map(r=>`<tr><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>Mgg ${r.w} · ${r.m||'—'}</td><td>${fD(r.date)}</td><td>${r.pic}</td><td style="color:var(--ok);font-weight:700;">${r.okCnt||0}</td><td style="color:${r.ngCnt?'var(--danger)':'var(--muted)'};font-weight:700;">${r.ngCnt||0}</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.n||'—'}</td></tr>`).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
-}
-
-// ============================================================
-// SPAREPART
-// ============================================================
-function rSp(){if(!document.getElementById('spd').value)document.getElementById('spd').value=today();rLtAll();rSpH();}
-function onSpJ(){const j=document.getElementById('spj').value;document.getElementById('sp-pr').style.display=j==='assy'?'none':'block';document.getElementById('sp-ai').style.display=j==='assy'?'block':'none';}
-function rLtAll(){rLtMc(1);rLtMc(2);}
-function rLtMc(mc){
-  let h='';
-  for(const nm of Object.keys(ltC)){
-    const md=modT(mc,nm),t=tonSP(mc,nm),p=t!=null?Math.min(t/md,1):0;
-    const col=p>=1?'var(--danger)':p>=.8?'var(--warn)':'var(--ok)';
-    const rs=spL.filter(s=>s.mc==mc&&s.nm===nm).sort((a,b)=>b.date.localeCompare(a.date));
-    h+=`<div style="margin-bottom:9px;padding:9px 11px;background:var(--card2);border:1px solid var(--border);border-radius:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:.8rem;font-weight:700;">${nm}</span><span style="color:${col};font-weight:700;font-size:.78rem;">${t!=null?t.toFixed(1):'—'} / ${md} Ton (${Math.round(p*100)}%)</span></div><div class="ltw"><div class="lt" style="width:${Math.round(p*100)}%;background:${col};"></div></div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;">Terakhir: ${rs.length?fD(rs[0].date):'Belum ada'}</div></div>`;
-  }
-  document.getElementById('lt'+mc).innerHTML=h;
-}
-function saveSp(e){
-  const btn=e?.target,mc=+document.getElementById('smc').value,d=document.getElementById('spd').value,j=document.getElementById('spj').value,op=document.getElementById('spop').value.trim(),no=document.getElementById('spno').value.trim();
-  if(!d){toast('Tanggal wajib','warn');return;}
-  showSp('Menyimpan...',btn);
-  setTimeout(async()=>{
-    let rows=[];
-    if(j==='assy'){const kg=+document.getElementById('spaj').value||0;['Impeller Blade','Control Cage','Distributor','End Liner Atas','End Liner Bawah','Ceiling Liner','Front Cover','V-Belt'].forEach(nm=>{spL.push({mc,date:d,nm,kg,q:1,kn:'Assy',j:'assy',op,no});rows.push({mc,date:d,nm,kg,q:1,kn:'Assy',j:'assy',op,no});});}
-    else{const nm=document.getElementById('spnm').value,kg=+document.getElementById('spkg').value||0,q=+document.getElementById('spq').value||1,kn=document.getElementById('spk').value;const r={mc,date:d,nm,kg,q,kn,j:'part',op,no};spL.push(r);rows=[r];}
-    sv('spL',spL);await api('addSparepart',{rows_json:JSON.stringify(rows)});
-    hideSp(btn);toast('✅ Sparepart tersimpan');rLtAll();rSpH();
-  },400);
-}
-function rSpH(){
-  const mcf=document.getElementById('spfmc').value,pdf=document.getElementById('spfpd').value;
-  let rows=[...spL].sort((a,b)=>b.date.localeCompare(a.date));
-  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
-  if(pdf==='30d'){const cx=new Date();cx.setDate(cx.getDate()-30);rows=rows.filter(r=>pD(r.date)>=cx);}
-  if(pdf==='90d'){const cx=new Date();cx.setDate(cx.getDate()-90);rows=rows.filter(r=>pD(r.date)>=cx);}
-  document.getElementById('sp-tb').innerHTML=rows.length?rows.map(r=>`<tr><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.nm}</td><td>${r.kg?(r.kg/1000).toFixed(1)+' Ton':'—'}</td><td>${r.q}</td><td>${r.kn||'—'}</td><td>${r.op||'—'}</td></tr>`).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
-}
-
-// ============================================================
-// AMPERE
-// ============================================================
-function rAmp(){
-  const sh=gSh();
-  [1,2].forEach(mc=>{if(!document.getElementById('a'+mc+'dt').value)document.getElementById('a'+mc+'dt').value=nowL();document.getElementById('a'+mc+'sh').value=sh;});
-  document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=`${cfg.aLo}–${cfg.aHi}A`;
-  drawAC(1);drawAC(2);rAH();
-}
-function ampPv(mc){const v=parseFloat(document.getElementById('a'+mc+'a').value);const el=document.getElementById('a'+mc+'pv');if(isNaN(v)){el.textContent='';return;}const s=ampS(v);el.textContent=s==='ok'?`✅ Normal (${cfg.aLo}–${cfg.aHi}A)`:s==='hi'?`🔴 OVER > ${cfg.aHi}A`:`🟡 UNDER < ${cfg.aLo}A`;el.style.color=s==='ok'?'var(--ok)':s==='hi'?'var(--danger)':'var(--warn)';}
-function saveAmp(mc,e){
-  const btn=e?.target,dt=document.getElementById('a'+mc+'dt').value,sh=document.getElementById('a'+mc+'sh').value,v=parseFloat(document.getElementById('a'+mc+'a').value),op=document.getElementById('a'+mc+'op').value.trim(),n=document.getElementById('a'+mc+'no').value.trim();
-  if(!dt){toast('Waktu wajib','warn');return;}if(isNaN(v)){toast('Ampere wajib','warn');return;}
-  showSp('Menyimpan...',btn);
-  setTimeout(async()=>{
-    const status=ampS(v);const entry={mc,dt:new Date(dt).toISOString(),sh,v,op,status,n};
-    aLog.push(entry);sv('aLog',aLog);iSt[mc].a=v;iSt[mc].dt=new Date(dt).toISOString();sv('iSt',iSt);
-    await Promise.all([api('addAmpere',{mc,dt:entry.dt,sh,v,op,status,n}),api('updateImpState',{mc,on:iSt[mc].on,a:v,dt:iSt[mc].dt,n:iSt[mc].n,cf:iSt[mc].cf})]);
-    hideSp(btn);toast(`✅ Ampere CND-${mc} tersimpan`);document.getElementById('a'+mc+'a').value='';document.getElementById('a'+mc+'pv').textContent='';rIG(mc);rAH();
-  },400);
-}
-function drawAC(mc){
-  const{f,t}=dtR(document.getElementById('acp'+mc).value),days=allD(f,t),c=cv();
-  const ds=days.map(d=>{const vs=aLog.filter(r=>r.mc==mc&&(r.dt||'').slice(0,10)===d);return vs.length?vs.reduce((s,r)=>s+r.v,0)/vs.length:null;});
-  rC('c-amp'+mc,'line',days.map(d=>d.slice(5)),[{label:'Ampere',data:ds,borderColor:mc===1?'rgba(15,108,189,.8)':'rgba(124,58,237,.8)',backgroundColor:mc===1?'rgba(15,108,189,.1)':'rgba(124,58,237,.1)',tension:.3,fill:true,spanGaps:true,pointRadius:3}],{plugins:{legend:{display:false}},scales:{x:{ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx}}}});
-}
-function rAH(){
-  const mcf=document.getElementById('afmc').value,shf=document.getElementById('afsh').value,stf=document.getElementById('afst').value;
-  let rows=[...aLog].sort((a,b)=>(b.dt||'').localeCompare(a.dt||'')).slice(0,120);
-  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);if(shf!=='all')rows=rows.filter(r=>r.sh===shf);if(stf!=='all')rows=rows.filter(r=>r.status===stf);
-  document.getElementById('amp-tb').innerHTML=rows.length?rows.map(r=>`<tr><td style="font-size:.7rem;">${fDT(r.dt)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td style="font-family:'Courier New',monospace;font-weight:700;">${r.v?.toFixed(1)||'—'}A</td><td><span class="bd ${r.status==='ok'?'bd-ok':r.status==='hi'?'bd-ng':'bd-wn'}">${r.status==='ok'?'NORMAL':r.status==='hi'?'OVER':'UNDER'}</span></td><td>${r.op||'—'}</td></tr>`).join(''):'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
-}
-
-// ============================================================
-// STEEL SHOT
-// ============================================================
-function rSs(){const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('s'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('s'+mc+'sh').value=sh;});drawSC(1);drawSC(2);rSSH();}
-function saveSS(mc,e){
-  const btn=e?.target,d=document.getElementById('s'+mc+'d').value,sh=document.getElementById('s'+mc+'sh').value,s5=+document.getElementById('s'+mc+'50').value||0,wc=+document.getElementById('s'+mc+'wc').value||0,lb=+document.getElementById('s'+mc+'lb').value||0,op=document.getElementById('s'+mc+'op').value.trim(),n=document.getElementById('s'+mc+'no').value.trim();
-  if(!d){toast('Tanggal wajib','warn');return;}
-  showSp('Menyimpan...',btn);
-  setTimeout(async()=>{ssL.push({mc,date:d,sh,s5,wc,lb,op,n});sv('ssL',ssL);await api('addSteelshot',{mc,date:d,sh,s5,wc,lb,op,n});hideSp(btn);toast(`✅ Steelshot CND-${mc} tersimpan`);document.getElementById('s'+mc+'50').value='';document.getElementById('s'+mc+'wc').value='';document.getElementById('s'+mc+'lb').value='';drawSC(mc);rSSH();},400);
-}
-function drawSC(mc){
-  const{f,t}=dtR(document.getElementById('scp'+mc).value),days=allD(f,t),c=cv();
-  rC('c-ss-f'+mc,'bar',days.map(d=>d.slice(5)),[
-    {label:'SS 550',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.s5||0),0)||null),backgroundColor:'rgba(124,58,237,.65)',stack:'s'},
-    {label:'Wire Cut',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.wc||0),0)||null),backgroundColor:'rgba(5,150,105,.65)',stack:'s'},
-    {label:'SS Bekas',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.lb||0),0)||null),backgroundColor:'rgba(180,83,9,.5)',stack:'b'},
-  ],{scales:{x:{stacked:true,ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{stacked:true,grid:{color:c.gr},ticks:{color:c.tx}}},plugins:{legend:{labels:{color:c.tx,font:{size:10},boxWidth:10}}}});
-}
-function rSSH(){
-  const mcf=document.getElementById('ssfmc').value,shf=document.getElementById('ssfsh').value;
-  let rows=[...ssL].sort((a,b)=>b.date.localeCompare(a.date));
-  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);if(shf!=='all')rows=rows.filter(r=>r.sh===shf);
-  document.getElementById('ss-tb').innerHTML=rows.length?rows.map(r=>`<tr><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td>${r.s5||0}</td><td>${r.wc||0}</td><td>${r.lb||0}</td><td style="font-weight:700;">${(+r.s5||0)+(+r.wc||0)+(+r.lb||0)}</td><td>${r.op||'—'}</td></tr>`).join(''):'<tr><td colspan="8" class="es">Belum ada data</td></tr>';
-}
-
-// ============================================================
-// LIMBAH (Pasir/Debu/Trolley + Dust Collector/Karung)
-// ============================================================
-function rLb(){
-  const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('l'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('l'+mc+'sh').value=sh;});
-  const dcd=document.getElementById('dc-d');if(dcd&&!dcd.value)dcd.value=gSD(sh);
-  const dcsh=document.getElementById('dc-sh');if(dcsh)dcsh.value=sh;
-  const dcStd=document.getElementById('dc-std-lbl');if(dcStd)dcStd.textContent=(cfg.dcLo||0)+'–'+(cfg.dcHi||0)+' karung';
-  drawLC(1);drawLC(2);rLBH();drawDC();rDCH();
-}
-function saveLB(mc,e){
-  const btn=e?.target;
-  const d=document.getElementById('l'+mc+'d').value;
-  const sh=document.getElementById('l'+mc+'sh').value;
-  const vp=+document.getElementById('l'+mc+'vp').value||0;
-  const vd=+document.getElementById('l'+mc+'vd').value||0;
-  const lo2=document.getElementById('l'+mc+'lo').value.trim();
-  const op=document.getElementById('l'+mc+'op').value.trim();
-  if(!d){toast('Tanggal wajib','warn');return;}
-  showSp('Menyimpan...',btn);
-  setTimeout(async()=>{
-    lbL.push({mc,date:d,sh,vp,vd,lo:lo2,op});sv('lbL',lbL);
-    await api('addLimbah',{mc,date:d,sh,vp,vd,lo:lo2,op});
-    hideSp(btn);toast(`✅ Limbah CND-${mc} tersimpan`);drawLC(mc);rLBH();
-  },400);
-}
-function drawLC(mc){
-  const{f,t}=dtR(document.getElementById('lcp'+mc).value),days=allD(f,t),c=cv();
-  rC('c-lb'+mc,'bar',days.map(d=>d.slice(5)),[
-    {label:'Pasir (Trolley)',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vp||0),0)||null),backgroundColor:'rgba(217,119,6,.7)',stack:'s'},
-    {label:'Debu (Trolley)',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vd||0),0)||null),backgroundColor:'rgba(8,145,178,.65)',stack:'s'},
-  ],{scales:{x:{stacked:true,ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{stacked:true,grid:{color:c.gr},ticks:{color:c.tx}}},plugins:{legend:{labels:{color:c.tx,font:{size:10},boxWidth:10}}}});
-}
-function drawLCdash(mc){
-  // Dashboard mini chart — all 3 types
-  const{f,t}=dtR('cur'),days=allD(f,t),c=cv();
-  rC('c-lb'+mc+'d','bar',days.map(d=>d.slice(5)),[
-    {label:'Pasir',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vp||0),0)||null),backgroundColor:'rgba(217,119,6,.7)',stack:'s'},
-    {label:'Debu',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vd||0),0)||null),backgroundColor:'rgba(8,145,178,.65)',stack:'s'},
-    {label:'DC',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vdc||0),0)||null),backgroundColor:'rgba(124,58,237,.6)',stack:'dc'},
-  ],{scales:{x:{stacked:true,ticks:{color:c.tx,maxTicksLimit:8},grid:{display:false}},y:{stacked:true,grid:{color:c.gr},ticks:{color:c.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}});
-}
-function rLBH(){
-  const mcf=document.getElementById('lbfmc').value;
-  let rows=[...lbL].sort((a,b)=>b.date.localeCompare(a.date));
-  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
-  document.getElementById('lb-tb').innerHTML=rows.length?rows.map(r=>`<tr>
-    <td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td>
-    <td>${r.vp||0}</td><td>${r.vd||0}</td>
-    <td>${r.lo||'—'}</td><td>${r.op||'—'}</td>
-  </tr>`).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
-}
-
-// ============================================================
-// GENTANI
-// ============================================================
-function rGt(){
-  const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('g'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('g'+mc+'sh').value=sh;});
-  const el=document.getElementById('cap-lbl');if(el)el.textContent=cfg.trCap;
-  drawGC(1);drawGC(2);rGTH();
-}
-function gtPv(mc){
-  const d=document.getElementById('g'+mc+'d').value||today(),tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0;
-  const tot=tn+tm,tK=tot*cfg.trCap,ss=ssKg(mc,d),gt=tK>0&&ss>0?ss/(tK/1000):null;
-  const box=document.getElementById('gpv'+mc);
-  if(tot===0){box.style.display='none';return;}
-  const ic=gt==null?'':cfg.gtHi>0&&gt>cfg.gtHi?'🔴':cfg.gtLo>0&&gt<cfg.gtLo?'🟡':'🟢';
-  box.style.display='block';
-  box.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;"><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL TROLLEY</div><div style="font-size:1.3rem;font-weight:700;color:var(--accent);">${tot}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL KG</div><div style="font-size:1.3rem;font-weight:700;color:var(--info);">${tK.toLocaleString('id-ID')}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">GENTANI (Kg/Ton)</div><div style="font-size:1.3rem;font-weight:700;color:var(--ok);">${gt!=null?gt.toFixed(2):'—'}</div></div></div><div style="font-size:.65rem;color:var(--muted);margin-top:5px;text-align:center;">${ic} SS+WC: ${ss.toLocaleString('id-ID')} Kg · ${cfg.trCap} Kg/trolley</div>`;
-}
-function saveGT(mc,e){
-  const btn=e?.target,d=document.getElementById('g'+mc+'d').value,sh=document.getElementById('g'+mc+'sh').value,tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0,op=document.getElementById('g'+mc+'op').value.trim(),n=document.getElementById('g'+mc+'no').value.trim();
-  if(!d){toast('Tanggal wajib','warn');return;}
-  showSp('Menyimpan...',btn);
-  setTimeout(async()=>{trL.push({mc,date:d,sh,tn,tm,op,n});sv('trL',trL);await api('addTrolley',{mc,date:d,sh,tn,tm,trCap:cfg.trCap,op,n});hideSp(btn);toast(`✅ Trolley CND-${mc} tersimpan`);document.getElementById('g'+mc+'tn').value='';document.getElementById('g'+mc+'tm').value='';document.getElementById('gpv'+mc).style.display='none';drawGC(mc);rGTH();rTT(mc);},400);
-}
-function drawGC(mc){
-  const{f,t}=dtR(document.getElementById('gcp'+mc).value),days=allD(f,t),c=cv();
-  let aK=0,aS=0;const gD=[],gA=[];
-  days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/(tK/1000)).toFixed(2):null);gA.push(aK>0&&aS>0?+(aS/(aK/1000)).toFixed(2):null);});
-  rC('c-gt-f'+mc,'bar',days.map(d=>d.slice(5)),[
-    {label:'Harian',data:gD,backgroundColor:mc===1?'rgba(8,145,178,.6)':'rgba(124,58,237,.6)',type:'bar'},
-    {label:'Akumulasi',data:gA,borderColor:mc===1?'rgba(15,108,189,.8)':'rgba(167,139,250,.8)',type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2},
-  ],{scales:{x:{ticks:{color:c.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:c.gr},ticks:{color:c.tx}}},plugins:{legend:{labels:{color:c.tx,font:{size:10},boxWidth:10}}}});
-}
-function rGTH(){
-  const mcf=document.getElementById('gtfmc').value;
-  let rows=[...trL].sort((a,b)=>b.date.localeCompare(a.date));
-  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
-  document.getElementById('gt-tb').innerHTML=rows.length?rows.map(r=>{
-    const mc=r.mc,tot=(+r.tn||0)+(+r.tm||0),tK=tot*cfg.trCap,ss=ssKg(mc,r.date),gt=tK>0&&ss>0?ss/(tK/1000):null;
-    const lo=cfg.gtLo,hi=cfg.gtHi,gSt=gt==null?'—':hi>0&&gt>hi?'TINGGI':lo>0&&gt<lo?'RENDAH':'Normal';
-    const gC=gt==null?'var(--muted)':hi>0&&gt>hi?'var(--danger)':lo>0&&gt<lo?'var(--warn)':'var(--ok)';
-    return`<tr><td>${fD(r.date)}</td><td><span class="mb${mc}">CND-${mc}</span></td><td>${r.sh}</td><td>${r.tn||0}</td><td>${r.tm||0}</td><td>${tK.toLocaleString('id-ID')}</td><td>${ss.toLocaleString('id-ID')}</td><td style="font-family:'Courier New',monospace;font-weight:700;color:${gC};">${gt!=null?gt.toFixed(2):'—'}</td><td style="color:${gC};font-weight:700;">${gSt}</td><td>${r.op||'—'}</td></tr>`;
-  }).join(''):'<tr><td colspan="10" class="es">Belum ada data</td></tr>';
-}
-
-// ============================================================
-// SETTING
-// ============================================================
-function rSet(){
-  document.getElementById('s-alo').value=cfg.aLo;document.getElementById('s-ahi').value=cfg.aHi;
-  document.getElementById('s-trcap').value=cfg.trCap||800;
-  document.getElementById('s-gtlo').value=cfg.gtLo||0;document.getElementById('s-gthi').value=cfg.gtHi||0;
-  document.getElementById('s-plo').value=cfg.pLo||2;document.getElementById('s-phi').value=cfg.pHi||4;
-  document.getElementById('s-dlo').value=cfg.dLo||2;document.getElementById('s-dhi').value=cfg.dHi||4;
-  document.getElementById('s-dclo').value=cfg.dcLo||0;document.getElementById('s-dchi').value=cfg.dcHi||0;
-  document.getElementById('s-wa').value=localStorage.getItem(K+'wa')||'';
-  const gsel=document.getElementById('gas-status');
-  if(gsel)gsel.innerHTML=ONLINE?'<span style="color:var(--ok);">✅ Terhubung ke Google Sheets</span>':'<span style="color:var(--warn);">⚠ Offline — isi GAS_URL di HTML</span>';
-  let h='';
-  for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');h+=`<div class="sr"><div class="sl">${nm}</div><input class="si" type="number" id="lt-${kk}" value="${ltC[nm]}" min="1"><span style="font-size:.7rem;color:var(--muted);margin-left:4px;">Ton</span></div>`;}
-  document.getElementById('lt-set').innerHTML=h;
-}
-function saveCfg(){
-  cfg.aLo=+document.getElementById('s-alo').value||37.5;cfg.aHi=+document.getElementById('s-ahi').value||42.5;
-  cfg.trCap=+document.getElementById('s-trcap').value||800;
-  cfg.gtLo=+document.getElementById('s-gtlo').value||0;cfg.gtHi=+document.getElementById('s-gthi').value||0;
-  cfg.pLo=+document.getElementById('s-plo').value||0;cfg.pHi=+document.getElementById('s-phi').value||0;
-  cfg.dLo=+document.getElementById('s-dlo').value||0;cfg.dHi=+document.getElementById('s-dhi').value||0;
-  cfg.dcLo=+document.getElementById('s-dclo').value||0;cfg.dcHi=+document.getElementById('s-dchi').value||0;
-  sv('cfg',cfg);
-  api('updateConfig',{pairs_json:JSON.stringify({aLo:cfg.aLo,aHi:cfg.aHi,trCap:cfg.trCap,gtLo:cfg.gtLo,gtHi:cfg.gtHi,pLo:cfg.pLo,pHi:cfg.pHi,dLo:cfg.dLo,dHi:cfg.dHi,dcLo:cfg.dcLo,dcHi:cfg.dcHi})});
-  toast('✅ Konfigurasi tersimpan');
-  const cl=document.getElementById('cap-lbl');if(cl)cl.textContent=cfg.trCap;
-  document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=`${cfg.aLo}–${cfg.aHi}A`;
-}
-function saveLt(){
-  for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');const el=document.getElementById('lt-'+kk);if(el)ltC[nm]=+el.value||1;}
-  sv('ltC',ltC);
-  const ltPairs={};Object.entries(ltC).forEach(([nm,v])=>{ltPairs['lt_'+nm.replace(/\s+/g,'_')]=v;});
-  api('updateConfig',{pairs_json:JSON.stringify(ltPairs)});
-  toast('✅ Lifetime tersimpan');
-}
-function saveWA(){localStorage.setItem(K+'wa',document.getElementById('s-wa').value.trim());toast('✅ No. WA tersimpan');}
-function expD(){const b=new Blob([JSON.stringify({cfg,ltC,iSt,aLog,spL,pvL,lbL,ssL,trL},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`cnd-backup-${today()}.json`;a.click();}
-
-
-// ============================================================
-// IMPELLER MODAL
-// ============================================================
-function openImpM(mc){
-  _miMc=mc;
-  const s=iSt[mc]||{on:true,a:null,dt:null,n:'',cf:false};
-  const col=mc===1?'var(--c1)':'var(--c2)';
-  document.getElementById('mi-t').innerHTML=`<span style="color:${col};">⚙ CND-${mc}</span> — Impeller`;
-  document.getElementById('mia').value=s.a!=null?s.a:'';
-  document.getElementById('min').value=s.n||'';
-  miAP();
-  let h='';
-  for(const nm of Object.keys(ltC)){
-    const t=tonSP(mc,nm),md=modT(mc,nm),p=t!=null?Math.min(t/md,1):0;
-    const col2=p>=1?'var(--danger)':p>=.8?'var(--warn)':'var(--ok)';
-    h+=`<div style="margin-bottom:7px;font-size:.75rem;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span>${nm}</span><span style="color:${col2};font-weight:700;">${t!=null?t.toFixed(1):'—'} / ${md} Ton</span></div><div class="ltw"><div class="lt" style="width:${Math.round(p*100)}%;background:${col2};"></div></div></div>`;
-  }
-  document.getElementById('milt').innerHTML=h;
-  document.getElementById('m-imp').classList.add('on');
-}
-function miAP(){
-  const v=parseFloat(document.getElementById('mia').value);
-  const el=document.getElementById('miaf');
-  if(isNaN(v)){el.textContent='';return;}
-  const s=ampS(v);
-  el.textContent=s==='ok'?'✅ Normal':s==='hi'?`🔴 OVER > ${cfg.aHi}A`:`🟡 UNDER < ${cfg.aLo}A`;
-  el.style.color=s==='ok'?'var(--ok)':s==='hi'?'var(--danger)':'var(--warn)';
-}
-function setImpM(on){iSt[_miMc].on=on;if(!on)iSt[_miMc].a=null;sv('iSt',iSt);rIG(_miMc);toast(`CND-${_miMc} ${on?'ON':'OFF'}`);}
-function confImp(){iSt[_miMc].cf=true;iSt[_miMc].n='';sv('iSt',iSt);cM('m-imp');rIG(_miMc);rAl();toast(`CND-${_miMc} OK`);}
-function saveMI(e){
-  const btn=e?.target;showSp('Menyimpan...',btn);
-  setTimeout(async()=>{
-    const a=parseFloat(document.getElementById('mia').value),n=document.getElementById('min').value.trim();
-    const ts=new Date().toISOString(),sh=gSh();
-    if(!isNaN(a)){iSt[_miMc].a=a;iSt[_miMc].dt=ts;const entry={mc:_miMc,dt:ts,sh,v:a,op:'',status:ampS(a),n};aLog.push(entry);sv('aLog',aLog);await api('addAmpere',{mc:_miMc,dt:ts,sh,v:a,op:'',status:ampS(a),n});}
-    iSt[_miMc].n=n;iSt[_miMc].cf=false;sv('iSt',iSt);
-    await api('updateImpState',{mc:_miMc,on:iSt[_miMc].on,a:iSt[_miMc].a,dt:iSt[_miMc].dt,n,cf:false});
-    hideSp(btn);cM('m-imp');rIG(_miMc);rAl();toast('Tersimpan');
-  },400);
-}
-document.getElementById('mia').addEventListener('input',miAP);
-
-// ============================================================
-// DUST COLLECTOR — 1 unit shared CND-1 & CND-2
-// ============================================================
-function saveDC(e){
-  const btn=e?.target;
-  const d=document.getElementById('dc-d').value;
-  const sh=document.getElementById('dc-sh').value;
-  const vdc=+document.getElementById('dc-val').value||0;
-  const op=document.getElementById('dc-op').value.trim();
-  const n=document.getElementById('dc-no').value.trim();
-  if(!d){toast('Tanggal wajib','warn');return;}
-  showSp('Menyimpan...',btn);
-  setTimeout(async()=>{
-    dcL.push({date:d,sh,vdc,op,n});sv('dcL',dcL);
-    await api('addLimbah',{mc:0,date:d,sh,vp:0,vd:0,vdc,lo:'DC',op,n});  // mc=0 = DC shared
-    hideSp(btn);toast('✅ Dust Collector tersimpan');
-    document.getElementById('dc-val').value='';
-    drawDC();rDCH();
-  },400);
-}
-function drawDC(){
-  const{f,t}=dtR(document.getElementById('dc-pd').value||'cur');
-  const days=allD(f,t),cx=cv();
-  rC('c-dc','bar',days.map(d=>d.slice(5)),[
-    {label:'DC (Karung)',data:days.map(d=>dcL.filter(r=>r.date===d).reduce((s,r)=>s+(+r.vdc||0),0)||null),backgroundColor:'rgba(124,58,237,.7)'},
-  ],{scales:{x:{ticks:{color:cx.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:cx.gr},ticks:{color:cx.tx}}},plugins:{legend:{display:false}}});
-}
-function drawDCdash(){
-  const{f,t}=dtR('cur'),days=allD(f,t),cx=cv();
-  rC('c-dc-d','bar',days.map(d=>d.slice(5)),[
-    {label:'DC',data:days.map(d=>dcL.filter(r=>r.date===d).reduce((s,r)=>s+(+r.vdc||0),0)||null),backgroundColor:'rgba(124,58,237,.7)'},
-  ],{scales:{x:{ticks:{color:cx.tx,maxTicksLimit:8},grid:{display:false}},y:{grid:{color:cx.gr},ticks:{color:cx.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}});
-}
-function rDCH(){
-  const rows=[...dcL].sort((a,b)=>b.date.localeCompare(a.date));
-  const lo=cfg.dcLo||0,hi=cfg.dcHi||0;
-  document.getElementById('dc-tb').innerHTML=rows.length?rows.map(r=>{
-    const s=hi>0&&r.vdc>hi?'🔴 OVER':lo>0&&r.vdc<lo?'🟡 LOW':'🟢';
-    const col=hi>0&&r.vdc>hi?'var(--danger)':lo>0&&r.vdc<lo?'var(--warn)':'var(--ok)';
-    return`<tr><td>${fD(r.date)}</td><td>${r.sh}</td>
-      <td style="font-weight:700;color:${col};">${r.vdc} karung</td>
-      <td>${s}</td><td>${r.op||'—'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.n||'—'}</td>
-    </tr>`;
-  }).join(''):'<tr><td colspan="6" class="es">Belum ada data</td></tr>';
-}
-
-function waDC(reportDate, reportShifts){
-  const d=reportDate||document.getElementById('dc-d')?.value||today();
-  const sh=(reportShifts&&reportShifts.length===1)?reportShifts[0]:(document.getElementById('dc-sh')?.value||gSh());
-  const now=new Date(),jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  const shifts=Array.isArray(reportShifts)?reportShifts:[sh];
-  const dcRows=dcL.filter(r=>r.date===d&&shifts.includes(r.sh));
-  const total=dcRows.reduce((s,r)=>s+(+r.vdc||0),0);
-  const lo=cfg.dcLo||0,hi=cfg.dcHi||0;
-  function dcStat(v){
-    if(!lo&&!hi)return '➖ Belum ada standar';
-    if(v===0) return '⬜ Belum ada input';
-    if(hi>0&&v>hi)return `🔴 *OUT STANDARD* (di atas ${hi} karung)`;
-    if(lo>0&&v<lo)return `🟡 *OUT STANDARD* (di bawah ${lo} karung)`;
-    return '🟢 Normal';
-  }
-  const status=dcStat(total);
-  const hasOut=status.includes('OUT');
-  let msg=`🏭 *LAPORAN DUST COLLECTOR*\n`;
-  msg+=`📅 ${fD(d)}  🕐 ${jam}\n`;
-  msg+=`🔄 Shift: ${shifts.join('+')}  |  1 Unit ⟶ CND-1 & CND-2\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`*Debu Dust Collector*\n`;
-  msg+=`  Total ${shifts.join('+')}: *${total} Karung*\n`;
-  msg+=`  Standar: ${lo||'—'} – ${hi||'—'} karung\n`;
-  msg+=`  Status: ${status}\n`;
-  if(dcRows.length){
-    dcRows.forEach(r=>{
-      msg+=`  • ${r.sh}: ${r.vdc} karung (${r.op||'—'})`;
-      if(r.n) msg+=` — ${r.n}`;
-      msg+=`\n`;
-    });
-  }
-  if(_waNote) msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`${hasOut?'🔴':'🟢'} *KESIMPULAN: ${hasOut?'OUT STANDARD — SEGERA TINDAK LANJUT':'DUST COLLECTOR NORMAL'}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`\n_${fD(d)} ${jam} — TPM CND Casting 2_`;
-  sendWA(msg);
-}
-
-function initApp(){
-  startAutoSync();
-  rDash();rSet();
-  const sh=gSh(),td=gSD(sh),nl=nowL(),mo=curMo();
-  [['s1d',td],['s2d',td],['l1d',td],['l2d',td],['g1d',td],['g2d',td],['p1d',td],['p2d',td],['a1dt',nl],['a2dt',nl],['p1m',mo],['p2m',mo],['s1sh',sh],['s2sh',sh],['l1sh',sh],['l2sh',sh],['a1sh',sh],['a2sh',sh],['g1sh',sh],['g2sh',sh]].forEach(([id,val])=>{const el=document.getElementById(id);if(el&&!el.value)el.value=val;});
-}
-function showLogin(){
-  const ex=document.getElementById('ls');if(ex)ex.remove();
-  const div=document.createElement('div');div.id='ls';
-  div.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  div.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);text-align:center;">
-    <div style="width:56px;height:56px;background:linear-gradient(135deg,#0f6cbd,#0044cc);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;margin:0 auto 16px;">⚙</div>
-    <div style="font-size:1.4rem;font-weight:800;margin-bottom:4px;">TPM CND</div>
-    <div style="font-size:.75rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px;">Casting 2 · PT AT Indonesia</div>
-    <div style="display:flex;gap:8px;margin-bottom:20px;">
-      <div style="flex:1;background:var(--c1bg);border:1px solid var(--c1b);border-radius:8px;padding:8px;font-size:.75rem;font-weight:800;color:var(--c1);">⚙ CND-1</div>
-      <div style="flex:1;background:var(--c2bg);border:1px solid var(--c2b);border-radius:8px;padding:8px;font-size:.75rem;font-weight:800;color:var(--c2);">⚙ CND-2</div>
-    </div>
-    <input id="pi" type="password" placeholder="Password..." autofocus style="width:100%;background:var(--bg);border:2px solid var(--border);border-radius:9px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:1rem;margin-bottom:10px;text-align:center;letter-spacing:4px;" onkeydown="if(event.key==='Enter')doLogin()">
-    <div id="pe" style="font-size:.78rem;color:var(--danger);min-height:18px;margin-bottom:10px;"></div>
-    <button onclick="doLogin()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:13px;font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;">Masuk →</button>
-    <div style="font-size:.7rem;color:var(--muted);margin-top:14px;">CND Monitor v2 · ${new Date().getFullYear()}</div>
-  </div>`;
-  document.body.appendChild(div);
-  setTimeout(()=>document.getElementById('pi')?.focus(),100);
-}
-function doLogin(){
-  const pwd=document.getElementById('pi').value;
-  if(pwd===PWD){sessionStorage.setItem(K+'pwd',pwd);document.getElementById('ls')?.remove();initApp();}
-  else{document.getElementById('pe').textContent='⚠ Password salah';document.getElementById('pi').value='';document.getElementById('pi').focus();}
-}
-if(!sessionStorage.getItem(K+'pwd'))showLogin();else initApp();
-
-</script>
 
 <!-- WA PICKER MODAL -->
 <div class="mv" id="m-wa-picker">
@@ -2116,6 +946,544 @@ if(!sessionStorage.getItem(K+'pwd'))showLogin();else initApp();
     </div>
   </div>
 </div>
+
+<!-- MODAL PASSWORD EDIT -->
+<div class="mv" id="m-e-pwd" style="z-index:300;">
+  <div class="mw" style="max-width:360px;">
+    <div class="mh"><h3>🔒 Mode Edit Data</h3><button class="mx" onclick="cM('m-e-pwd')">×</button></div>
+    <div class="mb">
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:14px;">Masukkan password untuk mengaktifkan mode edit data. Klik baris untuk edit atau hapus.</p>
+      <label>Password</label>
+      <input type="password" id="e-pwd-input" placeholder="Password..." style="margin-bottom:8px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;">
+      <div id="e-pwd-err" style="font-size:.78rem;color:var(--danger);min-height:18px;margin-bottom:10px;"></div>
+      <button class="btn btn-p" style="width:100%;justify-content:center;" onclick="histCheckPwd()">🔓 Buka Mode Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT ROW -->
+<div class="mv" id="m-e-edit" style="z-index:300;">
+  <div class="mw" style="max-width:420px;">
+    <div class="mh"><h3 id="e-edit-title">✏️ Edit Data</h3><button class="mx" onclick="cM('m-e-edit')">×</button></div>
+    <div class="mb">
+      <div id="e-edit-fields"></div>
+      <div class="ma">
+        <button class="btn btn-p" style="flex:1;justify-content:center;" onclick="histSaveEdit()">💾 Simpan</button>
+        <button class="btn btn-d" style="flex:1;justify-content:center;" onclick="histAskDelete()">🗑 Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS -->
+<div class="mv" id="m-e-del" style="z-index:310;">
+  <div class="mw" style="max-width:360px;">
+    <div class="mh"><h3>🗑 Konfirmasi Hapus</h3><button class="mx" onclick="cM('m-e-del')">×</button></div>
+    <div class="mb">
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">Data berikut akan dihapus permanen:</p>
+      <div id="e-del-info" style="background:var(--danger-bg);border:1px solid var(--danger);border-radius:8px;padding:10px 12px;font-size:.82rem;margin-bottom:14px;"></div>
+      <p style="font-size:.78rem;color:var(--danger);font-weight:600;margin-bottom:14px;">⚠ Tindakan ini tidak bisa dibatalkan.</p>
+      <div class="ma">
+        <button class="btn btn-g" style="flex:1;justify-content:center;" onclick="cM('m-e-del')">Batal</button>
+        <button class="btn btn-d" style="flex:1;justify-content:center;" onclick="histConfirmDelete()">🗑 Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+
+const K='cnd9_',M_=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'],PWD='cnd2026';
+
+// ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────────────────
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbz9Qj1DR7qQOkXyHfEHDeWlFXvcEtOgKHl0JCJoca96G_b68z1lWEIHMgKsZGBjfGNz/exec';
+const ONLINE  = GAS_URL.length > 0;
+
+// ── API ──────────────────────────────────────────────────────────────────────
+async function api(action,data={}){
+  if(!ONLINE)return{ok:true,offline:true};
+  const p=new URLSearchParams();p.set('action',action);p.set('pwd',PWD);
+  Object.entries(data).forEach(([k,v])=>p.set(k,typeof v==='object'?JSON.stringify(v):String(v)));
+  try{
+    const ctrl=new AbortController(),tmo=setTimeout(()=>ctrl.abort(),15000);
+    const res=await fetch(GAS_URL+'?'+p.toString(),{method:'GET',redirect:'follow',signal:ctrl.signal});
+    clearTimeout(tmo);return JSON.parse(await res.text());
+  }catch(e){toast('⚠ Gagal sync ke Sheets','warn');return{ok:false,offline:true};}
+}
+async function setupSheets(){if(!ONLINE){toast('GAS_URL belum diisi','warn');return;}toast('Menyiapkan sheets...','ok');const r=await api('setup');toast(r.ok?'✅ Setup berhasil':'❌ '+r.error,r.ok?'ok':'warn',5000);}
+
+// ── SYNC FROM SHEETS ─────────────────────────────────────────────────────────
+async function syncFromSheets(){
+  if(!ONLINE){setSyncLbl('⚡ Lokal');return;}setSyncLbl('⟳ Sync...');
+  const r=await api('getAll');if(!r.ok){setSyncLbl('⚠ Offline');return;}
+  if(Array.isArray(r.ampere)&&r.ampere.length){aLog=r.ampere.map(x=>({mc:+x.mesin,dt:x.datetime,sh:x.shift,v:+x.ampere,status:x.status,op:x.operator,n:x.catatan}));sv('aLog',aLog);}
+  if(Array.isArray(r.sparepart)&&r.sparepart.length){spL=r.sparepart.map(x=>({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),nm:x.nama_part,kg:+x.kg_pakai,q:+x.qty,kn:x.kondisi,j:x.jenis,op:x.operator,no:x.catatan}));sv('spL',spL);}
+  if(Array.isArray(r.preventive)&&r.preventive.length){pvL=r.preventive.map(x=>{let items={};try{items=JSON.parse(x.items_json||'{}');}catch(e){}return{mc:+x.mesin,w:x.minggu,m:x.bulan,date:String(x.tanggal||'').slice(0,10),pic:x.pic,items,n:x.catatan,okCnt:+x.ok_count,ngCnt:+x.ng_count};});sv('pvL',pvL);}
+  if(Array.isArray(r.limbah)&&r.limbah.length){
+    lbL=r.limbah.filter(x=>+x.mesin!==0).map(x=>({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,vp:+x.pasir_trolley,vd:+x.debu_trolley,lo:x.lokasi,op:x.operator}));sv('lbL',lbL);
+    const dcRows=r.limbah.filter(x=>+x.mesin===0);if(dcRows.length){dcL=dcRows.map(x=>({date:String(x.tanggal||'').slice(0,10),sh:x.shift,vdc:+x.vdc_kg||0,op:x.operator,n:x.keterangan||''}));sv('dcL',dcL);}
+  }
+  if(Array.isArray(r.steelshot)&&r.steelshot.length){ssL=r.steelshot.map(x=>({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,s5:+x.ss550_kg,wc:+x.wirecut_kg,lb:+x.ssbekas_kg,op:x.operator,n:x.keterangan}));sv('ssL',ssL);}
+  if(Array.isArray(r.trolley)&&r.trolley.length){trL=r.trolley.map(x=>({mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,tn:+x.trolley_nsp,tm:+x.trolley_nsm,op:x.operator,n:x.keterangan}));sv('trL',trL);}
+  if(Array.isArray(r.imp_state)&&r.imp_state.length){r.imp_state.forEach(x=>{const mc=+x.mesin;if(mc!==1&&mc!==2)return;iSt[mc]={on:x.status_on==='TRUE'||x.status_on===true,a:x.ampere!==''?+x.ampere:null,dt:x.last_update||null,n:x.catatan||'',cf:x.confirmed==='TRUE'||x.confirmed===true};});sv('iSt',iSt);}
+  if(r.config&&typeof r.config==='object'){const cv=r.config;['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi','dcLo','dcHi'].forEach(k=>{if(cv[k]!==undefined)cfg[k]=+cv[k];});const ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};Object.entries(ltKeys).forEach(([ck,nm])=>{if(cv[ck])ltC[nm]=+cv[ck];});sv('cfg',cfg);sv('ltC',ltC);}
+  const now=new Date();setSyncLbl('✓ '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
+  rDash();rSet();
+}
+function setSyncLbl(txt){const el=document.getElementById('sync-lbl');if(el)el.textContent=txt;}
+function startAutoSync(){if(!ONLINE){setSyncLbl('⚡ Lokal');return;}syncFromSheets();setInterval(syncFromSheets,5*60*1000);}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ONLINE)syncFromSheets();});
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const gl=(k,d)=>{try{const v=localStorage.getItem(K+k);return v?JSON.parse(v):d;}catch(e){return d;}};
+const sv=(k,v)=>{try{localStorage.setItem(K+k,JSON.stringify(v));}catch(e){}};
+let cfg=gl('cfg',{aLo:37.5,aHi:42.5,pLo:0,pHi:0,dLo:0,dHi:0,dcLo:0,dcHi:0,sLo:0,sHi:0,wLo:0,wHi:0,lsLo:0,lsHi:0,gtLo:0,gtHi:0,trCap:800});
+let ltC=gl('ltC',{'Impeller Blade':120,'Control Cage':180,'Distributor':240,'End Liner Atas':200,'End Liner Bawah':200,'Ceiling Liner':200,'Front Cover':300,'V-Belt':120,'Motor':500});
+let iSt=gl('iSt',{1:{on:true,a:null,dt:null,n:'',cf:false},2:{on:true,a:null,dt:null,n:'',cf:false}});
+let aLog=gl('aLog',[]),spL=gl('spL',[]),pvL=gl('pvL',[]),lbL=gl('lbL',[]),ssL=gl('ssL',[]),trL=gl('trL',[]),dcL=gl('dcL',[]);
+let _miMc=1,_pvS={1:{},2:{}};
+const EDIT_PWD='admincnd';
+let _histType=null,_histIdx=-1;
+const _editModes={};
+let _waNote='';
+
+const PVI=[
+  {sec:'Impeller Unit',items:[{id:'ib',l:'Impeller Blade',d:'Keausan, retak, deformasi'},{id:'cc',l:'Control Cage',d:'Keausan, clearance'},{id:'di',l:'Distributor',d:'Keausan, kebocoran'},{id:'ela',l:'End Liner Atas',d:'Ketebalan, keausan'},{id:'elb',l:'End Liner Bawah',d:'Ketebalan, keausan'},{id:'cl',l:'Ceiling Liner',d:'Ketebalan, keausan'},{id:'fc',l:'Front Cover',d:'Keausan, kebocoran debu'},{id:'vb',l:'V-Belt',d:'Ketegangan, keausan, slip'},{id:'mo',l:'Motor',d:'Suara, panas, ampere'}]},
+  {sec:'Conveyor & Trolley',items:[{id:'ch',l:'Rantai Conveyor',d:'Keausan, lubrication'},{id:'gr',l:'Guide Rail',d:'Kerataan, deformasi'},{id:'dm',l:'Drive Motor',d:'Suara, panas, ampere'},{id:'tb',l:'Body Trolley',d:'Retak, deformasi, kebersihan'},{id:'tp',l:'Pin Trolley',d:'Keausan, kelonggaran'}]},
+  {sec:'Separator & Elevator',items:[{id:'sb',l:'Separator Blade',d:'Keausan, clearance'},{id:'sc',l:'Screen/Mesh',d:'Kebersihan, clogging'},{id:'eb',l:'Elevator Belt',d:'Kondisi, ketegangan, slip'},{id:'eu',l:'Elevator Bucket',d:'Keausan, kebocoran'}]},
+  {sec:'Dust Collector',items:[{id:'df',l:'Filter DC',d:'Kondisi, differential pressure'},{id:'dfa',l:'Fan DC',d:'Suara, ampere, vibrasi'},{id:'dh',l:'Hopper / Drain',d:'Penumpukan, buang rutin'}]},
+  {sec:'General',items:[{id:'gl2',l:'Lubrication bearing',d:'Greasing sesuai jadwal'},{id:'gc',l:'Kebersihan area',d:'Tidak ada material tercecer'},{id:'gg',l:'Safety guard',d:'Semua guard & cover terpasang'},{id:'gb',l:'Baut & fastener',d:'Cek baut kritis, tidak longgar'}]},
+];
+const HIST_CFG={
+  preventive:{title:'Edit Data Preventive',arr:()=>pvL,lsKey:'pvL',fields:[{k:'date',label:'Tanggal',type:'date'},{k:'pic',label:'PIC',type:'text'},{k:'n',label:'Catatan',type:'textarea'}],delInfo:r=>`CND-${r.mc} · Mgg ${r.w} · ${fD(r.date)} · PIC: ${r.pic||'—'}`},
+  sparepart:{title:'Edit Data Sparepart',arr:()=>spL,lsKey:'spL',fields:[{k:'date',label:'Tanggal',type:'date'},{k:'nm',label:'Nama Part',type:'text'},{k:'kg',label:'Kg Pakai',type:'number'},{k:'q',label:'Qty',type:'number'},{k:'kn',label:'Kondisi',type:'text'},{k:'op',label:'Operator',type:'text'}],delInfo:r=>`CND-${r.mc} · ${fD(r.date)} · ${r.nm}`},
+  ampere:{title:'Edit Data Ampere',arr:()=>aLog,lsKey:'aLog',fields:[{k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},{k:'v',label:'Ampere (A)',type:'number'},{k:'op',label:'Operator',type:'text'},{k:'n',label:'Catatan',type:'textarea'}],delInfo:r=>`CND-${r.mc} · ${fDT(r.dt)} · ${r.v}A`},
+  steelshot:{title:'Edit Data Steelshot',arr:()=>ssL,lsKey:'ssL',fields:[{k:'date',label:'Tanggal',type:'date'},{k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},{k:'s5',label:'SS 550 (Kg)',type:'number'},{k:'wc',label:'Wire Cut (Kg)',type:'number'},{k:'lb',label:'SS Bekas (Kg)',type:'number'},{k:'op',label:'Operator',type:'text'}],delInfo:r=>`CND-${r.mc} · ${fD(r.date)} · Shift ${r.sh}`},
+  limbah:{title:'Edit Data Limbah',arr:()=>lbL,lsKey:'lbL',fields:[{k:'date',label:'Tanggal',type:'date'},{k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},{k:'vp',label:'Pasir (Trolley)',type:'number'},{k:'vd',label:'Debu (Trolley)',type:'number'},{k:'lo',label:'Lokasi TPS',type:'text'},{k:'op',label:'Operator',type:'text'}],delInfo:r=>`CND-${r.mc} · ${fD(r.date)} · Shift ${r.sh}`},
+  dustcollector:{title:'Edit Data Dust Collector',arr:()=>dcL,lsKey:'dcL',fields:[{k:'date',label:'Tanggal',type:'date'},{k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},{k:'vdc',label:'Jumlah (Karung)',type:'number'},{k:'op',label:'Operator',type:'text'},{k:'n',label:'Keterangan',type:'textarea'}],delInfo:r=>`DC · ${fD(r.date)} · ${r.sh} · ${r.vdc} karung`},
+  gentani:{title:'Edit Data Trolley/Gentani',arr:()=>trL,lsKey:'trL',fields:[{k:'date',label:'Tanggal',type:'date'},{k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},{k:'tn',label:'Trolley NSP',type:'number'},{k:'tm',label:'Trolley NSM',type:'number'},{k:'op',label:'Operator',type:'text'}],delInfo:r=>`CND-${r.mc} · ${fD(r.date)} · NSP:${r.tn} NSM:${r.tm}`},
+};
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+const dStr=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const today=()=>dStr(new Date());
+const pD=s=>{if(!s)return null;if(s instanceof Date)return isNaN(s)?null:s;const str=s.toString().trim();if(/^\d{4}-\d{2}-\d{2}/.test(str)){const[y,m,d]=str.slice(0,10).split('-');return new Date(+y,+m-1,+d);}const d=new Date(str);return isNaN(d)?null:d;};
+const pDT=s=>{if(!s)return null;const d=new Date(s.toString().trim());return isNaN(d)?null:d;};
+const fD=s=>{const d=pD(s);if(!d)return s||'-';return`${d.getDate()}-${M_[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`;};
+const fDT=s=>{if(!s)return'-';const d=pDT(s)||pD(s);if(!d||isNaN(d))return s;return`${d.getDate()}-${M_[d.getMonth()]}-${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
+const gSh=()=>{const n=new Date(),t=n.getHours()*60+n.getMinutes();return(t>=420&&t<1170)?'NSP':'NSM';};
+const gSD=sh=>{const now=new Date(),t=now.getHours()*60+now.getMinutes();if(sh==='NSM'&&t<420){const y=new Date(now);y.setDate(y.getDate()-1);return dStr(y);}return dStr(now);};
+const nowL=()=>{const d=new Date(),o=d.getTimezoneOffset(),l=new Date(d.getTime()-o*60000);return l.toISOString().slice(0,16);};
+const curMo=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
+const dtR=p=>{const n=new Date(),y=n.getFullYear(),m=n.getMonth();if(p==='cur')return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};if(p==='prev')return{f:dStr(new Date(y,m-1,1)),t:dStr(new Date(y,m,0))};if(p==='3m')return{f:dStr(new Date(y,m-2,1)),t:dStr(new Date(y,m+1,0))};return{f:dStr(new Date(y,m,1)),t:dStr(new Date(y,m+1,0))};};
+const allD=(f,t)=>{const[fy,fm,fd]=f.split('-').map(Number);const[ty,tm,td]=t.split('-').map(Number);let c=new Date(fy,fm-1,fd);const e=new Date(ty,tm-1,td);const days=[];while(c<=e){days.push(dStr(c));c.setDate(c.getDate()+1);}return days;};
+const toast=(msg,type='ok',dur=3000)=>{let t=document.getElementById('toast');t.textContent=msg;t.style.cssText=`position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;display:block;`+(type==='ok'?'background:var(--ok);color:#fff;':type==='warn'?'background:var(--warn);color:#fff;':'background:var(--danger);color:#fff;');t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',dur);};
+const showSp=(m,btn)=>{document.getElementById('sp-ov').classList.add('on');document.getElementById('sp-msg').textContent=m;if(btn)btn.classList.add('btn-sav');};
+const hideSp=btn=>{document.getElementById('sp-ov').classList.remove('on');if(btn)btn.classList.remove('btn-sav');};
+const cM=id=>document.getElementById(id).classList.remove('on');
+const sendWA=msg=>{const wa=localStorage.getItem(K+'wa')||'';window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`,'_blank');};
+const ampS=v=>{if(v==null)return'na';if(v<cfg.aLo)return'lo';if(v>cfg.aHi)return'hi';return'ok';};
+const ssKg=(mc,dt)=>ssL.filter(r=>r.mc==mc&&r.date===dt).reduce((s,r)=>(+r.s5||0)+(+r.wc||0)+s,0);
+const trTot=(mc,dt)=>trL.filter(r=>r.mc==mc&&r.date===dt).reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+const totTon=(mc,from=null)=>trL.filter(r=>r.mc==mc&&(!from||r.date>=from)).reduce((s,r)=>s+((+r.tn||0)+(+r.tm||0))*cfg.trCap/1000,0);
+const tonSP=(mc,nm)=>{const rs=spL.filter(s=>s.mc==mc&&s.nm===nm).sort((a,b)=>b.date.localeCompare(a.date));if(!rs.length)return null;return totTon(mc,rs[0].date);};
+const modT=(mc,nm)=>{const js2=spL.filter(s=>s.mc==mc&&s.nm===nm).map(s=>+s.kg/1000).filter(j=>j>0);if(!js2.length)return ltC[nm]||120;const r=js2.map(j=>Math.round(j/10)*10);const f={};r.forEach(j=>f[j]=(f[j]||0)+1);return+Object.entries(f).sort((a,b)=>b[1]-a[1])[0][0];};
+const needA=mc=>{const s=iSt[mc];if(!s||s.cf)return false;for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm);if(t==null)continue;if(t/modT(mc,nm)>=.8)return true;}if(s.n&&s.n.trim())return true;if(s.on&&s.a!=null){const st=ampS(s.a);if(st==='hi'||st==='lo')return true;}return false;};
+const _now=()=>new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+
+// ── CLOCK + THEME ─────────────────────────────────────────────────────────────
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(tick,1000);tick();
+function tgTh(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';localStorage.setItem(K+'theme',t);}
+(()=>{const t=localStorage.getItem(K+'theme')||'light';document.documentElement.setAttribute('data-theme',t);document.getElementById('thbtn').textContent=t==='dark'?'☀️':'🌙';})();
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
+
+// ── TAB NAV ──────────────────────────────────────────────────────────────────
+function goTab(t){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+t).classList.add('on');
+  document.querySelectorAll('.tb').forEach(b=>{if(b.dataset.t===t)b.classList.add('on');});
+  ({dash:rDash,prev:rPrev,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,gt:rGt,set:rSet})[t]?.();
+}
+document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.t)));
+
+// ── CHARTS ENGINE ────────────────────────────────────────────────────────────
+let _ch={};
+const cv=()=>{const dk=document.documentElement.getAttribute('data-theme')==='dark';return{tx:dk?'rgba(160,182,205,.8)':'rgba(100,120,140,.8)',gr:dk?'rgba(30,44,68,.6)':'rgba(216,223,233,.5)'};};
+function rC(id,type,lbl,ds,opts={}){
+  if(_ch[id])_ch[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  const c2=cv();
+  _ch[id]=new Chart(ctx,{type,data:{labels:lbl,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:ds.length>1,labels:{color:c2.tx,font:{size:10},boxWidth:10}},...(opts.plugins||{})},scales:{x:{ticks:{color:c2.tx,maxTicksLimit:10},grid:{display:false}},...(opts.scales||{})},...opts}});
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+function rDash(){rIG(1);rIG(2);rTT(1);rTT(2);rAl();drawDash();}
+function rIG(mc){
+  const s=iSt[mc]||{on:true,a:null,dt:null,n:'',cf:false};
+  const aS=s.on?ampS(s.a):null;
+  const cls='imp '+(s.on?(aS==='ok'?'imp-ok':aS==='hi'?'imp-hi':aS==='lo'?'imp-lo':'imp-ok'):'imp-of');
+  const attn=needA(mc);
+  document.getElementById('ig'+mc).innerHTML=`<div class="${cls}" onclick="openImpM(${mc})">${attn?'<div class="imp-attn">!</div>':''}<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Impeller Unit</div><div class="imp-a">${s.a!=null?s.a.toFixed(1)+'A':'—'}</div><div class="imp-s">${s.on?(aS==='ok'?'NORMAL':aS==='hi'?'OVER':aS==='lo'?'UNDER':'ON'):'OFF'}</div>${s.n?`<div style="font-size:.65rem;color:var(--warn);margin-top:5px;">⚠ ${s.n.slice(0,45)}</div>`:''}</div>`;
+  document.getElementById('is'+mc).innerHTML=`<div class="cp ${s.on?'ok':''}"><span class="v">${s.on?'ON':'OFF'}</span> Status</div><div class="cp ${aS==='ok'?'ok':aS==='hi'?'dg':aS==='lo'?'wn':'mu'}"><span class="v">${s.a!=null?s.a.toFixed(1):'—'}A</span> Ampere</div><div class="cp mu"><span class="v">${cfg.aLo}–${cfg.aHi}</span> Range</div>`;
+}
+function rTT(mc){
+  const td=today();
+  const n=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+  const m=trL.filter(r=>r.mc==mc&&r.date===td&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);
+  const tot=n+m,kg=tot*cfg.trCap;
+  const q=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  q('t'+mc+'n',n||'—');q('t'+mc+'m',m||'—');
+  q('t'+mc+'nk',n?(n*cfg.trCap).toLocaleString('id-ID')+' Kg':'— Kg');
+  q('t'+mc+'mk',m?(m*cfg.trCap).toLocaleString('id-ID')+' Kg':'— Kg');
+  q('t'+mc+'tot',tot||'—');q('t'+mc+'kg',tot?kg.toLocaleString('id-ID')+' Kg':'—');
+}
+function rAl(){
+  const al=[];
+  [1,2].forEach(mc=>{
+    const s=iSt[mc];if(!s)return;
+    const aS=s.on?ampS(s.a):null;
+    if(aS==='hi')al.push({c:'al-d',t:`⚠ CND-${mc}: Ampere OVER (${s.a?.toFixed(1)}A > ${cfg.aHi}A)`});
+    if(aS==='lo')al.push({c:'al-w',t:`⚠ CND-${mc}: Ampere UNDER (${s.a?.toFixed(1)}A < ${cfg.aLo}A)`});
+    for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm);if(t==null)continue;const md=modT(mc,nm),p=t/md;if(p>=1)al.push({c:'al-d',t:`🔴 CND-${mc} ${nm}: Lifetime HABIS`});else if(p>=.8)al.push({c:'al-w',t:`🟡 CND-${mc} ${nm}: Segera ganti (${Math.round(p*100)}%)`});}
+  });
+  document.getElementById('al-box').innerHTML=al.length?al.map(a=>`<div class="al-i ${a.c}">${a.t}</div>`).join(''):'<div class="al-i al-o">✅ Semua sistem CND-1 & CND-2 normal</div>';
+}
+function drawDash(){
+  const{f,t}=dtR('cur'),days=allD(f,t),lbl=days.map(d=>d.slice(5)),c2=cv();
+  const bS={scales:{x:{stacked:true,ticks:{color:c2.tx,maxTicksLimit:8},grid:{display:false}},y:{stacked:true,grid:{color:c2.gr},ticks:{color:c2.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}};
+  const lS={scales:{x:{ticks:{color:c2.tx,maxTicksLimit:8},grid:{display:false}},y:{grid:{color:c2.gr},ticks:{color:c2.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}};
+  [1,2].forEach(mc=>{
+    rC('c-gt'+mc,'bar',lbl,[{label:'Harian',data:days.map(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);return tK>0&&ss>0?+(ss/(tK/1000)).toFixed(2):null;}),backgroundColor:mc===1?'rgba(8,145,178,.6)':'rgba(124,58,237,.6)',type:'bar'},{label:'Akum',data:(()=>{let aK=0,aS=0;return days.map(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;return aK>0&&aS>0?+(aS/(aK/1000)).toFixed(2):null;});})(),borderColor:mc===1?'rgba(15,108,189,.85)':'rgba(167,139,250,.85)',type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2}],lS);
+    rC('c-ss'+mc,'bar',lbl,[{label:'SS 550',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.s5||0),0)||null),backgroundColor:'rgba(124,58,237,.65)',stack:'s'},{label:'WC',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.wc||0),0)||null),backgroundColor:'rgba(5,150,105,.65)',stack:'s'}],bS);
+    rC('c-tr'+mc,'bar',lbl,[{label:'NSP',data:days.map(d=>trL.filter(r=>r.mc==mc&&r.date===d&&r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0)||null),backgroundColor:'rgba(8,145,178,.7)',stack:'s'},{label:'NSM',data:days.map(d=>trL.filter(r=>r.mc==mc&&r.date===d&&r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0)||null),backgroundColor:mc===1?'rgba(15,108,189,.6)':'rgba(124,58,237,.6)',stack:'s'}],bS);
+    rC('c-lb'+mc+'d','bar',lbl,[{label:'Pasir',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vp||0),0)||null),backgroundColor:'rgba(217,119,6,.7)',stack:'s'},{label:'Debu',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vd||0),0)||null),backgroundColor:'rgba(8,145,178,.65)',stack:'s'}],bS);
+  });
+  rC('c-dc-d','bar',lbl,[{label:'DC',data:days.map(d=>dcL.filter(r=>r.date===d).reduce((s,r)=>s+(+r.vdc||0),0)||null),backgroundColor:'rgba(124,58,237,.7)'}],lS);
+}
+function setIO(mc,on){iSt[mc].on=on;if(!on)iSt[mc].a=null;sv('iSt',iSt);rIG(mc);toast(`CND-${mc} ${on?'ON':'OFF'}`);}
+setInterval(()=>{if(document.getElementById('p-dash').classList.contains('on')){rIG(1);rIG(2);rTT(1);rTT(2);rAl();drawDash();}},30000);
+
+// ── IMPELLER MODAL ────────────────────────────────────────────────────────────
+function openImpM(mc){
+  _miMc=mc;const s=iSt[mc]||{on:true,a:null,dt:null,n:'',cf:false};
+  const col=mc===1?'var(--c1)':'var(--c2)';
+  document.getElementById('mi-t').innerHTML=`<span style="color:${col};">⚙ CND-${mc}</span> — Impeller`;
+  document.getElementById('mia').value=s.a!=null?s.a:'';document.getElementById('min').value=s.n||'';miAP();
+  let h='';for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm),md=modT(mc,nm),p=t!=null?Math.min(t/md,1):0;const c3=p>=1?'var(--danger)':p>=.8?'var(--warn)':'var(--ok)';h+=`<div style="margin-bottom:7px;font-size:.75rem;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span>${nm}</span><span style="color:${c3};font-weight:700;">${t!=null?t.toFixed(1):'—'} / ${md} Ton</span></div><div class="ltw"><div class="lt" style="width:${Math.round(p*100)}%;background:${c3};"></div></div></div>`;}
+  document.getElementById('milt').innerHTML=h;document.getElementById('m-imp').classList.add('on');
+}
+function miAP(){const v=parseFloat(document.getElementById('mia').value);const el=document.getElementById('miaf');if(isNaN(v)){el.textContent='';return;}const s=ampS(v);el.textContent=s==='ok'?'✅ Normal':s==='hi'?`🔴 OVER > ${cfg.aHi}A`:`🟡 UNDER < ${cfg.aLo}A`;el.style.color=s==='ok'?'var(--ok)':s==='hi'?'var(--danger)':'var(--warn)';}
+document.getElementById('mia').addEventListener('input',miAP);
+function setImpM(on){iSt[_miMc].on=on;if(!on)iSt[_miMc].a=null;sv('iSt',iSt);rIG(_miMc);toast(`CND-${_miMc} ${on?'ON':'OFF'}`);}
+function confImp(){iSt[_miMc].cf=true;iSt[_miMc].n='';sv('iSt',iSt);cM('m-imp');rIG(_miMc);rAl();toast(`CND-${_miMc} OK`);}
+function saveMI(e){
+  const btn=e?.target;showSp('Menyimpan...',btn);
+  setTimeout(async()=>{
+    const a=parseFloat(document.getElementById('mia').value),n=document.getElementById('min').value.trim();
+    const ts=new Date().toISOString(),sh=gSh();
+    if(!isNaN(a)){iSt[_miMc].a=a;iSt[_miMc].dt=ts;const entry={mc:_miMc,dt:ts,sh,v:a,op:'',status:ampS(a),n};aLog.push(entry);sv('aLog',aLog);await api('addAmpere',{mc:_miMc,dt:ts,sh,v:a,op:'',status:ampS(a),n});}
+    iSt[_miMc].n=n;iSt[_miMc].cf=false;sv('iSt',iSt);await api('updateImpState',{mc:_miMc,on:iSt[_miMc].on,a:iSt[_miMc].a,dt:iSt[_miMc].dt,n,cf:false});
+    hideSp(btn);cM('m-imp');rIG(_miMc);rAl();toast('Tersimpan');
+  },400);
+}
+
+// ── EDIT ENGINE ───────────────────────────────────────────────────────────────
+function histToggleEdit(type){
+  if(_editModes[type]){_editModes[type]=false;_updEditBtn(type,false);_rerender(type);}
+  else{_histType=type;document.getElementById('e-pwd-input').value='';document.getElementById('e-pwd-err').textContent='';document.getElementById('m-e-pwd').classList.add('on');setTimeout(()=>document.getElementById('e-pwd-input')?.focus(),100);}
+}
+function histCheckPwd(){
+  if(document.getElementById('e-pwd-input').value===EDIT_PWD){cM('m-e-pwd');_editModes[_histType]=true;_updEditBtn(_histType,true);_rerender(_histType);toast('✏️ Mode edit aktif');}
+  else{document.getElementById('e-pwd-err').textContent='⚠ Password salah';}
+}
+document.getElementById('e-pwd-input').addEventListener('keydown',e=>{if(e.key==='Enter')histCheckPwd();});
+function _updEditBtn(type,active){const btn=document.getElementById(`${type}-edit-btn`);const ban=document.getElementById(`${type}-edit-ban`);if(btn){btn.style.background=active?'var(--accent)':'';btn.style.color=active?'#fff':'var(--muted)';}if(ban)ban.style.display=active?'block':'none';}
+function _rerender(type){({preventive:rPvH,sparepart:rSpH,ampere:rAH,steelshot:rSSH,limbah:rLBH,dustcollector:rDCH,gentani:rGTH})[type]?.();}
+function histOpenEdit(type,idx){
+  _histType=type;_histIdx=idx;const cfg2=HIST_CFG[type];const r=cfg2.arr()[idx];if(!r)return;
+  document.getElementById('e-edit-title').textContent='✏️ '+cfg2.title;
+  document.getElementById('e-edit-fields').innerHTML=cfg2.fields.map(f=>{const val=r[f.k]!=null?r[f.k]:'';if(f.type==='textarea')return`<label>${f.label}</label><textarea id="ef-${f.k}" style="margin-bottom:10px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;min-height:52px;">${val}</textarea>`;if(f.type==='select')return`<label>${f.label}</label><select id="ef-${f.k}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;margin-bottom:10px;">${f.opts.map(o=>`<option ${o==val?'selected':''}>${o}</option>`).join('')}</select>`;return`<label>${f.label}</label><input type="${f.type}" id="ef-${f.k}" value="${val}" style="margin-bottom:10px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;">`;}).join('');
+  document.getElementById('m-e-edit').classList.add('on');
+}
+function histSaveEdit(){
+  const cfg2=HIST_CFG[_histType];const r=cfg2.arr()[_histIdx];if(!r)return;
+  cfg2.fields.forEach(f=>{const el=document.getElementById('ef-'+f.k);if(!el)return;r[f.k]=f.type==='number'?(+el.value||0):el.value;});
+  if(_histType==='ampere')r.status=ampS(r.v);
+  sv(cfg2.lsKey,cfg2.arr());cM('m-e-edit');_rerender(_histType);toast('✅ Data diperbarui');
+}
+function histAskDelete(){const cfg2=HIST_CFG[_histType];const r=cfg2.arr()[_histIdx];if(!r)return;document.getElementById('e-del-info').innerHTML=cfg2.delInfo(r);document.getElementById('m-e-del').classList.add('on');}
+function histConfirmDelete(){cM('m-e-del');cM('m-e-edit');const cfg2=HIST_CFG[_histType];cfg2.arr().splice(_histIdx,1);sv(cfg2.lsKey,cfg2.arr());_rerender(_histType);toast('🗑 Data dihapus');}
+
+// ── PREVENTIVE ────────────────────────────────────────────────────────────────
+function rPrev(){const sh=gSh(),td=today(),mo=curMo();[1,2].forEach(mc=>{const d=document.getElementById('p'+mc+'d');if(!d.value)d.value=gSD(sh);const m=document.getElementById('p'+mc+'m');if(!m.value)m.value=mo;renderPck(mc);});rPvH();}
+function renderPck(mc){let h='';PVI.forEach(sec=>{h+=`<div class="pv-sec"><div class="pv-sh">${sec.sec}</div>`;sec.items.forEach(it=>{h+=`<div class="pv-i" id="pvi${mc}${it.id}"><div class="pv-l"><div style="font-weight:600;">${it.l}</div><div class="pv-d">${it.d}</div></div><div class="pv-bb"><button class="pv-b" onclick="sPVI(${mc},'${it.id}','ok',this)">✓ OK</button><button class="pv-b" onclick="sPVI(${mc},'${it.id}','ng',this)">✗ NG</button><button class="pv-b" onclick="sPVI(${mc},'${it.id}',null,this)">○</button></div></div>`;});h+='</div>';});document.getElementById('pck'+mc).innerHTML=h;_pvS[mc]={};}
+function sPVI(mc,id,v,btn){_pvS[mc][id]=v;const r=document.getElementById('pvi'+mc+id);r.className='pv-i'+(v==='ok'?' pok':v==='ng'?' png':'');r.querySelectorAll('.pv-b').forEach(b=>b.className='pv-b');if(v&&btn)btn.className='pv-b '+(v==='ok'?'ok':'ng');}
+function savePv(mc,e){
+  const btn=e?.target,w=document.getElementById('p'+mc+'w').value,m=document.getElementById('p'+mc+'m').value,d=document.getElementById('p'+mc+'d').value,pic=document.getElementById('p'+mc+'p').value.trim(),n=document.getElementById('p'+mc+'n').value.trim();
+  if(!d){toast('Tanggal wajib','warn');return;}if(!pic){toast('PIC wajib','warn');return;}
+  let ok=0,ng=0;const items={};PVI.forEach(sec=>sec.items.forEach(it=>{const v=_pvS[mc]?.[it.id]||null;items[it.id]=v;if(v==='ok')ok++;if(v==='ng')ng++;}));
+  showSp('Menyimpan...',btn);setTimeout(async()=>{pvL.push({mc,w,m,date:d,pic,items,n,okCnt:ok,ngCnt:ng});sv('pvL',pvL);await api('addPreventive',{mc,w,m,date:d,pic,okCnt:ok,ngCnt:ng,items_json:JSON.stringify(items),n});hideSp(btn);toast(`✅ Preventive CND-${mc} tersimpan`);renderPck(mc);document.getElementById('p'+mc+'p').value='';document.getElementById('p'+mc+'n').value='';rPvH();},400);
+}
+function rPvH(){
+  const mcf=document.getElementById('pvfmc').value,pdf=document.getElementById('pvfpd').value;
+  let rows=[...pvL].sort((a,b)=>b.date.localeCompare(a.date));
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
+  if(pdf==='30d'){const cx=new Date();cx.setDate(cx.getDate()-30);rows=rows.filter(r=>pD(r.date)>=cx);}
+  if(pdf==='90d'){const cx=new Date();cx.setDate(cx.getDate()-90);rows=rows.filter(r=>pD(r.date)>=cx);}
+  document.getElementById('pv-tb').innerHTML=rows.length?rows.map((r,i)=>{const em=_editModes.preventive;const clk=em?`onclick="histOpenEdit('preventive',${i})" style="cursor:pointer;"`:'';return`<tr ${clk}><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>Mgg ${r.w} · ${r.m||'—'}</td><td>${fD(r.date)}</td><td>${r.pic}</td><td style="color:var(--ok);font-weight:700;">${r.okCnt||0}</td><td style="color:${r.ngCnt?'var(--danger)':'var(--muted)'};font-weight:700;">${r.ngCnt||0}</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.n||'—'}</td></tr>`;}).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+}
+
+// ── SPAREPART ─────────────────────────────────────────────────────────────────
+function rSp(){if(!document.getElementById('spd').value)document.getElementById('spd').value=today();rLtAll();rSpH();}
+function onSpJ(){const j=document.getElementById('spj').value;document.getElementById('sp-pr').style.display=j==='assy'?'none':'block';document.getElementById('sp-ai').style.display=j==='assy'?'block':'none';}
+function rLtAll(){rLtMc(1);rLtMc(2);}
+function rLtMc(mc){let h='';for(const nm of Object.keys(ltC)){const md=modT(mc,nm),t=tonSP(mc,nm),p=t!=null?Math.min(t/md,1):0;const col=p>=1?'var(--danger)':p>=.8?'var(--warn)':'var(--ok)';const rs=spL.filter(s=>s.mc==mc&&s.nm===nm).sort((a,b)=>b.date.localeCompare(a.date));h+=`<div style="margin-bottom:9px;padding:9px 11px;background:var(--card2);border:1px solid var(--border);border-radius:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:.8rem;font-weight:700;">${nm}</span><span style="color:${col};font-weight:700;font-size:.78rem;">${t!=null?t.toFixed(1):'—'} / ${md} Ton (${Math.round(p*100)}%)</span></div><div class="ltw"><div class="lt" style="width:${Math.round(p*100)}%;background:${col};"></div></div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;">Terakhir: ${rs.length?fD(rs[0].date):'Belum ada'}</div></div>`;} document.getElementById('lt'+mc).innerHTML=h;}
+function saveSp(e){
+  const btn=e?.target,mc=+document.getElementById('smc').value,d=document.getElementById('spd').value,j=document.getElementById('spj').value,op=document.getElementById('spop').value.trim(),no=document.getElementById('spno').value.trim();
+  if(!d){toast('Tanggal wajib','warn');return;}
+  showSp('Menyimpan...',btn);setTimeout(async()=>{let rows=[];if(j==='assy'){const kg=+document.getElementById('spaj').value||0;['Impeller Blade','Control Cage','Distributor','End Liner Atas','End Liner Bawah','Ceiling Liner','Front Cover','V-Belt'].forEach(nm=>{spL.push({mc,date:d,nm,kg,q:1,kn:'Assy',j:'assy',op,no});rows.push({mc,date:d,nm,kg,q:1,kn:'Assy',j:'assy',op,no});});}else{const nm=document.getElementById('spnm').value,kg=+document.getElementById('spkg').value||0,q=+document.getElementById('spq').value||1,kn=document.getElementById('spk').value;const r={mc,date:d,nm,kg,q,kn,j:'part',op,no};spL.push(r);rows=[r];}sv('spL',spL);await api('addSparepart',{rows_json:JSON.stringify(rows)});hideSp(btn);toast('✅ Sparepart tersimpan');rLtAll();rSpH();},400);
+}
+function rSpH(){
+  const mcf=document.getElementById('spfmc').value,pdf=document.getElementById('spfpd').value;
+  let rows=[...spL].sort((a,b)=>b.date.localeCompare(a.date));
+  if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);
+  if(pdf==='30d'){const cx=new Date();cx.setDate(cx.getDate()-30);rows=rows.filter(r=>pD(r.date)>=cx);}
+  if(pdf==='90d'){const cx=new Date();cx.setDate(cx.getDate()-90);rows=rows.filter(r=>pD(r.date)>=cx);}
+  document.getElementById('sp-tb').innerHTML=rows.length?rows.map(r=>{const idx=spL.indexOf(r);const em=_editModes.sparepart;const clk=em?`onclick="histOpenEdit('sparepart',${idx})" style="cursor:pointer;"`:'';return`<tr ${clk}><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.nm}</td><td>${r.kg?(r.kg/1000).toFixed(1)+' Ton':'—'}</td><td>${r.q}</td><td>${r.kn||'—'}</td><td>${r.op||'—'}</td></tr>`;}).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';
+}
+
+// ── AMPERE ────────────────────────────────────────────────────────────────────
+function rAmp(){const sh=gSh();[1,2].forEach(mc=>{if(!document.getElementById('a'+mc+'dt').value)document.getElementById('a'+mc+'dt').value=nowL();document.getElementById('a'+mc+'sh').value=sh;});document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=`${cfg.aLo}–${cfg.aHi}A`;drawAC(1);drawAC(2);rAH();}
+function ampPv(mc){const v=parseFloat(document.getElementById('a'+mc+'a').value);const el=document.getElementById('a'+mc+'pv');if(isNaN(v)){el.textContent='';return;}const s=ampS(v);el.textContent=s==='ok'?`✅ Normal (${cfg.aLo}–${cfg.aHi}A)`:s==='hi'?`🔴 OVER > ${cfg.aHi}A`:`🟡 UNDER < ${cfg.aLo}A`;el.style.color=s==='ok'?'var(--ok)':s==='hi'?'var(--danger)':'var(--warn)';}
+function saveAmp(mc,e){
+  const btn=e?.target,dt=document.getElementById('a'+mc+'dt').value,sh=document.getElementById('a'+mc+'sh').value,v=parseFloat(document.getElementById('a'+mc+'a').value),op=document.getElementById('a'+mc+'op').value.trim(),n=document.getElementById('a'+mc+'no').value.trim();
+  if(!dt){toast('Waktu wajib','warn');return;}if(isNaN(v)){toast('Ampere wajib','warn');return;}
+  showSp('Menyimpan...',btn);setTimeout(async()=>{const status=ampS(v);const entry={mc,dt:new Date(dt).toISOString(),sh,v,op,status,n};aLog.push(entry);sv('aLog',aLog);iSt[mc].a=v;iSt[mc].dt=new Date(dt).toISOString();sv('iSt',iSt);await Promise.all([api('addAmpere',{mc,dt:entry.dt,sh,v,op,status,n}),api('updateImpState',{mc,on:iSt[mc].on,a:v,dt:iSt[mc].dt,n:iSt[mc].n,cf:iSt[mc].cf})]);hideSp(btn);toast(`✅ Ampere CND-${mc} tersimpan`);document.getElementById('a'+mc+'a').value='';document.getElementById('a'+mc+'pv').textContent='';rIG(mc);rAH();},400);
+}
+function drawAC(mc){const{f,t}=dtR(document.getElementById('acp'+mc).value),days=allD(f,t),c2=cv();const ds=days.map(d=>{const vs=aLog.filter(r=>r.mc==mc&&(r.dt||'').slice(0,10)===d);return vs.length?vs.reduce((s,r)=>s+r.v,0)/vs.length:null;});rC('c-amp'+mc,'line',days.map(d=>d.slice(5)),[{label:'Ampere',data:ds,borderColor:mc===1?'rgba(15,108,189,.8)':'rgba(124,58,237,.8)',backgroundColor:mc===1?'rgba(15,108,189,.1)':'rgba(124,58,237,.1)',tension:.3,fill:true,spanGaps:true,pointRadius:3}],{plugins:{legend:{display:false}},scales:{x:{ticks:{color:c2.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:c2.gr},ticks:{color:c2.tx}}}});}
+function rAH(){const mcf=document.getElementById('afmc').value,shf=document.getElementById('afsh').value,stf=document.getElementById('afst').value;let rows=[...aLog].sort((a,b)=>(b.dt||'').localeCompare(a.dt||'')).slice(0,120);if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);if(shf!=='all')rows=rows.filter(r=>r.sh===shf);if(stf!=='all')rows=rows.filter(r=>r.status===stf);document.getElementById('amp-tb').innerHTML=rows.length?rows.map(r=>{const idx=aLog.indexOf(r);const em=_editModes.ampere;const clk=em?`onclick="histOpenEdit('ampere',${idx})" style="cursor:pointer;"`:'';return`<tr ${clk}><td style="font-size:.7rem;">${fDT(r.dt)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td style="font-family:'Courier New',monospace;font-weight:700;">${r.v?.toFixed(1)||'—'}A</td><td><span class="bd ${r.status==='ok'?'bd-ok':r.status==='hi'?'bd-ng':'bd-wn'}">${r.status==='ok'?'NORMAL':r.status==='hi'?'OVER':'UNDER'}</span></td><td>${r.op||'—'}</td></tr>`;}).join(''):'<tr><td colspan="6" class="es">Belum ada data</td></tr>';}
+
+// ── STEEL SHOT ────────────────────────────────────────────────────────────────
+function rSs(){const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('s'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('s'+mc+'sh').value=sh;});drawSC(1);drawSC(2);rSSH();}
+function saveSS(mc,e){const btn=e?.target,d=document.getElementById('s'+mc+'d').value,sh=document.getElementById('s'+mc+'sh').value,s5=+document.getElementById('s'+mc+'50').value||0,wc=+document.getElementById('s'+mc+'wc').value||0,lb2=+document.getElementById('s'+mc+'lb').value||0,op=document.getElementById('s'+mc+'op').value.trim(),n=document.getElementById('s'+mc+'no').value.trim();if(!d){toast('Tanggal wajib','warn');return;}showSp('Menyimpan...',btn);setTimeout(async()=>{ssL.push({mc,date:d,sh,s5,wc,lb:lb2,op,n});sv('ssL',ssL);await api('addSteelshot',{mc,date:d,sh,s5,wc,lb:lb2,op,n});hideSp(btn);toast(`✅ Steelshot CND-${mc} tersimpan`);document.getElementById('s'+mc+'50').value='';document.getElementById('s'+mc+'wc').value='';document.getElementById('s'+mc+'lb').value='';drawSC(mc);rSSH();},400);}
+function drawSC(mc){const{f,t}=dtR(document.getElementById('scp'+mc).value),days=allD(f,t),c2=cv();rC('c-ss-f'+mc,'bar',days.map(d=>d.slice(5)),[{label:'SS 550',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.s5||0),0)||null),backgroundColor:'rgba(124,58,237,.65)',stack:'s'},{label:'Wire Cut',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.wc||0),0)||null),backgroundColor:'rgba(5,150,105,.65)',stack:'s'},{label:'SS Bekas',data:days.map(d=>ssL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.lb||0),0)||null),backgroundColor:'rgba(180,83,9,.5)',stack:'b'}],{scales:{x:{stacked:true,ticks:{color:c2.tx,maxTicksLimit:10},grid:{display:false}},y:{stacked:true,grid:{color:c2.gr},ticks:{color:c2.tx}}},plugins:{legend:{labels:{color:c2.tx,font:{size:10},boxWidth:10}}}});}
+function rSSH(){const mcf=document.getElementById('ssfmc').value,shf=document.getElementById('ssfsh').value;let rows=[...ssL].sort((a,b)=>b.date.localeCompare(a.date));if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);if(shf!=='all')rows=rows.filter(r=>r.sh===shf);document.getElementById('ss-tb').innerHTML=rows.length?rows.map(r=>{const idx=ssL.indexOf(r);const em=_editModes.steelshot;const clk=em?`onclick="histOpenEdit('steelshot',${idx})" style="cursor:pointer;"`:'';return`<tr ${clk}><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td>${r.s5||0}</td><td>${r.wc||0}</td><td>${r.lb||0}</td><td style="font-weight:700;">${(+r.s5||0)+(+r.wc||0)+(+r.lb||0)}</td><td>${r.op||'—'}</td></tr>`;}).join(''):'<tr><td colspan="8" class="es">Belum ada data</td></tr>';}
+
+// ── LIMBAH ────────────────────────────────────────────────────────────────────
+function rLb(){const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('l'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('l'+mc+'sh').value=sh;});const dcd=document.getElementById('dc-d');if(dcd&&!dcd.value)dcd.value=gSD(gSh());const dcsh=document.getElementById('dc-sh');if(dcsh)dcsh.value=gSh();const dcStd=document.getElementById('dc-std-lbl');if(dcStd)dcStd.textContent=(cfg.dcLo||0)+'–'+(cfg.dcHi||0)+' karung';drawLC(1);drawLC(2);rLBH();drawDC();rDCH();}
+function saveLB(mc,e){const btn=e?.target,d=document.getElementById('l'+mc+'d').value,sh=document.getElementById('l'+mc+'sh').value,vp=+document.getElementById('l'+mc+'vp').value||0,vd=+document.getElementById('l'+mc+'vd').value||0,lo2=document.getElementById('l'+mc+'lo').value.trim(),op=document.getElementById('l'+mc+'op').value.trim();if(!d){toast('Tanggal wajib','warn');return;}showSp('Menyimpan...',btn);setTimeout(async()=>{lbL.push({mc,date:d,sh,vp,vd,lo:lo2,op});sv('lbL',lbL);await api('addLimbah',{mc,date:d,sh,vp,vd,lo:lo2,op});hideSp(btn);toast(`✅ Limbah CND-${mc} tersimpan`);drawLC(mc);rLBH();},400);}
+function drawLC(mc){const{f,t}=dtR(document.getElementById('lcp'+mc).value),days=allD(f,t),c2=cv();rC('c-lb'+mc,'bar',days.map(d=>d.slice(5)),[{label:'Pasir',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vp||0),0)||null),backgroundColor:'rgba(217,119,6,.7)',stack:'s'},{label:'Debu',data:days.map(d=>lbL.filter(r=>r.mc==mc&&r.date===d).reduce((s,r)=>s+(+r.vd||0),0)||null),backgroundColor:'rgba(8,145,178,.65)',stack:'s'}],{scales:{x:{stacked:true,ticks:{color:c2.tx,maxTicksLimit:10},grid:{display:false}},y:{stacked:true,grid:{color:c2.gr},ticks:{color:c2.tx}}},plugins:{legend:{labels:{color:c2.tx,font:{size:10},boxWidth:10}}}});}
+function rLBH(){const mcf=document.getElementById('lbfmc').value;let rows=[...lbL].sort((a,b)=>b.date.localeCompare(a.date));if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);document.getElementById('lb-tb').innerHTML=rows.length?rows.map(r=>{const idx=lbL.indexOf(r);const em=_editModes.limbah;const clk=em?`onclick="histOpenEdit('limbah',${idx})" style="cursor:pointer;"`:'';return`<tr ${clk}><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td>${r.vp||0}</td><td>${r.vd||0}</td><td>${r.lo||'—'}</td><td>${r.op||'—'}</td></tr>`;}).join(''):'<tr><td colspan="7" class="es">Belum ada data</td></tr>';}
+function saveDC(e){const btn=e?.target,d=document.getElementById('dc-d').value,sh=document.getElementById('dc-sh').value,vdc=+document.getElementById('dc-val').value||0,op=document.getElementById('dc-op').value.trim(),n=document.getElementById('dc-no').value.trim();if(!d){toast('Tanggal wajib','warn');return;}showSp('Menyimpan...',btn);setTimeout(async()=>{dcL.push({date:d,sh,vdc,op,n});sv('dcL',dcL);await api('addLimbah',{mc:0,date:d,sh,vp:0,vd:0,vdc,lo:'DC',op,n});hideSp(btn);toast('✅ Dust Collector tersimpan');document.getElementById('dc-val').value='';drawDC();rDCH();},400);}
+function drawDC(){const{f,t}=dtR(document.getElementById('dc-pd')?.value||'cur'),days=allD(f,t),c2=cv();rC('c-dc','bar',days.map(d=>d.slice(5)),[{label:'DC',data:days.map(d=>dcL.filter(r=>r.date===d).reduce((s,r)=>s+(+r.vdc||0),0)||null),backgroundColor:'rgba(124,58,237,.7)'}],{scales:{x:{ticks:{color:c2.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:c2.gr},ticks:{color:c2.tx}}},plugins:{legend:{display:false}}});}
+function drawDCdash(){const{f,t}=dtR('cur'),days=allD(f,t),c2=cv();rC('c-dc-d','bar',days.map(d=>d.slice(5)),[{label:'DC',data:days.map(d=>dcL.filter(r=>r.date===d).reduce((s,r)=>s+(+r.vdc||0),0)||null),backgroundColor:'rgba(124,58,237,.7)'}],{scales:{x:{ticks:{color:c2.tx,maxTicksLimit:8},grid:{display:false}},y:{grid:{color:c2.gr},ticks:{color:c2.tx,maxTicksLimit:5}}},plugins:{legend:{display:false}}});}
+function rDCH(){const rows=[...dcL].sort((a,b)=>b.date.localeCompare(a.date));const lo=cfg.dcLo||0,hi=cfg.dcHi||0;document.getElementById('dc-tb').innerHTML=rows.length?rows.map((r,i)=>{const em=_editModes.dustcollector;const clk=em?`onclick="histOpenEdit('dustcollector',${i})" style="cursor:pointer;"`:'';const s=hi>0&&r.vdc>hi?'🔴 OVER':lo>0&&r.vdc<lo?'🟡 LOW':'🟢';const col=hi>0&&r.vdc>hi?'var(--danger)':lo>0&&r.vdc<lo?'var(--warn)':'var(--ok)';return`<tr ${clk}><td>${fD(r.date)}</td><td>${r.sh}</td><td style="font-weight:700;color:${col};">${r.vdc} karung</td><td>${s}</td><td>${r.op||'—'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.n||'—'}</td></tr>`;}).join(''):'<tr><td colspan="6" class="es">Belum ada data</td></tr>';}
+
+// ── GENTANI ───────────────────────────────────────────────────────────────────
+function rGt(){const sh=gSh();[1,2].forEach(mc=>{const d=document.getElementById('g'+mc+'d');if(!d.value)d.value=gSD(sh);document.getElementById('g'+mc+'sh').value=sh;});const el=document.getElementById('cap-lbl');if(el)el.textContent=cfg.trCap;drawGC(1);drawGC(2);rGTH();}
+function gtPv(mc){const d=document.getElementById('g'+mc+'d').value||today(),tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0;const tot=tn+tm,tK=tot*cfg.trCap,ss=ssKg(mc,d),gt=tK>0&&ss>0?ss/(tK/1000):null;const box=document.getElementById('gpv'+mc);if(tot===0){box.style.display='none';return;}const ic=gt==null?'':cfg.gtHi>0&&gt>cfg.gtHi?'🔴':cfg.gtLo>0&&gt<cfg.gtLo?'🟡':'🟢';box.style.display='block';box.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;"><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL TROLLEY</div><div style="font-size:1.3rem;font-weight:700;color:var(--accent);">${tot}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">TOTAL KG</div><div style="font-size:1.3rem;font-weight:700;color:var(--info);">${tK.toLocaleString('id-ID')}</div></div><div><div style="font-size:.6rem;color:var(--muted);margin-bottom:2px;">GENTANI (Kg/Ton)</div><div style="font-size:1.3rem;font-weight:700;color:var(--ok);">${gt!=null?gt.toFixed(2):'—'}</div></div></div><div style="font-size:.65rem;color:var(--muted);margin-top:5px;text-align:center;">${ic} SS+WC: ${ss.toLocaleString('id-ID')} Kg · ${cfg.trCap} Kg/trolley</div>`;}
+function saveGT(mc,e){const btn=e?.target,d=document.getElementById('g'+mc+'d').value,sh=document.getElementById('g'+mc+'sh').value,tn=+document.getElementById('g'+mc+'tn').value||0,tm=+document.getElementById('g'+mc+'tm').value||0,op=document.getElementById('g'+mc+'op').value.trim(),n=document.getElementById('g'+mc+'no').value.trim();if(!d){toast('Tanggal wajib','warn');return;}showSp('Menyimpan...',btn);setTimeout(async()=>{trL.push({mc,date:d,sh,tn,tm,op,n});sv('trL',trL);await api('addTrolley',{mc,date:d,sh,tn,tm,trCap:cfg.trCap,op,n});hideSp(btn);toast(`✅ Trolley CND-${mc} tersimpan`);document.getElementById('g'+mc+'tn').value='';document.getElementById('g'+mc+'tm').value='';document.getElementById('gpv'+mc).style.display='none';drawGC(mc);rGTH();rTT(mc);},400);}
+function drawGC(mc){const{f,t}=dtR(document.getElementById('gcp'+mc).value),days=allD(f,t),c2=cv();let aK=0,aS=0;const gD=[],gA=[];days.forEach(d=>{const tK=trTot(mc,d)*cfg.trCap,ss=ssKg(mc,d);aK+=tK;aS+=ss;gD.push(tK>0&&ss>0?+(ss/(tK/1000)).toFixed(2):null);gA.push(aK>0&&aS>0?+(aS/(aK/1000)).toFixed(2):null);});rC('c-gt-f'+mc,'bar',days.map(d=>d.slice(5)),[{label:'Harian',data:gD,backgroundColor:mc===1?'rgba(8,145,178,.6)':'rgba(124,58,237,.6)',type:'bar'},{label:'Akumulasi',data:gA,borderColor:mc===1?'rgba(15,108,189,.8)':'rgba(167,139,250,.8)',type:'line',fill:false,tension:.3,spanGaps:true,pointRadius:2}],{scales:{x:{ticks:{color:c2.tx,maxTicksLimit:10},grid:{display:false}},y:{grid:{color:c2.gr},ticks:{color:c2.tx}}},plugins:{legend:{labels:{color:c2.tx,font:{size:10},boxWidth:10}}}});}
+function rGTH(){const mcf=document.getElementById('gtfmc').value;let rows=[...trL].sort((a,b)=>b.date.localeCompare(a.date));if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);document.getElementById('gt-tb').innerHTML=rows.length?rows.map(r=>{const idx=trL.indexOf(r);const em=_editModes.gentani;const clk=em?`onclick="histOpenEdit('gentani',${idx})" style="cursor:pointer;"`:'';const tot=(+r.tn||0)+(+r.tm||0),tK=tot*cfg.trCap,ss=ssKg(r.mc,r.date),gt=tK>0&&ss>0?ss/(tK/1000):null;const lo=cfg.gtLo,hi=cfg.gtHi,gStat=gt==null?'—':hi>0&&gt>hi?'TINGGI':lo>0&&gt<lo?'RENDAH':'Normal';const gC=gt==null?'var(--muted)':hi>0&&gt>hi?'var(--danger)':lo>0&&gt<lo?'var(--warn)':'var(--ok)';return`<tr ${clk}><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td>${r.tn||0}</td><td>${r.tm||0}</td><td>${tK.toLocaleString('id-ID')}</td><td>${ss.toLocaleString('id-ID')}</td><td style="font-family:'Courier New',monospace;font-weight:700;color:${gC};">${gt!=null?gt.toFixed(2):'—'}</td><td style="color:${gC};font-weight:700;">${gStat}</td><td>${r.op||'—'}</td></tr>`;}).join(''):'<tr><td colspan="10" class="es">Belum ada data</td></tr>';}
+
+// ── SETTING ───────────────────────────────────────────────────────────────────
+function rSet(){
+  ['s-alo','s-ahi','s-trcap','s-gtlo','s-gthi','s-plo','s-phi','s-dlo','s-dhi','s-dclo','s-dchi'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const key=id.replace('s-','').replace('-','').replace('a','A').replace('lo','Lo').replace('hi','Hi');const map={'alo':'aLo','ahi':'aHi','trcap':'trCap','gtlo':'gtLo','gthi':'gtHi','plo':'pLo','phi':'pHi','dlo':'dLo','dhi':'dHi','dclo':'dcLo','dchi':'dcHi'};const k=map[id.replace('s-','')];if(k)el.value=cfg[k]||0;});
+  document.getElementById('s-wa').value=localStorage.getItem(K+'wa')||'';
+  const gsel=document.getElementById('gas-status');if(gsel)gsel.innerHTML=ONLINE?'<span style="color:var(--ok);">✅ Terhubung ke Google Sheets</span>':'<span style="color:var(--warn);">⚠ Offline — isi GAS_URL di HTML</span>';
+  let h='';for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');h+=`<div class="sr"><div class="sl">${nm}</div><input class="si" type="number" id="lt-${kk}" value="${ltC[nm]}" min="1"><span style="font-size:.7rem;color:var(--muted);margin-left:4px;">Ton</span></div>`;}
+  document.getElementById('lt-set').innerHTML=h;
+}
+function saveCfg(){
+  const map={'s-alo':'aLo','s-ahi':'aHi','s-trcap':'trCap','s-gtlo':'gtLo','s-gthi':'gtHi','s-plo':'pLo','s-phi':'pHi','s-dlo':'dLo','s-dhi':'dHi','s-dclo':'dcLo','s-dchi':'dcHi'};
+  Object.entries(map).forEach(([id,k])=>{const el=document.getElementById(id);if(el)cfg[k]=+el.value||0;});
+  if(!cfg.aLo)cfg.aLo=37.5;if(!cfg.aHi)cfg.aHi=42.5;if(!cfg.trCap)cfg.trCap=800;
+  sv('cfg',cfg);api('updateConfig',{pairs_json:JSON.stringify(cfg)});
+  toast('✅ Konfigurasi tersimpan');
+  const cl=document.getElementById('cap-lbl');if(cl)cl.textContent=cfg.trCap;
+  document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=`${cfg.aLo}–${cfg.aHi}A`;
+}
+function saveLt(){for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');const el=document.getElementById('lt-'+kk);if(el)ltC[nm]=+el.value||1;}sv('ltC',ltC);const ltPairs={};Object.entries(ltC).forEach(([nm,v])=>{ltPairs['lt_'+nm.replace(/\s+/g,'_')]=v;});api('updateConfig',{pairs_json:JSON.stringify(ltPairs)});toast('✅ Lifetime tersimpan');}
+function saveWA(){localStorage.setItem(K+'wa',document.getElementById('s-wa').value.trim());toast('✅ No. WA tersimpan');}
+function expD(){const b=new Blob([JSON.stringify({cfg,ltC,iSt,aLog,spL,pvL,lbL,ssL,trL,dcL},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`cnd-backup-${today()}.json`;a.click();}
+
+// ── WA PICKER ─────────────────────────────────────────────────────────────────
+function openWAPicker(reportType,defaultMc){
+  _waNote='';_waFn=reportType;_waMc=defaultMc||1;_waDate=today();_waSh=gSh();
+  document.getElementById('wa-pick-date').value=_waDate;
+  const titles={resume:'📊 Resume Harian CND',preventive:'🔧 Preventive',sparepart:'🔩 Sparepart',ampere:'⚡ Ampere',steelshot:'🔮 Steelshot',limbah:'🗑 Limbah',dc:'🏭 Dust Collector',gentani:'📊 Gentani'};
+  document.getElementById('wa-picker-title').textContent=titles[reportType]||'📤 Kirim Laporan WA';
+  const noMc=['resume','dc'];const mcRow=document.getElementById('wa-pick-mc-row');if(mcRow)mcRow.style.display=noMc.includes(reportType)?'none':'block';
+  const noShift=['sparepart','preventive'];const shiftRow=document.getElementById('wa-pick-shift-row');if(shiftRow)shiftRow.style.display=noShift.includes(reportType)?'none':'block';
+  waPickMc(_waMc);waPickShift(_waSh);
+  const noteEl=document.getElementById('wa-pick-note');if(noteEl)noteEl.value='';
+  waPickPreview();document.getElementById('m-wa-picker').classList.add('on');
+}
+let _waFn='resume',_waMc=1,_waDate=today(),_waSh='NSP';
+function waPickMc(mc){_waMc=mc;['1','2','b'].forEach(x=>{const btn=document.getElementById('wa-pick-mc'+(x==='b'?'b':x));if(!btn)return;const active=(x==='b'&&mc==='both')||(x!=='b'&&mc==+x);btn.style.background=active?(mc===1?'var(--c1)':mc===2?'var(--c2)':'var(--accent)'):'var(--card2)';btn.style.color=active?'#fff':'var(--text2)';btn.style.border=active?'none':'1px solid var(--border)';});waPickPreview();}
+function waPickDate(offset){const d=new Date();d.setDate(d.getDate()+offset);_waDate=dStr(d);document.getElementById('wa-pick-date').value=_waDate;waPickPreview();}
+document.getElementById('wa-pick-date').addEventListener('change',function(){_waDate=this.value;waPickPreview();});
+function waPickShift(sh){_waSh=sh;['NSP','NSM','BOTH'].forEach(s=>{const btn=document.getElementById('wa-pick-'+s.toLowerCase());if(!btn)return;const active=s===sh;btn.style.background=active?'var(--accent)':'var(--card2)';btn.style.color=active?'#fff':'var(--text2)';btn.style.border=active?'none':'1px solid var(--border)';});waPickPreview();}
+function waPickPreview(){
+  const el=document.getElementById('wa-pick-preview');if(!el)return;
+  const[y,m,d]=(_waDate||'').split('-');const tglStr=_waDate?`${+d}-${M_[+m-1]}-${y}`:'-';
+  const mcLabel=_waMc==='both'?'CND-1 & CND-2':`CND-${_waMc}`;
+  const shifts=_waSh==='BOTH'?['NSP','NSM']:[_waSh];let counts='';
+  const mcList=_waMc==='both'?[1,2]:[+_waMc];
+  if(_waFn==='steelshot'){mcList.forEach(mc=>{shifts.forEach(sh=>{const n=ssL.filter(r=>r.mc==mc&&r.date===_waDate&&r.sh===sh).length;counts+=`CND-${mc} ${sh}: ${n} record  `;});});}
+  else if(_waFn==='limbah'){mcList.forEach(mc=>{shifts.forEach(sh=>{const n=lbL.filter(r=>r.mc==mc&&r.date===_waDate&&r.sh===sh).length;counts+=`CND-${mc} ${sh}: ${n} record  `;});});}
+  else if(_waFn==='dc'){shifts.forEach(sh=>{const n=dcL.filter(r=>r.date===_waDate&&r.sh===sh).length;counts+=`${sh}: ${n} record  `;});}
+  else if(_waFn==='ampere'){mcList.forEach(mc=>{const n=aLog.filter(r=>r.mc==mc&&(r.dt||'').slice(0,10)===_waDate).length;counts+=`CND-${mc}: ${n} record  `;});}
+  else if(_waFn==='sparepart'){mcList.forEach(mc=>{const n=spL.filter(r=>r.mc==mc&&r.date===_waDate).length;counts+=`CND-${mc}: ${n} part  `;});}
+  else if(_waFn==='gentani'){mcList.forEach(mc=>{const n=trL.filter(r=>r.mc==mc&&r.date===_waDate).length;counts+=`CND-${mc}: ${n} record  `;});}
+  else if(_waFn==='preventive'){mcList.forEach(mc=>{const n=pvL.filter(r=>r.mc==mc&&r.date===_waDate).length;counts+=`CND-${mc}: ${n} check  `;});}
+  else if(_waFn==='resume'){counts=`Semua mesin — ${tglStr}`;}
+  el.innerHTML=`<strong>📅 ${tglStr}</strong>  |  <strong>${mcLabel}</strong>  |  <strong>Shift: ${_waSh}</strong><br><span style="color:var(--ok);margin-top:4px;display:block;">${counts||'— belum ada data'}</span>`;
+}
+function waPickSend(){
+  _waNote=(document.getElementById('wa-pick-note')?.value||'').trim();
+  const shifts=_waSh==='BOTH'?['NSP','NSM']:[_waSh];
+  const mcList=_waMc==='both'?[1,2]:[+_waMc];
+  switch(_waFn){
+    case 'resume':     waResume(_waDate); break;
+    case 'preventive': mcList.forEach(mc=>waPv(mc,_waDate)); break;
+    case 'sparepart':  mcList.forEach(mc=>waSp(mc,_waDate)); break;
+    case 'ampere':     mcList.forEach(mc=>waAmp(mc,_waDate,shifts)); break;
+    case 'steelshot':  mcList.forEach(mc=>waSS(mc,_waDate,shifts)); break;
+    case 'limbah':     mcList.forEach(mc=>waLB(mc,_waDate,shifts)); break;
+    case 'dc':         waDC(_waDate,shifts); break;
+    case 'gentani':    mcList.forEach(mc=>waGT(mc,_waDate,shifts)); break;
+  }
+  cM('m-wa-picker');
+}
+
+// ── WA FUNCTIONS (data from arrays) ──────────────────────────────────────────
+function _fD2(s){const[y,m,d]=(s||'').split('-');return d?`${+d}-${M_[+m-1]}-${y}`:s||'—';}
+function waResume(reportDate){
+  const td=reportDate||today(),jam=_now();const[ry,rm,rd]=td.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  let hasIssue=false;
+  let msg=`🏭 *RESUME TPM CND — DAILY REPORT*\n📅 ${tgl}  📤 ${jam}\n━━━━━━━━━━━━━━━━━━━━━\n`;
+  [1,2].forEach(mc=>{
+    const s=iSt[mc]||{};const aS=s.on?ampS(s.a):null;const aIcon=aS==='ok'?'✅':aS==='hi'?'🔴':aS==='lo'?'🟡':'➖';
+    if(aS==='hi'||aS==='lo')hasIssue=true;
+    const trRows=trL.filter(r=>r.mc==mc&&r.date===td);const trN=trRows.filter(r=>r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);const trM=trRows.filter(r=>r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);const trTot2=trN+trM,trKg=trTot2*cfg.trCap;
+    const ss=ssKg(mc,td);const gt=trKg>0&&ss>0?(ss/(trKg/1000)).toFixed(2)+' Kg/Ton':'—';
+    const gtVal=trKg>0&&ss>0?ss/(trKg/1000):null;const gtIcon=gtVal==null?'➖':cfg.gtHi>0&&gtVal>cfg.gtHi?'🔴':cfg.gtLo>0&&gtVal<cfg.gtLo?'🟡':'🟢';
+    if(gtIcon==='🔴'||gtIcon==='🟡')hasIssue=true;
+    const lb=lbL.filter(r=>r.mc==mc&&r.date===td);const lbP=lb.reduce((s,r)=>s+(+r.vp||0),0);const lbD=lb.reduce((s,r)=>s+(+r.vd||0),0);
+    const ltAlerts=[];for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm);if(t==null)continue;const md=modT(mc,nm),p=t/md;if(p>=1){ltAlerts.push(`  🔴 ${nm}: HABIS`);hasIssue=true;}else if(p>=.8){ltAlerts.push(`  🟡 ${nm}: ${Math.round(p*100)}%`);hasIssue=true;}}
+    msg+=`\n⚙ *CND-${mc}*\n  Impeller : ${s.on?'ON':'OFF'} | ${s.a!=null?s.a.toFixed(1)+'A':'—'} ${aIcon}\n  Range    : ${cfg.aLo}–${cfg.aHi} A\n`;
+    msg+=`\n  🚛 Trolley : NSP ${trN} + NSM ${trM} = *${trTot2} unit*\n  Material  : *${(trKg/1000).toFixed(2)} Ton*\n`;
+    msg+=`\n  🔮 Steelshot : *${ss.toLocaleString('id-ID')} Kg*\n  📊 Gentani   : *${gt}* ${gtIcon}\n  🎯 Target    : ${cfg.gtLo||'—'}–${cfg.gtHi||'—'} Kg/Ton\n`;
+    msg+=`\n  🗑 Pasir : ${lbP} Trolley (std ${cfg.pLo}–${cfg.pHi})\n     Debu  : ${lbD} Trolley (std ${cfg.dLo}–${cfg.dHi})\n`;
+    if(ltAlerts.length)msg+=`\n  ⚠ Lifetime:\n${ltAlerts.join('\n')}\n`;
+    msg+=`─────────────────────\n`;
+  });
+  const dcTot=dcL.filter(r=>r.date===td).reduce((s,r)=>s+(+r.vdc||0),0);const dcIcon=cfg.dcHi>0&&dcTot>cfg.dcHi?'🔴':'🟢';
+  msg+=`\n🏭 *Dust Collector*: *${dcTot} Karung* ${dcIcon} (std ${cfg.dcLo||'—'}–${cfg.dcHi||'—'})\n`;
+  if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━━━\n${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'ADA KONDISI PERLU PERHATIAN':'SEMUA CND NORMAL'}*\n━━━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+function waPv(mc,reportDate){
+  const d=reportDate||document.getElementById('p'+mc+'d')?.value||today();const jam=_now();const[ry,rm,rd]=d.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  const w=document.getElementById('p'+mc+'w')?.value||'—',m=document.getElementById('p'+mc+'m')?.value||'';const[my,mm]=m.split('-');const mStr=mm?M_[+mm-1]+' '+my:'—';
+  const pic=document.getElementById('p'+mc+'p')?.value||'—';
+  let ok=0,ng=0,pend=0;const ngItems=[];PVI.forEach(sec=>sec.items.forEach(it=>{const v=_pvS[mc]?.[it.id];if(v==='ok')ok++;else if(v==='ng'){ng++;ngItems.push(it.l);}else pend++;}));
+  const tot=ok+ng+pend,pct=tot>0?Math.round(ok/tot*100):0;
+  let msg=`🔧 *LAPORAN PREVENTIVE CHECK*\n📅 ${tgl}  📤 ${jam}\n🏭 CND-${mc} | Mgg ${w} — ${mStr} | PIC: ${pic}\n━━━━━━━━━━━━━━━━━━━\n✅ OK: *${ok}* (${pct}%)  ❌ NG: *${ng}*  ○ Pending: ${pend}  Total: ${tot}\n`;
+  if(ngItems.length){msg+=`\n⚠ *Item NG:*\n`;ngItems.forEach(x=>{msg+=`  • ${x}\n`;});}
+  const n=document.getElementById('p'+mc+'n')?.value.trim()||'';if(n)msg+=`\n📝 ${n}\n`;
+  if(_waNote)msg+=`📝 *Tambahan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${ng>0?'🔴':pend>0?'🟡':'🟢'} *KESIMPULAN: ${ng>0?`ADA ${ng} ITEM NG`:pend>0?'ADA BELUM DICEK':'SEMUA ITEM OK'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+function waSp(reportMc,reportDate){
+  const mc=reportMc||+document.getElementById('smc')?.value||1;const d=reportDate||today();const jam=_now();const[ry,rm,rd]=d.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  const rows=spL.filter(r=>r.mc==mc&&r.date===d);const warns=[];
+  for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm);if(t==null)continue;const md=modT(mc,nm),p=t/md;if(p>=1)warns.push(`  🔴 ${nm}: HABIS (${t.toFixed(0)}/${md} Ton)`);else if(p>=.8)warns.push(`  🟡 ${nm}: ${Math.round(p*100)}% (${t.toFixed(1)}/${md} Ton)`);}
+  let msg=`🔩 *LAPORAN SPAREPART*\n📅 ${tgl}  📤 ${jam}\n🏭 CND-${mc}\n━━━━━━━━━━━━━━━━━━━\n`;
+  if(rows.length){rows.forEach(r=>{msg+=`• *${r.nm}*  Kg Pakai: ${(+r.kg/1000).toFixed(2)} Ton  Jenis: ${r.j==='assy'?'Assy':'Satuan'}  Op: ${r.op||'—'}\n`;});}else{msg+=`  _(Belum ada data)_\n`;}
+  if(warns.length){msg+=`\n🔔 *Lifetime CND-${mc}:*\n${warns.join('\n')}\n`;}
+  if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${warns.some(w=>w.includes('HABIS'))?'🔴':warns.length?'🟡':'🟢'} *KESIMPULAN: ${warns.some(w=>w.includes('HABIS'))?'ADA LIFETIME HABIS':warns.length?'PERLU PERHATIAN':'SEMUA OK'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+function waAmp(mc,reportDate,reportShifts){
+  const d=reportDate||today();const shifts=reportShifts&&reportShifts.length?reportShifts:[gSh()];const sh=shifts.length===1?shifts[0]:'NSP+NSM';const jam=_now();const[ry,rm,rd]=d.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  const s=iSt[mc]||{};const aS=s.on?ampS(s.a):null;const icon=aS==='ok'?'✅':aS==='hi'?'🔴':aS==='lo'?'🟡':'➖';
+  const rows=[...aLog].filter(r=>r.mc==mc&&shifts.includes(r.sh)&&(r.dt||'').slice(0,10)===d).sort((a,b)=>(b.dt||'').localeCompare(a.dt||''));
+  let msg=`⚡ *LAPORAN AMPERE IMPELLER*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}  |  Range: ${cfg.aLo}–${cfg.aHi} A\n━━━━━━━━━━━━━━━━━━━\n⚙ Status: ${s.on?'ON':'OFF'} | *${s.a!=null?s.a.toFixed(1):'—'} A* ${icon}\n${icon} *${aS==='ok'?'NORMAL':aS==='hi'?'OVER':'UNDER'}*\n`;
+  if(rows.length){msg+=`\n📋 *Log ${sh} — ${tgl}:*\n`;rows.forEach(r=>{const ic=r.status==='ok'?'✅':r.status==='hi'?'🔴':'🟡';msg+=`  ${ic} ${fDT(r.dt).slice(0,14)} — *${r.v?.toFixed(1)}A* (${r.sh})${r.op?' · '+r.op:''}${r.n?' | '+r.n:''}\n`;});}
+  if(_waNote)msg+=`\n📝 *Catatan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${aS==='hi'||aS==='lo'?'🔴':'🟢'} *KESIMPULAN: ${aS==='ok'?'AMPERE NORMAL':aS==='hi'?'OVER — SEGERA CEK':'UNDER — SEGERA CEK'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+function waSS(mc,reportDate,reportShifts){
+  const d=reportDate||today();const shifts=reportShifts&&reportShifts.length?reportShifts:[gSh()];const sh=shifts.length===1?shifts[0]:'NSP+NSM';const jam=_now();const[ry,rm,rd]=d.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  const rows=ssL.filter(r=>r.mc==mc&&r.date===d&&shifts.includes(r.sh));const ss5=rows.reduce((s,r)=>s+(+r.s5||0),0);const wc=rows.reduce((s,r)=>s+(+r.wc||0),0);const lb2=rows.reduce((s,r)=>s+(+r.lb||0),0);const totalInput=ss5+wc;
+  function ssChk(v,lo,hi){if(!lo&&!hi)return'➖ Tidak ada standar';if(v===0)return'⬜ Belum input';if(hi>0&&v>hi)return`🔴 *OUT* (> ${hi} Kg)`;if(lo>0&&v<lo)return`🟡 *OUT* (< ${lo} Kg)`;return'🟢 Normal';}
+  const st5=ssChk(ss5,cfg.sLo||0,cfg.sHi||0);const stWC=ssChk(wc,cfg.wLo||0,cfg.wHi||0);const stLB=ssChk(lb2,cfg.lsLo||0,cfg.lsHi||0);
+  const hasOut=[st5,stWC,stLB].some(x=>x.includes('OUT'));const allOk=[st5,stWC,stLB].every(x=>x.includes('Normal')||x.includes('standar')||x.includes('input'));
+  const tgt=(+cfg.sHi||0)+(+cfg.wHi||0);const budgetLine=tgt>0?(totalInput<=tgt?`💰 Total: *${totalInput} Kg* ✅ EFISIEN (sisa ${tgt-totalInput} Kg)`:`💰 Total: *${totalInput} Kg* 🔴 MELEBIHI (+${totalInput-tgt} Kg)`):(`💰 Total: *${totalInput} Kg*`);
+  let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}\n━━━━━━━━━━━━━━━━━━━\n*SS 550*: ${ss5} Kg | Std: ${cfg.sLo||0}–${cfg.sHi||0} | ${st5}\n*Wire Cut*: ${wc} Kg | Std: ${cfg.wLo||0}–${cfg.wHi||0} | ${stWC}\n*SS Bekas*: ${lb2} Kg | Std: ${cfg.lsLo||0}–${cfg.lsHi||0} | ${stLB}\n━━━━━━━━━━━━━━━━━━━\n${budgetLine}\n`;
+  if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+function waLB(mc,reportDate,reportShifts){
+  const d=reportDate||today();const shifts=reportShifts&&reportShifts.length?reportShifts:[gSh()];const sh=shifts.length===1?shifts[0]:'NSP+NSM';const jam=_now();const[ry,rm,rd]=d.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  const rows=lbL.filter(r=>r.mc==mc&&r.date===d&&shifts.includes(r.sh));const vp=rows.reduce((s,r)=>s+(+r.vp||0),0);const vd=rows.reduce((s,r)=>s+(+r.vd||0),0);
+  function lbChk(v,lo,hi){if(v===0)return'⬜ Belum input';if(hi>0&&v>hi)return`🔴 *OUT* (> ${hi} Trolley)`;if(lo>0&&v<lo)return`🟡 *OUT* (< ${lo} Trolley)`;return'🟢 Normal';}
+  const stP=lbChk(vp,cfg.pLo,cfg.pHi);const stD=lbChk(vd,cfg.dLo,cfg.dHi);const hasOut=[stP,stD].some(x=>x.includes('OUT'));const allOk=[stP,stD].every(x=>x.includes('Normal')||x.includes('input'));
+  let msg=`🗑 *LAPORAN LIMBAH HARIAN*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}\n━━━━━━━━━━━━━━━━━━━\n*Pasir*: ${vp} Trolley | Std: ${cfg.pLo||0}–${cfg.pHi||0} | ${stP}\n*Debu*: ${vd} Trolley | Std: ${cfg.dLo||0}–${cfg.dHi||0} | ${stD}\n`;
+  if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+function waDC(reportDate,reportShifts){
+  const d=reportDate||today();const shifts=reportShifts&&reportShifts.length?reportShifts:[gSh()];const sh=shifts.length===1?shifts[0]:'NSP+NSM';const jam=_now();const[ry,rm,rd]=d.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  const rows=dcL.filter(r=>r.date===d&&shifts.includes(r.sh));const total=rows.reduce((s,r)=>s+(+r.vdc||0),0);const lo=cfg.dcLo||0,hi=cfg.dcHi||0;
+  const stDC=total===0?'⬜ Belum input':hi>0&&total>hi?`🔴 OUT STANDARD (> ${hi} karung)`:lo>0&&total<lo?`🟡 OUT STANDARD (< ${lo} karung)`:'🟢 Normal';
+  let msg=`🏭 *LAPORAN DUST COLLECTOR*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n⚙ 1 Unit Shared — CND-1 & CND-2\n━━━━━━━━━━━━━━━━━━━\n*Debu DC*: *${total} Karung* | Std: ${lo||'—'}–${hi||'—'} | ${stDC}\n`;
+  if(rows.length){rows.forEach(r=>{msg+=`  • ${r.sh}: ${r.vdc} karung (${r.op||'—'})${r.n?' — '+r.n:''}\n`;});}
+  if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${stDC.includes('OUT')?'🔴':'🟢'} *KESIMPULAN: ${stDC.includes('OUT')?'OUT STANDARD':'DUST COLLECTOR NORMAL'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+function waGT(mc,reportDate,reportShifts){
+  const d=reportDate||today();const shifts=reportShifts&&reportShifts.length?reportShifts:[gSh()];const sh=shifts.length===1?shifts[0]:'NSP+NSM';const jam=_now();const[ry,rm,rd]=d.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
+  const rows=trL.filter(r=>r.mc==mc&&r.date===d&&shifts.includes(r.sh));const tnTot=rows.reduce((s,r)=>s+(+r.tn||0),0);const tmTot=rows.reduce((s,r)=>s+(+r.tm||0),0);const tot=tnTot+tmTot,totKg=tot*cfg.trCap;
+  const ssH=ssKg(mc,d);const gt=totKg>0&&ssH>0?ssH/(totKg/1000):null;
+  const[y2,m2]=d.split('-');const fb=`${y2}-${m2}-01`;let accKg=0,accTon2=0;allD(fb,d).forEach(dt=>{const tK=trTot(mc,dt)*cfg.trCap;accKg+=ssKg(mc,dt);accTon2+=tK/1000;});const gtA=accTon2>0?accKg/accTon2:null;
+  const lo=+cfg.gtLo||0,hi=+cfg.gtHi||0;function gStat(v){if(v==null)return'➖ Belum ada data';if(hi>0&&v>hi)return`🔴 TINGGI (> ${hi} Kg/Ton)`;if(lo>0&&v<lo)return`🟡 RENDAH (< ${lo} Kg/Ton)`;return'🟢 Normal';}
+  const hasIssue=gStat(gt).includes('TINGGI')||gStat(gt).includes('RENDAH')||gStat(gtA).includes('TINGGI')||gStat(gtA).includes('RENDAH');
+  let msg=`📊 *LAPORAN GENTANI STEELSHOT*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}  |  Formula: SS+WC Kg ÷ (Trolley × ${cfg.trCap} Kg ÷ 1000)\n━━━━━━━━━━━━━━━━━━━\n*GENTANI HARI INI*\n  Trolley: NSP ${tnTot} + NSM ${tmTot} = *${tot}* → *${(totKg/1000).toFixed(2)} Ton*\n  SS+WC  : *${ssH.toLocaleString('id-ID')} Kg*\n  Gentani: *${gt!=null?gt.toFixed(2)+' Kg/Ton':'—'}*  ${gStat(gt)}\n\n*AKUMULASI BULAN INI* (s/d ${tgl})\n  SS+WC  : *${accKg.toLocaleString('id-ID')} Kg*\n  Materi : *${accTon2.toFixed(2)} Ton*\n  Gentani: *${gtA!=null?gtA.toFixed(2)+' Kg/Ton':'—'}*  ${gStat(gtA)}\n━━━━━━━━━━━━━━━━━━━\n🎯 Target: ${lo||'—'}–${hi||'—'} Kg/Ton\n`;
+  if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'PERLU PERHATIAN':'GENTANI NORMAL'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  sendWA(msg);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function initApp(){
+  startAutoSync();rDash();rSet();
+  const sh=gSh(),td=gSD(sh),nl=nowL(),mo=curMo();
+  [['s1d',td],['s2d',td],['l1d',td],['l2d',td],['g1d',td],['g2d',td],['p1d',td],['p2d',td],['a1dt',nl],['a2dt',nl],['p1m',mo],['p2m',mo],['s1sh',sh],['s2sh',sh],['l1sh',sh],['l2sh',sh],['a1sh',sh],['a2sh',sh],['g1sh',sh],['g2sh',sh]].forEach(([id,val])=>{const el=document.getElementById(id);if(el&&!el.value)el.value=val;});
+}
+function showLogin(){
+  const ex=document.getElementById('ls');if(ex)ex.remove();
+  const div=document.createElement('div');div.id='ls';div.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  div.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.15);text-align:center;"><div style="width:56px;height:56px;background:linear-gradient(135deg,#0f6cbd,#0044cc);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;margin:0 auto 16px;">⚙</div><div style="font-size:1.4rem;font-weight:800;margin-bottom:4px;">TPM CND</div><div style="font-size:.75rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px;">Casting 2 · PT AT Indonesia</div><div style="display:flex;gap:8px;margin-bottom:20px;"><div style="flex:1;background:var(--c1bg);border:1px solid var(--c1b);border-radius:8px;padding:8px;font-size:.75rem;font-weight:800;color:var(--c1);">⚙ CND-1</div><div style="flex:1;background:var(--c2bg);border:1px solid var(--c2b);border-radius:8px;padding:8px;font-size:.75rem;font-weight:800;color:var(--c2);">⚙ CND-2</div></div><input id="pi" type="password" placeholder="Password..." autofocus style="width:100%;background:var(--bg);border:2px solid var(--border);border-radius:9px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:1rem;margin-bottom:10px;text-align:center;letter-spacing:4px;" onkeydown="if(event.key==='Enter')doLogin()"><div id="pe" style="font-size:.78rem;color:var(--danger);min-height:18px;margin-bottom:10px;"></div><button onclick="doLogin()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:13px;font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;">Masuk →</button><div style="font-size:.7rem;color:var(--muted);margin-top:14px;">CND Monitor v2 · ${new Date().getFullYear()}</div></div>`;
+  document.body.appendChild(div);setTimeout(()=>document.getElementById('pi')?.focus(),100);
+}
+function doLogin(){const pwd=document.getElementById('pi').value;if(pwd===PWD){sessionStorage.setItem(K+'pwd',pwd);document.getElementById('ls')?.remove();initApp();}else{document.getElementById('pe').textContent='⚠ Password salah';document.getElementById('pi').value='';document.getElementById('pi').focus();}}
+if(!sessionStorage.getItem(K+'pwd'))showLogin();else initApp();
+
+</script>
 
 </body>
 </html>
