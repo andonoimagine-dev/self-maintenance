@@ -86,14 +86,14 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .mc-col{display:flex;flex-direction:column;gap:12px;}
 
 /* Semua .cd di dalam .mc-col punya height auto, tidak stretch paksa */
-.mc-col>.cd{width:100%;}
+.mc-col>
 
 /* Backward compat — .g2 dan .g3 tetap ada untuk tab lain */
 .g2{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;}
 @media(min-width:860px){.g2{grid-template-columns:1fr 1fr;align-items:start;}}
 .g2-eq{display:grid;grid-template-columns:1fr;gap:12px;}
 @media(min-width:860px){.g2-eq{grid-template-columns:1fr 1fr;}}
-.g2-eq>.cd{display:flex;flex-direction:column;}
+.g2-eq>
 .g3{display:grid;grid-template-columns:1fr;gap:12px;}
 @media(min-width:700px){.g3{grid-template-columns:1fr 1fr;}}
 @media(min-width:1400px){.g3{grid-template-columns:1fr 1fr 1fr;}}
@@ -107,7 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
 /* CARD */
 .cd{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow);}
-.cd+.cd{margin-top:12px;}
+.cd+
 .st{font-size:.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
 .st::after{content:'';flex:1;height:1px;background:var(--border);}
 
@@ -1019,21 +1019,29 @@ async function setupSheets(){if(!ONLINE){toast('GAS_URL belum diisi','warn');ret
 
 // ── SYNC FROM SHEETS ─────────────────────────────────────────────────────────
 async function syncFromSheets(){
-  if(!ONLINE){setSyncLbl('⚡ Lokal');return;}setSyncLbl('⟳ Sync...');
-  const r=await api('getAll');if(!r.ok){setSyncLbl('⚠ Offline');return;}
-  if(Array.isArray(r.ampere)&&r.ampere.length){aLog=r.ampere.map(x=>({_id:x.id,mc:+x.mesin,dt:x.datetime,sh:x.shift,v:+x.ampere,status:x.status,op:x.operator,n:x.catatan}));sv('aLog',aLog);}
-  if(Array.isArray(r.sparepart)&&r.sparepart.length){spL=r.sparepart.map(x=>({_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),nm:x.nama_part,kg:+x.kg_pakai,q:+x.qty,kn:x.kondisi,j:x.jenis,op:x.operator,no:x.catatan}));sv('spL',spL);}
-  if(Array.isArray(r.preventive)&&r.preventive.length){pvL=r.preventive.map(x=>{let items={};try{items=JSON.parse(x.items_json||'{}');}catch(e){}return{_id:x.id,mc:+x.mesin,w:x.minggu,m:x.bulan,date:String(x.tanggal||'').slice(0,10),pic:x.pic,items,n:x.catatan,okCnt:+x.ok_count,ngCnt:+x.ng_count};});sv('pvL',pvL);}
-  if(Array.isArray(r.limbah)&&r.limbah.length){
-    lbL=r.limbah.filter(x=>+x.mesin!==0).map(x=>({_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,vp:+x.pasir_trolley,vd:+x.debu_trolley,lo:x.lokasi,op:x.operator}));sv('lbL',lbL);
-    const dcRows=r.limbah.filter(x=>+x.mesin===0);if(dcRows.length){dcL=dcRows.map(x=>({_id:x.id,date:String(x.tanggal||'').slice(0,10),sh:x.shift,vdc:+x.vdc_kg||0,op:x.operator,n:x.keterangan||''}));sv('dcL',dcL);}
-  }
-  if(Array.isArray(r.steelshot)&&r.steelshot.length){ssL=r.steelshot.map(x=>({_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,s5:+x.ss550_kg,wc:+x.wirecut_kg,lb:+x.ssbekas_kg,op:x.operator,n:x.keterangan}));sv('ssL',ssL);}
-  if(Array.isArray(r.trolley)&&r.trolley.length){trL=r.trolley.map(x=>({_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,tn:+x.trolley_nsp,tm:+x.trolley_nsm,op:x.operator,n:x.keterangan}));sv('trL',trL);}
-  if(Array.isArray(r.imp_state)&&r.imp_state.length){r.imp_state.forEach(x=>{const mc=+x.mesin;if(mc!==1&&mc!==2)return;iSt[mc]={on:x.status_on==='TRUE'||x.status_on===true,a:x.ampere!==''?+x.ampere:null,dt:x.last_update||null,n:x.catatan||'',cf:x.confirmed==='TRUE'||x.confirmed===true};});sv('iSt',iSt);}
-  if(r.config&&typeof r.config==='object'){const cv=r.config;['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi','dcLo','dcHi'].forEach(k=>{if(cv[k]!==undefined)cfg[k]=+cv[k];});const ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};Object.entries(ltKeys).forEach(([ck,nm])=>{if(cv[ck])ltC[nm]=+cv[ck];});sv('cfg',cfg);sv('ltC',ltC);}
-  const now=new Date();setSyncLbl('✓ '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
-  rDash();rSet();
+  if(!ONLINE){setSyncLbl('\u26a1 Lokal');return Promise.resolve();}
+  setSyncLbl('\u27f3 Sync...');
+  return api('getAll').then(function(r){
+    if(!r||!r.ok){setSyncLbl('\u26a0 Offline');return;}
+    // SERVER = sumber kebenaran. Selalu timpa array lokal dengan hasil server,
+    // termasuk saat kosong (supaya data yang dihapus di Sheets ikut hilang).
+    if(Array.isArray(r.ampere))    {aLog=r.ampere.map(function(x){return{_id:x.id,mc:+x.mesin,dt:x.datetime,sh:x.shift,v:+x.ampere,status:x.status,op:x.operator,n:x.catatan};});sv('aLog',aLog);}
+    if(Array.isArray(r.sparepart)) {spL=r.sparepart.map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),nm:x.nama_part,kg:+x.kg_pakai,q:+x.qty,kn:x.kondisi,j:x.jenis,op:x.operator,no:x.catatan};});sv('spL',spL);}
+    if(Array.isArray(r.preventive)){pvL=r.preventive.map(function(x){var items={};try{items=JSON.parse(x.items_json||'{}');}catch(e){}return{_id:x.id,mc:+x.mesin,w:x.minggu,m:x.bulan,date:String(x.tanggal||'').slice(0,10),pic:x.pic,items:items,n:x.catatan,okCnt:+x.ok_count,ngCnt:+x.ng_count};});sv('pvL',pvL);}
+    if(Array.isArray(r.limbah)){
+      lbL=r.limbah.filter(function(x){return+x.mesin!==0;}).map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,vp:+x.pasir_trolley,vd:+x.debu_trolley,lo:x.lokasi,op:x.operator};});sv('lbL',lbL);
+      dcL=r.limbah.filter(function(x){return+x.mesin===0;}).map(function(x){return{_id:x.id,date:String(x.tanggal||'').slice(0,10),sh:x.shift,vdc:+x.vdc_kg||0,op:x.operator,n:x.keterangan||''};});sv('dcL',dcL);
+    }
+    if(Array.isArray(r.steelshot)){ssL=r.steelshot.map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,s5:+x.ss550_kg,wc:+x.wirecut_kg,lb:+x.ssbekas_kg,op:x.operator,n:x.keterangan};});sv('ssL',ssL);}
+    if(Array.isArray(r.trolley)) {trL=r.trolley.map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,tn:+x.trolley_nsp,tm:+x.trolley_nsm,op:x.operator,n:x.keterangan};});sv('trL',trL);}
+    if(Array.isArray(r.imp_state)&&r.imp_state.length){r.imp_state.forEach(function(x){var mc=+x.mesin;if(mc!==1&&mc!==2)return;iSt[mc]={on:x.status_on==='TRUE'||x.status_on===true,a:x.ampere!==''&&x.ampere!=null?+x.ampere:null,dt:x.last_update||null,n:x.catatan||'',cf:x.confirmed==='TRUE'||x.confirmed===true};});sv('iSt',iSt);}
+    if(r.config&&typeof r.config==='object'){var cv=r.config;['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi','dcLo','dcHi'].forEach(function(k){if(cv[k]!==undefined&&cv[k]!=='')cfg[k]=+cv[k];});var ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};Object.keys(ltKeys).forEach(function(ck){if(cv[ck])ltC[ltKeys[ck]]=+cv[ck];});sv('cfg',cfg);sv('ltC',ltC);}
+    var now=new Date();setSyncLbl('\u2713 '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
+    // Redraw apapun tab yang sedang aktif
+    if(document.getElementById('p-dash').classList.contains('on'))rDash();
+    rSet();
+    ({prev:rPrev,sp:rSp,amp:rAmp,ss:rSs,lb:rLb,gt:rGt})[_curTab]&&({prev:rPrev,sp:rSp,amp:rAmp,ss:rSs,lb:rLb,gt:rGt})[_curTab]();
+  }).catch(function(){setSyncLbl('\u26a0 Offline');});
 }
 function setSyncLbl(txt){const el=document.getElementById('sync-lbl');if(el)el.textContent=txt;}
 function startAutoSync(){if(!ONLINE){setSyncLbl('⚡ Lokal');return;}syncFromSheets();setInterval(syncFromSheets,5*60*1000);}
@@ -1046,7 +1054,7 @@ let cfg=gl('cfg',{aLo:37.5,aHi:42.5,pLo:0,pHi:0,dLo:0,dHi:0,dcLo:0,dcHi:0,sLo:0,
 let ltC=gl('ltC',{'Impeller Blade':120,'Control Cage':180,'Distributor':240,'End Liner Atas':200,'End Liner Bawah':200,'Ceiling Liner':200,'Front Cover':300,'V-Belt':120,'Motor':500});
 let iSt=gl('iSt',{1:{on:true,a:null,dt:null,n:'',cf:false},2:{on:true,a:null,dt:null,n:'',cf:false}});
 let aLog=gl('aLog',[]),spL=gl('spL',[]),pvL=gl('pvL',[]),lbL=gl('lbL',[]),ssL=gl('ssL',[]),trL=gl('trL',[]),dcL=gl('dcL',[]);
-let _miMc=1,_pvS={1:{},2:{}};
+let _miMc=1,_pvS={1:{},2:{}},_curTab='dash';
 const EDIT_PWD='admincnd';
 let _histType=null,_histIdx=-1;
 const _editModes={};
@@ -1105,6 +1113,7 @@ function toggleFS(){if(!document.fullscreenElement)document.documentElement.requ
 
 // ── TAB NAV ──────────────────────────────────────────────────────────────────
 function goTab(t){
+  _curTab=t;
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
   document.getElementById('p-'+t).classList.add('on');
@@ -1112,7 +1121,6 @@ function goTab(t){
   ({dash:rDash,prev:rPrev,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,gt:rGt,set:rSet})[t]?.();
 }
 document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.t)));
-
 
 // ── DASHBOARD ────────────────────────────────────────────────────────────────
 function rDash(){rIG(1);rIG(2);rTT(1);rTT(2);rAl();drawDash();}
