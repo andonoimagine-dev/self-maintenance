@@ -1523,29 +1523,63 @@ function waPickSend(){
 // ── WA FUNCTIONS (data from arrays) ──────────────────────────────────────────
 function _fD2(s){const[y,m,d]=(s||'').split('-');return d?`${+d}-${M_[+m-1]}-${y}`:s||'—';}
 function waResume(reportDate){
-  const td=reportDate||today(),jam=_now();const[ry,rm,rd]=td.split('-');const tgl=`${+rd}-${M_[+rm-1]}-${ry}`;
-  let hasIssue=false;
-  let msg=`🏭 *RESUME TPM CND — DAILY REPORT*\n📅 ${tgl}  📤 ${jam}\n━━━━━━━━━━━━━━━━━━━━━\n`;
-  [1,2].forEach(mc=>{
-    const s=iSt[mc]||{};const aS=s.on?ampS(s.a):null;const aIcon=aS==='ok'?'✅':aS==='hi'?'🔴':aS==='lo'?'🟡':'➖';
+  var td=reportDate||today(),jam=_now();var rp=td.split('-');var tgl=(+rp[2])+'-'+M_[+rp[1]-1]+'-'+rp[0];
+  var hasIssue=false;
+  function chk(v,lo,hi){if(v===0||v==null)return'\u2b1c';if(hi>0&&v>hi)return'\ud83d\udd34';if(lo>0&&v<lo)return'\ud83d\udfe1';return'\ud83d\udfe2';}
+  var msg='\ud83c\udfed *RESUME TPM CND \u2014 DAILY REPORT*\n\ud83d\udcc5 '+tgl+'  \ud83d\udce4 '+jam+'\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n';
+  [1,2].forEach(function(mc){
+    var s=iSt[mc]||{};var aS=s.on?ampS(s.a):null;var aIcon=aS==='ok'?'\u2705':aS==='hi'?'\ud83d\udd34':aS==='lo'?'\ud83d\udfe1':'\u2796';
     if(aS==='hi'||aS==='lo')hasIssue=true;
-    const trRows=trL.filter(r=>r.mc==mc&&r.date===td);const trN=trRows.filter(r=>r.sh==='NSP').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);const trM=trRows.filter(r=>r.sh==='NSM').reduce((s,r)=>s+(+r.tn||0)+(+r.tm||0),0);const trTot2=trN+trM,trKg=trTot2*cfg.trCap;
-    const ss=ssKg(mc,td);const gt=trKg>0&&ss>0?(ss/(trKg/1000)).toFixed(2)+' Kg/Ton':'—';
-    const gtVal=trKg>0&&ss>0?ss/(trKg/1000):null;const gtIcon=gtVal==null?'➖':cfg.gtHi>0&&gtVal>cfg.gtHi?'🔴':cfg.gtLo>0&&gtVal<cfg.gtLo?'🟡':'🟢';
-    if(gtIcon==='🔴'||gtIcon==='🟡')hasIssue=true;
-    const lb=lbL.filter(r=>r.mc==mc&&r.date===td);const lbP=lb.reduce((s,r)=>s+(+r.vp||0),0);const lbD=lb.reduce((s,r)=>s+(+r.vd||0),0);
-    const ltAlerts=[];for(const nm of Object.keys(ltC)){const t=tonSP(mc,nm);if(t==null)continue;const md=modT(mc,nm),p=t/md;if(p>=1){ltAlerts.push(`  🔴 ${nm}: HABIS`);hasIssue=true;}else if(p>=.8){ltAlerts.push(`  🟡 ${nm}: ${Math.round(p*100)}%`);hasIssue=true;}}
-    msg+=`\n⚙ *CND-${mc}*\n  Impeller : ${s.on?'ON':'OFF'} | ${s.a!=null?s.a.toFixed(1)+'A':'—'} ${aIcon}\n  Range    : ${cfg.aLo}–${cfg.aHi} A\n`;
-    msg+=`\n  🚛 Trolley : NSP ${trN} + NSM ${trM} = *${trTot2} unit*\n  Material  : *${(trKg/1000).toFixed(2)} Ton*\n`;
-    msg+=`\n  🔮 Steelshot : *${ss.toLocaleString('id-ID')} Kg*\n  📊 Gentani   : *${gt}* ${gtIcon}\n  🎯 Target    : ${cfg.gtLo||'—'}–${cfg.gtHi||'—'} Kg/Ton\n`;
-    msg+=`\n  🗑 Pasir : ${lbP} Trolley (std ${cfg.pLo}–${cfg.pHi})\n     Debu  : ${lbD} Trolley (std ${cfg.dLo}–${cfg.dHi})\n`;
-    if(ltAlerts.length)msg+=`\n  ⚠ Lifetime:\n${ltAlerts.join('\n')}\n`;
-    msg+=`─────────────────────\n`;
+    // Trolley
+    var trRows=trL.filter(function(r){return r.mc==mc&&r.date===td;});
+    var trN=trRows.filter(function(r){return r.sh==='NSP';}).reduce(function(a,r){return a+(+r.tn||0)+(+r.tm||0);},0);
+    var trM=trRows.filter(function(r){return r.sh==='NSM';}).reduce(function(a,r){return a+(+r.tn||0)+(+r.tm||0);},0);
+    var trTot2=trN+trM,trKg=trTot2*cfg.trCap;
+    // Steelshot harian (breakdown)
+    var ssRows=ssL.filter(function(r){return r.mc==mc&&r.date===td;});
+    var ss5=ssRows.reduce(function(a,r){return a+(+r.s5||0);},0);
+    var wc=ssRows.reduce(function(a,r){return a+(+r.wc||0);},0);
+    var lbk=ssRows.reduce(function(a,r){return a+(+r.lb||0);},0);
+    var ssTot=ss5+wc;
+    // Gentani harian + akumulasi
+    var gt=trKg>0&&ssTot>0?ssTot/(trKg/1000):null;
+    var gtIcon=chk(gt,+cfg.gtLo||0,+cfg.gtHi||0);if(gtIcon==='\ud83d\udd34'||gtIcon==='\ud83d\udfe1')hasIssue=true;
+    var fb=rp[0]+'-'+rp[1]+'-01';var accKg=0,accTon=0;
+    allD(fb,td).forEach(function(dt){accKg+=ssKg(mc,dt);accTon+=trTot(mc,dt)*cfg.trCap/1000;});
+    var gtA=accTon>0?accKg/accTon:null;var gtAIcon=chk(gtA,+cfg.gtLo||0,+cfg.gtHi||0);
+    if(gtAIcon==='\ud83d\udd34'||gtAIcon==='\ud83d\udfe1')hasIssue=true;
+    // Limbah
+    var lb=lbL.filter(function(r){return r.mc==mc&&r.date===td;});
+    var lbP=lb.reduce(function(a,r){return a+(+r.vp||0);},0);
+    var lbD=lb.reduce(function(a,r){return a+(+r.vd||0);},0);
+    var pIcon=chk(lbP,+cfg.pLo||0,+cfg.pHi||0),dIcon=chk(lbD,+cfg.dLo||0,+cfg.dHi||0);
+    if(pIcon==='\ud83d\udd34'||dIcon==='\ud83d\udd34')hasIssue=true;
+    // Lifetime
+    var ltAlerts=[];for(var nm in ltC){if(!ltC.hasOwnProperty(nm))continue;var t=tonSP(mc,nm);if(t==null)continue;var md=modT(mc,nm),p=t/md;if(p>=1){ltAlerts.push('  \ud83d\udd34 '+nm+': HABIS');hasIssue=true;}else if(p>=.8){ltAlerts.push('  \ud83d\udfe1 '+nm+': '+Math.round(p*100)+'%');hasIssue=true;}}
+    msg+='\n\u2699 *CND-'+mc+'*\n';
+    msg+='  Impeller : '+(s.on?'ON':'OFF')+' | '+(s.a!=null?s.a.toFixed(1)+'A':'\u2014')+' '+aIcon+'  (range '+cfg.aLo+'\u2013'+cfg.aHi+' A)\n';
+    msg+='\n  \ud83d\ude9b Trolley : NSP '+trN+' + NSM '+trM+' = *'+trTot2+' unit* \u2192 *'+(trKg/1000).toFixed(2)+' Ton*\n';
+    msg+='\n  \ud83d\udd2e Steelshot:\n';
+    msg+='     SS 550   : '+ss5.toLocaleString('id-ID')+' Kg '+chk(ss5,+cfg.sLo||0,+cfg.sHi||0)+'\n';
+    msg+='     Wire Cut : '+wc.toLocaleString('id-ID')+' Kg\n';
+    msg+='     SS Bekas : '+lbk.toLocaleString('id-ID')+' Kg\n';
+    msg+='\n  \ud83d\udcca Gentani:\n';
+    msg+='     Harian    : '+(gt!=null?gt.toFixed(2)+' Kg/Ton':'\u2014')+' '+gtIcon+'\n';
+    msg+='     Akumulasi : '+(gtA!=null?gtA.toFixed(2)+' Kg/Ton':'\u2014')+' '+gtAIcon+'\n';
+    msg+='     \ud83c\udfaf Target : '+(cfg.gtLo||'\u2014')+'\u2013'+(cfg.gtHi||'\u2014')+' Kg/Ton\n';
+    msg+='\n  \ud83d\uddd1 Limbah:\n';
+    msg+='     Pasir : '+lbP+' Trolley (std '+(cfg.pLo||0)+'\u2013'+(cfg.pHi||0)+') '+pIcon+'\n';
+    msg+='     Debu  : '+lbD+' Trolley (std '+(cfg.dLo||0)+'\u2013'+(cfg.dHi||0)+') '+dIcon+'\n';
+    if(ltAlerts.length)msg+='\n  \u26a0 Lifetime:\n'+ltAlerts.join('\n')+'\n';
+    msg+='\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n';
   });
-  const dcTot=dcL.filter(r=>r.date===td).reduce((s,r)=>s+(+r.vdc||0),0);const dcIcon=cfg.dcHi>0&&dcTot>cfg.dcHi?'🔴':'🟢';
-  msg+=`\n🏭 *Dust Collector*: *${dcTot} Karung* ${dcIcon} (std ${cfg.dcLo||'—'}–${cfg.dcHi||'—'})\n`;
-  if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━━━\n${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'ADA KONDISI PERLU PERHATIAN':'SEMUA CND NORMAL'}*\n━━━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  // Dust Collector (shared)
+  var dcTot=dcL.filter(function(r){return r.date===td;}).reduce(function(a,r){return a+(+r.vdc||0);},0);
+  var dcIcon=chk(dcTot,+cfg.dcLo||0,+cfg.dcHi||0);if(dcIcon==='\ud83d\udd34')hasIssue=true;
+  msg+='\n\ud83c\udfed *Dust Collector* (1 unit shared CND-1 & CND-2)\n';
+  msg+='  Debu : *'+dcTot+' Karung* '+dcIcon+'  (std '+(cfg.dcLo||'\u2014')+'\u2013'+(cfg.dcHi||'\u2014')+' karung)\n';
+  if(_waNote)msg+='\n\ud83d\udcdd *Catatan:* '+_waNote+'\n';
+  msg+='\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'+(hasIssue?'\ud83d\udd34':'\ud83d\udfe2')+' *KESIMPULAN: '+(hasIssue?'ADA KONDISI PERLU PERHATIAN':'SEMUA CND NORMAL')+'*\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n_'+tgl+' '+jam+' \u2014 TPM CND Casting 2_';
   sendWA(msg);
 }
 function waPv(mc,reportDate){
