@@ -71,6 +71,15 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
          stretch otomatis mengikuti tinggi kolom tetangga.
 ────────────────────────────────────────────────────────── */
 .mc2{display:grid;grid-template-columns:1fr;gap:14px;align-items:start;}
+/* DASHBOARD PAIRED GRID — each row = CND-1 | CND-2 equal height */
+.dash-grid{display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch;}
+.dash-cd{display:flex;flex-direction:column;}
+.cd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.lgr{margin-bottom:6px;}
+@media(min-width:860px){
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .dash-full{grid-column:1 / -1;}
+}
 @media(min-width:860px){.mc2{grid-template-columns:1fr 1fr;align-items:start;}}
 
 /* Kolom dalam .mc2 adalah flex column, isi turun ke bawah */
@@ -91,7 +100,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .imp-wrap{flex:1;display:flex;flex-direction:column;gap:8px;}
 
 /* Mini chart dalam kolom dashboard */
-.mini-chart{height:220px;position:relative;margin-top:6px;}
+.mini-chart{height:230px;position:relative;margin-top:auto;}
+@media(max-width:600px){.mini-chart{height:200px;}}
 .mini-chart>canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;}
 @media(max-width:600px){.mini-chart{height:180px;}}
 
@@ -102,7 +112,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .st::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* MACHINE PANEL HEADER */
-.mph{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;margin-bottom:12px;}
+.mph{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-radius:10px;margin-bottom:12px;flex-wrap:wrap;}
 .mph1{background:var(--c1bg);border:1px solid var(--c1b);}
 .mph2{background:var(--c2bg);border:1px solid var(--c2b);}
 .mph-lbl{font-size:.95rem;font-weight:800;letter-spacing:.5px;}
@@ -130,7 +140,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .al-o{background:var(--ok-bg);border:1px solid rgba(5,150,105,.25);color:var(--ok);}
 
 /* IMPELLER CARD */
-.imp{background:var(--card2);border:2px solid var(--border);border-radius:14px;padding:18px;text-align:center;cursor:pointer;transition:transform .12s,border-color .15s;position:relative;overflow:hidden;}
+.imp{background:var(--card2);border:2px solid var(--border);border-radius:14px;padding:18px;text-align:center;cursor:pointer;transition:transform .12s,border-color .15s;position:relative;overflow:hidden;min-height:150px;display:flex;flex-direction:column;justify-content:center;}
 .imp:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
 .imp-a{font-family:'Courier New',monospace;font-size:2.8rem;font-weight:700;margin:6px 0;line-height:1;}
 .imp-s{font-size:.75rem;font-weight:700;letter-spacing:.5px;padding:4px 14px;border-radius:6px;display:inline-block;margin-top:4px;}
@@ -302,12 +312,11 @@ tr:hover td{background:var(--accent-bg);}
 
 <!-- ═══════════════ DASHBOARD ═══════════════ -->
 <div id="p-dash" class="pg on">
-  <div class="mc2">
-<div class="mc-col">
-<div class="cd">
-        <div class="mph mph1" style="margin-bottom:10px;">
+  <div class="dash-grid">
+    <div class="cd dash-cd">
+        <div class="mph mph1">
           <div><div class="mph-lbl">&#9881; CND-1 &mdash; Impeller</div><div class="mph-sub">Klik kartu untuk detail</div></div>
-          <div style="display:flex;gap:6px;">
+          <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-k btn-s" onclick="setIO(1,true)">&#9654; ON</button>
             <button class="btn btn-d btn-s" onclick="setIO(1,false)">&#9632; OFF</button>
           </div>
@@ -315,55 +324,10 @@ tr:hover td{background:var(--accent-bg);}
         <div id="ig1"></div>
         <div class="bar" id="is1" style="margin-top:8px;margin-bottom:0;"></div>
       </div>
-<div class="cd">
-        <div class="st" style="color:var(--c1);">&#128665; Trolley Hari Ini &mdash; CND-1</div>
-        <div class="tr2">
-          <div class="trc"><div class="trc-l">NSP</div><div class="trc-v" id="t1n">&#8212;</div><div class="trc-s" id="t1nk">&#8212; Kg</div></div>
-          <div class="trc"><div class="trc-l">NSM</div><div class="trc-v" id="t1m">&#8212;</div><div class="trc-s" id="t1mk">&#8212; Kg</div></div>
-        </div>
-        <div class="tr-tot" style="background:var(--c1bg);border:1px solid var(--c1b);">
-          Total: <strong id="t1tot" style="color:var(--c1);font-family:\'Courier New\',monospace;font-size:1.1rem;">&#8212;</strong> trolley &nbsp;|&nbsp;
-          <span id="t1kg" style="color:var(--info);font-family:\'Courier New\',monospace;font-weight:700;">&#8212;</span> Kg
-        </div>
-      </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128202; Gentani CND-1</div>
-          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
-        </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div>
-        <div class="mini-chart"><canvas id="c-gt1"></canvas></div>
-      </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128302; Steelshot CND-1</div>
-          <button class="btn btn-g btn-s" onclick="goTab('ss')">&#8594;</button>
-        </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div></div>
-        <div class="mini-chart"><canvas id="c-ss1"></canvas></div>
-      </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128665; Trend Trolley CND-1</div>
-          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
-        </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>NSP</div><div class="lgi"><div class="lgd" style="background:rgba(15,108,189,.8);"></div>NSM</div></div>
-        <div class="mini-chart"><canvas id="c-tr1"></canvas></div>
-      </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128465; Limbah CND-1</div>
-          <button class="btn btn-g btn-s" onclick="goTab('lb')">&#8594;</button>
-        </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div>
-        <div class="mini-chart"><canvas id="c-lb1d"></canvas></div>
-      </div>
-</div>
-<div class="mc-col">
-<div class="cd">
-        <div class="mph mph2" style="margin-bottom:10px;">
+    <div class="cd dash-cd">
+        <div class="mph mph2">
           <div><div class="mph-lbl">&#9881; CND-2 &mdash; Impeller</div><div class="mph-sub">Klik kartu untuk detail</div></div>
-          <div style="display:flex;gap:6px;">
+          <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-k btn-s" onclick="setIO(2,true)">&#9654; ON</button>
             <button class="btn btn-d btn-s" onclick="setIO(2,false)">&#9632; OFF</button>
           </div>
@@ -371,67 +335,106 @@ tr:hover td{background:var(--accent-bg);}
         <div id="ig2"></div>
         <div class="bar" id="is2" style="margin-top:8px;margin-bottom:0;"></div>
       </div>
-<div class="cd">
+    <div class="cd dash-cd">
+        <div class="st" style="color:var(--c1);">&#128665; Trolley Hari Ini &mdash; CND-1</div>
+        <div class="tr2">
+          <div class="trc"><div class="trc-l">NSP</div><div class="trc-v" id="t1n">&#8212;</div><div class="trc-s" id="t1nk">&#8212; Kg</div></div>
+          <div class="trc"><div class="trc-l">NSM</div><div class="trc-v" id="t1m">&#8212;</div><div class="trc-s" id="t1mk">&#8212; Kg</div></div>
+        </div>
+        <div class="tr-tot" style="background:var(--c1bg);border:1px solid var(--c1b);margin-top:auto;">
+          Total: <strong id="t1tot" style="color:var(--c1);font-family:'Courier New',monospace;font-size:1.1rem;">&#8212;</strong> trolley &nbsp;|&nbsp;
+          <span id="t1kg" style="color:var(--info);font-family:'Courier New',monospace;font-weight:700;">&#8212;</span> Kg
+        </div>
+      </div>
+    <div class="cd dash-cd">
         <div class="st" style="color:var(--c2);">&#128665; Trolley Hari Ini &mdash; CND-2</div>
         <div class="tr2">
           <div class="trc"><div class="trc-l">NSP</div><div class="trc-v" id="t2n">&#8212;</div><div class="trc-s" id="t2nk">&#8212; Kg</div></div>
           <div class="trc"><div class="trc-l">NSM</div><div class="trc-v" id="t2m">&#8212;</div><div class="trc-s" id="t2mk">&#8212; Kg</div></div>
         </div>
-        <div class="tr-tot" style="background:var(--c2bg);border:1px solid var(--c2b);">
-          Total: <strong id="t2tot" style="color:var(--c2);font-family:\'Courier New\',monospace;font-size:1.1rem;">&#8212;</strong> trolley &nbsp;|&nbsp;
-          <span id="t2kg" style="color:var(--info);font-family:\'Courier New\',monospace;font-weight:700;">&#8212;</span> Kg
+        <div class="tr-tot" style="background:var(--c2bg);border:1px solid var(--c2b);margin-top:auto;">
+          Total: <strong id="t2tot" style="color:var(--c2);font-family:'Courier New',monospace;font-size:1.1rem;">&#8212;</strong> trolley &nbsp;|&nbsp;
+          <span id="t2kg" style="color:var(--info);font-family:'Courier New',monospace;font-weight:700;">&#8212;</span> Kg
         </div>
       </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div class="cd dash-cd">
+        <div class="cd-head">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128202; Gentani CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
+        </div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div>
+        <div class="mini-chart"><canvas id="c-gt1"></canvas></div>
+      </div>
+    <div class="cd dash-cd">
+        <div class="cd-head">
           <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128202; Gentani CND-2</div>
           <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
         </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div>
         <div class="mini-chart"><canvas id="c-gt2"></canvas></div>
       </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div class="cd dash-cd">
+        <div class="cd-head">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128302; Steelshot CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('ss')">&#8594;</button>
+        </div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div></div>
+        <div class="mini-chart"><canvas id="c-ss1"></canvas></div>
+      </div>
+    <div class="cd dash-cd">
+        <div class="cd-head">
           <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128302; Steelshot CND-2</div>
           <button class="btn btn-g btn-s" onclick="goTab('ss')">&#8594;</button>
         </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div></div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>SS 550</div><div class="lgi"><div class="lgd" style="background:#059669;"></div>Wire Cut</div></div>
         <div class="mini-chart"><canvas id="c-ss2"></canvas></div>
       </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div class="cd dash-cd">
+        <div class="cd-head">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128665; Trend Trolley CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
+        </div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>NSP</div><div class="lgi"><div class="lgd" style="background:rgba(15,108,189,.8);"></div>NSM</div></div>
+        <div class="mini-chart"><canvas id="c-tr1"></canvas></div>
+      </div>
+    <div class="cd dash-cd">
+        <div class="cd-head">
           <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128665; Trend Trolley CND-2</div>
           <button class="btn btn-g btn-s" onclick="goTab('gt')">&#8594;</button>
         </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>NSP</div><div class="lgi"><div class="lgd" style="background:rgba(124,58,237,.8);"></div>NSM</div></div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>NSP</div><div class="lgi"><div class="lgd" style="background:rgba(124,58,237,.8);"></div>NSM</div></div>
         <div class="mini-chart"><canvas id="c-tr2"></canvas></div>
       </div>
-<div class="cd">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div class="cd dash-cd">
+        <div class="cd-head">
+          <div class="st" style="margin:0;flex:1;color:var(--c1);">&#128465; Limbah CND-1</div>
+          <button class="btn btn-g btn-s" onclick="goTab('lb')">&#8594;</button>
+        </div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div>
+        <div class="mini-chart"><canvas id="c-lb1d"></canvas></div>
+      </div>
+    <div class="cd dash-cd">
+        <div class="cd-head">
           <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128465; Limbah CND-2</div>
           <button class="btn btn-g btn-s" onclick="goTab('lb')">&#8594;</button>
         </div>
-        <div class="lgr" style="margin-bottom:4px;"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div>
+        <div class="lgr"><div class="lgi"><div class="lgd" style="background:rgba(217,119,6,.8);"></div>Pasir</div><div class="lgi"><div class="lgd" style="background:rgba(8,145,178,.8);"></div>Debu</div></div>
         <div class="mini-chart"><canvas id="c-lb2d"></canvas></div>
       </div>
-</div>
-</div>
-  <!-- DC Chart — full width below 2 columns -->
-  <div class="cd" style="margin-top:12px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <div class="st" style="margin:0;flex:1;color:var(--c2);">&#128190; Dust Collector (Karung) &mdash; CND-1 &amp; CND-2</div>
-      <button class="btn btn-g btn-s" onclick="goTab('lb')">&#8594;</button>
+    <div class="cd dash-cd dash-full">
+      <div class="cd-head">
+        <div class="st" style="margin:0;flex:1;color:var(--accent);">&#128190; Dust Collector (Karung) &mdash; CND-1 &amp; CND-2 (1 unit shared)</div>
+        <button class="btn btn-g btn-s" onclick="goTab('lb')">&#8594;</button>
+      </div>
+      <div class="lgr"><div class="lgi"><div class="lgd" style="background:rgba(124,58,237,.8);"></div>Dust Collector (Karung)</div></div>
+      <div class="mini-chart"><canvas id="c-dc-d"></canvas></div>
     </div>
-    <div class="mini-chart"><canvas id="c-dc-d"></canvas></div>
-    <div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:rgba(124,58,237,.8);"></div>Dust Collector (Karung)</div></div>
+    <div class="cd dash-full">
+      <div class="st">&#9888; Alert System</div>
+      <div id="al-box" class="al"></div>
+    </div>
   </div>
-
-  <!-- Alert & WA — full width -->
-  <div class="cd" style="margin-top:12px;margin-bottom:10px;">
-    <div class="st">&#9888; Alert System</div>
-    <div id="al-box" class="al"></div>
-  </div>
-  <button class="btn btn-wa" onclick="openWAPicker('resume')" style="width:100%;justify-content:center;margin-bottom:4px;">
+  <button class="btn btn-wa" onclick="openWAPicker('resume')" style="width:100%;justify-content:center;margin-top:12px;margin-bottom:10px;">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Kirim Resume Harian ke WhatsApp
   </button>
 </div>
