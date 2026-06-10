@@ -1024,7 +1024,7 @@ async function api(action,data={}){
     clearTimeout(tmo);return JSON.parse(await res.text());
   }catch(e){toast('⚠ Gagal sync ke Sheets','warn');return{ok:false,offline:true};}
 }
-async function setupSheets(){if(!ONLINE){toast('GAS_URL belum diisi','warn');return;}toast('Menyiapkan sheets...','ok');const r=await api('setup');toast(r.ok?'✅ Setup berhasil':'❌ '+r.error,r.ok?'ok':'warn',5000);}
+async function setupSheets(){if(!ONLINE){toast('GAS_URL belum diisi','warn');return;}toast('Menyiapkan & memperbaiki kolom sheet...','ok',4000);const r=await api('setup');if(r&&r.ok){toast('✅ Setup berhasil — menyinkronkan ulang...','ok',3000);await syncFromSheets();toast('✅ Selesai. Kolom & data tersinkron.','ok',4000);}else{toast('❌ '+(r&&r.error||'gagal'),'warn',5000);}}
 
 // ── SYNC FROM SHEETS ─────────────────────────────────────────────────────────
 async function syncFromSheets(){
