@@ -845,6 +845,15 @@ tr:hover td{background:var(--accent-bg);}
     <div class="sr"><div class="sl">Target Atas</div><input class="si" type="number" step="0.01" id="s-gthi"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
   </div>
+  <div class="cd" style="margin-bottom:12px;"><div class="st">&#128302; Standar Steelshot (Kg)</div>
+    <div class="sr"><div class="sl">SS 550 Bawah</div><input class="si" type="number" id="s-slo"></div>
+    <div class="sr"><div class="sl">SS 550 Atas</div><input class="si" type="number" id="s-shi"></div>
+    <div class="sr"><div class="sl">Wire Cut Bawah</div><input class="si" type="number" id="s-wlo"></div>
+    <div class="sr"><div class="sl">Wire Cut Atas</div><input class="si" type="number" id="s-whi"></div>
+    <div class="sr"><div class="sl">SS Bekas Bawah</div><input class="si" type="number" id="s-lslo"></div>
+    <div class="sr"><div class="sl">SS Bekas Atas</div><input class="si" type="number" id="s-lshi"></div>
+    <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveCfg()">&#128190; Simpan</button>
+  </div>
   <div class="cd" style="margin-bottom:12px;"><div class="st">&#128297; Lifetime Default Sparepart (Ton material)</div>
     <div id="lt-set"></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveLt()">&#128190; Simpan</button>
@@ -1035,11 +1044,12 @@ async function syncFromSheets(){
     if(Array.isArray(r.steelshot)){ssL=r.steelshot.map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,s5:+x.ss550_kg,wc:+x.wirecut_kg,lb:+x.ssbekas_kg,op:x.operator,n:x.keterangan};});sv('ssL',ssL);}
     if(Array.isArray(r.trolley)) {trL=r.trolley.map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,tn:+x.trolley_nsp,tm:+x.trolley_nsm,op:x.operator,n:x.keterangan};});sv('trL',trL);}
     if(Array.isArray(r.imp_state)&&r.imp_state.length){r.imp_state.forEach(function(x){var mc=+x.mesin;if(mc!==1&&mc!==2)return;iSt[mc]={on:x.status_on==='TRUE'||x.status_on===true,a:x.ampere!==''&&x.ampere!=null?+x.ampere:null,dt:x.last_update||null,n:x.catatan||'',cf:x.confirmed==='TRUE'||x.confirmed===true};});sv('iSt',iSt);}
-    if(r.config&&typeof r.config==='object'){var cv=r.config;['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi','dcLo','dcHi'].forEach(function(k){if(cv[k]!==undefined&&cv[k]!=='')cfg[k]=+cv[k];});var ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};Object.keys(ltKeys).forEach(function(ck){if(cv[ck])ltC[ltKeys[ck]]=+cv[ck];});sv('cfg',cfg);sv('ltC',ltC);}
+    if(r.config&&typeof r.config==='object'){var cv=r.config;['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi','dcLo','dcHi','sLo','sHi','wLo','wHi','lsLo','lsHi'].forEach(function(k){if(cv[k]!==undefined&&cv[k]!==''&&cv[k]!==null)cfg[k]=+cv[k];});var ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};Object.keys(ltKeys).forEach(function(ck){if(cv[ck])ltC[ltKeys[ck]]=+cv[ck];});sv('cfg',cfg);sv('ltC',ltC);}
     var now=new Date();setSyncLbl('\u2713 '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
     // Redraw apapun tab yang sedang aktif
     if(document.getElementById('p-dash').classList.contains('on'))rDash();
-    rSet();
+    // Jangan timpa input Setting saat user sedang di tab Setting (mencegah reset input yang sedang diisi)
+    if(!document.getElementById('p-set').classList.contains('on'))rSet();
     ({prev:rPrev,sp:rSp,amp:rAmp,ss:rSs,lb:rLb,gt:rGt})[_curTab]&&({prev:rPrev,sp:rSp,amp:rAmp,ss:rSs,lb:rLb,gt:rGt})[_curTab]();
   }).catch(function(){setSyncLbl('\u26a0 Offline');});
 }
@@ -1050,7 +1060,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ONLINE)sy
 // ── DATA ─────────────────────────────────────────────────────────────────────
 const gl=(k,d)=>{try{const v=localStorage.getItem(K+k);return v?JSON.parse(v):d;}catch(e){return d;}};
 const sv=(k,v)=>{try{localStorage.setItem(K+k,JSON.stringify(v));}catch(e){}};
-let cfg=gl('cfg',{aLo:37.5,aHi:42.5,pLo:0,pHi:0,dLo:0,dHi:0,dcLo:0,dcHi:0,sLo:0,sHi:0,wLo:0,wHi:0,lsLo:0,lsHi:0,gtLo:0,gtHi:0,trCap:800});
+var _cfgDef={aLo:37.5,aHi:42.5,pLo:0,pHi:0,dLo:0,dHi:0,dcLo:0,dcHi:0,sLo:0,sHi:0,wLo:0,wHi:0,lsLo:0,lsHi:0,gtLo:0,gtHi:0,trCap:800};
+let cfg=Object.assign({},_cfgDef,gl('cfg',{}));
 let ltC=gl('ltC',{'Impeller Blade':120,'Control Cage':180,'Distributor':240,'End Liner Atas':200,'End Liner Bawah':200,'Ceiling Liner':200,'Front Cover':300,'V-Belt':120,'Motor':500});
 let iSt=gl('iSt',{1:{on:true,a:null,dt:null,n:'',cf:false},2:{on:true,a:null,dt:null,n:'',cf:false}});
 let aLog=gl('aLog',[]),spL=gl('spL',[]),pvL=gl('pvL',[]),lbL=gl('lbL',[]),ssL=gl('ssL',[]),trL=gl('trL',[]),dcL=gl('dcL',[]);
@@ -1451,20 +1462,21 @@ function rGTH(){const mcf=document.getElementById('gtfmc').value;let rows=[...tr
 
 // ── SETTING ───────────────────────────────────────────────────────────────────
 function rSet(){
-  ['s-alo','s-ahi','s-trcap','s-gtlo','s-gthi','s-plo','s-phi','s-dlo','s-dhi','s-dclo','s-dchi'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const key=id.replace('s-','').replace('-','').replace('a','A').replace('lo','Lo').replace('hi','Hi');const map={'alo':'aLo','ahi':'aHi','trcap':'trCap','gtlo':'gtLo','gthi':'gtHi','plo':'pLo','phi':'pHi','dlo':'dLo','dhi':'dHi','dclo':'dcLo','dchi':'dcHi'};const k=map[id.replace('s-','')];if(k)el.value=cfg[k]||0;});
+  var map={'s-alo':'aLo','s-ahi':'aHi','s-trcap':'trCap','s-gtlo':'gtLo','s-gthi':'gtHi','s-plo':'pLo','s-phi':'pHi','s-dlo':'dLo','s-dhi':'dHi','s-dclo':'dcLo','s-dchi':'dcHi','s-slo':'sLo','s-shi':'sHi','s-wlo':'wLo','s-whi':'wHi','s-lslo':'lsLo','s-lshi':'lsHi'};
+  Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)el.value=cfg[map[id]]||0;});
   document.getElementById('s-wa').value=localStorage.getItem(K+'wa')||'';
-  const gsel=document.getElementById('gas-status');if(gsel)gsel.innerHTML=ONLINE?'<span style="color:var(--ok);">✅ Terhubung ke Google Sheets</span>':'<span style="color:var(--warn);">⚠ Offline — isi GAS_URL di HTML</span>';
-  let h='';for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');h+=`<div class="sr"><div class="sl">${nm}</div><input class="si" type="number" id="lt-${kk}" value="${ltC[nm]}" min="1"><span style="font-size:.7rem;color:var(--muted);margin-left:4px;">Ton</span></div>`;}
+  var gsel=document.getElementById('gas-status');if(gsel)gsel.innerHTML=ONLINE?'<span style="color:var(--ok);">✅ Terhubung ke Google Sheets</span>':'<span style="color:var(--warn);">⚠ Offline</span>';
+  var h='';for(var nm in ltC){if(!ltC.hasOwnProperty(nm))continue;var kk=nm.replace(/\s+/g,'_');h+='<div class="sr"><div class="sl">'+nm+'</div><input class="si" type="number" id="lt-'+kk+'" value="'+ltC[nm]+'" min="1"><span style="font-size:.7rem;color:var(--muted);margin-left:4px;">Ton</span></div>';}
   document.getElementById('lt-set').innerHTML=h;
 }
 function saveCfg(){
-  const map={'s-alo':'aLo','s-ahi':'aHi','s-trcap':'trCap','s-gtlo':'gtLo','s-gthi':'gtHi','s-plo':'pLo','s-phi':'pHi','s-dlo':'dLo','s-dhi':'dHi','s-dclo':'dcLo','s-dchi':'dcHi'};
-  Object.entries(map).forEach(([id,k])=>{const el=document.getElementById(id);if(el)cfg[k]=+el.value||0;});
+  var map={'s-alo':'aLo','s-ahi':'aHi','s-trcap':'trCap','s-gtlo':'gtLo','s-gthi':'gtHi','s-plo':'pLo','s-phi':'pHi','s-dlo':'dLo','s-dhi':'dHi','s-dclo':'dcLo','s-dchi':'dcHi','s-slo':'sLo','s-shi':'sHi','s-wlo':'wLo','s-whi':'wHi','s-lslo':'lsLo','s-lshi':'lsHi'};
+  Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&el.value!=='')cfg[map[id]]=+el.value||0;});
   if(!cfg.aLo)cfg.aLo=37.5;if(!cfg.aHi)cfg.aHi=42.5;if(!cfg.trCap)cfg.trCap=800;
   sv('cfg',cfg);api('updateConfig',{pairs_json:JSON.stringify(cfg)});
   toast('✅ Konfigurasi tersimpan');
-  const cl=document.getElementById('cap-lbl');if(cl)cl.textContent=cfg.trCap;
-  document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=`${cfg.aLo}–${cfg.aHi}A`;
+  var cl=document.getElementById('cap-lbl');if(cl)cl.textContent=cfg.trCap;
+  document.getElementById('rg1').textContent=document.getElementById('rg2').textContent=cfg.aLo+'–'+cfg.aHi+'A';
 }
 function saveLt(){for(const nm of Object.keys(ltC)){const kk=nm.replace(/\s+/g,'_');const el=document.getElementById('lt-'+kk);if(el)ltC[nm]=+el.value||1;}sv('ltC',ltC);const ltPairs={};Object.entries(ltC).forEach(([nm,v])=>{ltPairs['lt_'+nm.replace(/\s+/g,'_')]=v;});api('updateConfig',{pairs_json:JSON.stringify(ltPairs)});toast('✅ Lifetime tersimpan');}
 function saveWA(){localStorage.setItem(K+'wa',document.getElementById('s-wa').value.trim());toast('✅ No. WA tersimpan');}
