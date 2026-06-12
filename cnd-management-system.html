@@ -870,6 +870,7 @@ tr:hover td{background:var(--accent-bg);}
   </div>
   <div class="cd" style="margin-bottom:12px;"><div class="st">&#128241; WhatsApp Tujuan</div>
     <div class="sr"><div class="sl">No. WA (628xxx)</div><input class="si" type="tel" id="s-wa" placeholder="628xxxxxxxxxx" style="width:180px;text-align:left;font-family:inherit;"></div>
+    <div class="sr"><div class="sl">Sertakan link dashboard di laporan WA</div><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="s-walink" onchange="saveWALink()" style="width:20px;height:20px;accent-color:var(--accent);cursor:pointer;"><span id="s-walink-lbl" style="font-size:.75rem;font-weight:700;color:var(--muted);"></span></label></div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveWA()">&#128190; Simpan</button>
   </div>
   <div class="cd"><div class="st">&#128451; Data &amp; Sync</div>
@@ -1012,6 +1013,11 @@ const K='cnd9_',M_=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt',
 // ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────────────────
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbz9Qj1DR7qQOkXyHfEHDeWlFXvcEtOgKHl0JCJoca96G_b68z1lWEIHMgKsZGBjfGNz/exec';
 const ONLINE  = GAS_URL.length > 0;
+const DASH_URL = 'https://andonoimagine-dev.github.io/self-maintenance/cnd-management-system.html';
+
+function _dashOn(){return cfg.waLink===undefined||+cfg.waLink!==0;}
+function _dashLine(){return _dashOn()?('\ud83d\udcca Dashboard: '+DASH_URL+'\n'):'';}
+function saveWALink(){var on=document.getElementById('s-walink').checked;cfg.waLink=on?1:0;sv('cfg',cfg);api('updateConfig',{pairs_json:JSON.stringify({waLink:cfg.waLink})});var l=document.getElementById('s-walink-lbl');if(l)l.textContent=on?'AKTIF':'NONAKTIF';toast(on?'\u2705 Link dashboard disertakan di WA (semua perangkat)':'Link dashboard disembunyikan dari WA (semua perangkat)');}
 
 // ── API ──────────────────────────────────────────────────────────────────────
 async function api(action,data={}){
@@ -1044,7 +1050,8 @@ async function syncFromSheets(){
     if(Array.isArray(r.steelshot)){ssL=r.steelshot.map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,s5:+x.ss550_kg,wc:+x.wirecut_kg,lb:+x.ssbekas_kg,op:x.operator,n:x.keterangan};});sv('ssL',ssL);}
     if(Array.isArray(r.trolley)) {trL=r.trolley.map(function(x){return{_id:x.id,mc:+x.mesin,date:String(x.tanggal||'').slice(0,10),sh:x.shift,tn:+x.trolley_nsp,tm:+x.trolley_nsm,op:x.operator,n:x.keterangan};});sv('trL',trL);}
     if(Array.isArray(r.imp_state)&&r.imp_state.length){r.imp_state.forEach(function(x){var mc=+x.mesin;if(mc!==1&&mc!==2)return;iSt[mc]={on:x.status_on==='TRUE'||x.status_on===true,a:x.ampere!==''&&x.ampere!=null?+x.ampere:null,dt:x.last_update||null,n:x.catatan||'',cf:x.confirmed==='TRUE'||x.confirmed===true};});sv('iSt',iSt);}
-    if(r.config&&typeof r.config==='object'){var cv=r.config;['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi','dcLo','dcHi','sLo','sHi','wLo','wHi','lsLo','lsHi'].forEach(function(k){if(cv[k]!==undefined&&cv[k]!==''&&cv[k]!==null)cfg[k]=+cv[k];});var ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};Object.keys(ltKeys).forEach(function(ck){if(cv[ck])ltC[ltKeys[ck]]=+cv[ck];});sv('cfg',cfg);sv('ltC',ltC);}
+    if(r.config&&typeof r.config==='object'){var cv=r.config;['aLo','aHi','trCap','gtLo','gtHi','pLo','pHi','dLo','dHi','dcLo','dcHi','sLo','sHi','wLo','wHi','lsLo','lsHi','waLink'].forEach(function(k){if(cv[k]!==undefined&&cv[k]!==''&&cv[k]!==null)cfg[k]=+cv[k];});var ltKeys={'lt_Impeller_Blade':'Impeller Blade','lt_Control_Cage':'Control Cage','lt_Distributor':'Distributor','lt_End_Liner_Atas':'End Liner Atas','lt_End_Liner_Bawah':'End Liner Bawah','lt_Ceiling_Liner':'Ceiling Liner','lt_Front_Cover':'Front Cover','lt_V_Belt':'V-Belt','lt_Motor':'Motor'};Object.keys(ltKeys).forEach(function(ck){if(cv[ck])ltC[ltKeys[ck]]=+cv[ck];});sv('cfg',cfg);sv('ltC',ltC);}
+    var wl2=document.getElementById('s-walink');if(wl2){wl2.checked=_dashOn();var wll2=document.getElementById('s-walink-lbl');if(wll2)wll2.textContent=_dashOn()?'AKTIF':'NONAKTIF';}
     var now=new Date();setSyncLbl('\u2713 '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
     // Redraw apapun tab yang sedang aktif
     if(document.getElementById('p-dash').classList.contains('on'))rDash();
@@ -1465,6 +1472,7 @@ function rSet(){
   var map={'s-alo':'aLo','s-ahi':'aHi','s-trcap':'trCap','s-gtlo':'gtLo','s-gthi':'gtHi','s-plo':'pLo','s-phi':'pHi','s-dlo':'dLo','s-dhi':'dHi','s-dclo':'dcLo','s-dchi':'dcHi','s-slo':'sLo','s-shi':'sHi','s-wlo':'wLo','s-whi':'wHi','s-lslo':'lsLo','s-lshi':'lsHi'};
   Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)el.value=cfg[map[id]]||0;});
   document.getElementById('s-wa').value=localStorage.getItem(K+'wa')||'';
+  var wl=document.getElementById('s-walink');if(wl){wl.checked=_dashOn();var wll=document.getElementById('s-walink-lbl');if(wll)wll.textContent=_dashOn()?'AKTIF':'NONAKTIF';}
   var gsel=document.getElementById('gas-status');if(gsel)gsel.innerHTML=ONLINE?'<span style="color:var(--ok);">✅ Terhubung ke Google Sheets</span>':'<span style="color:var(--warn);">⚠ Offline</span>';
   var h='';for(var nm in ltC){if(!ltC.hasOwnProperty(nm))continue;var kk=nm.replace(/\s+/g,'_');h+='<div class="sr"><div class="sl">'+nm+'</div><input class="si" type="number" id="lt-'+kk+'" value="'+ltC[nm]+'" min="1"><span style="font-size:.7rem;color:var(--muted);margin-left:4px;">Ton</span></div>';}
   document.getElementById('lt-set').innerHTML=h;
@@ -1591,6 +1599,7 @@ function waResume(reportDate){
   msg+='\n\ud83c\udfed *Dust Collector* (1 unit shared CND-1 & CND-2)\n';
   msg+='  Debu : *'+dcTot+' Karung* '+dcIcon+'  (std '+(cfg.dcLo||'\u2014')+'\u2013'+(cfg.dcHi||'\u2014')+' karung)\n';
   if(_waNote)msg+='\n\ud83d\udcdd *Catatan:* '+_waNote+'\n';
+  msg+=_dashLine();
   msg+='\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'+(hasIssue?'\ud83d\udd34':'\ud83d\udfe2')+' *KESIMPULAN: '+(hasIssue?'ADA KONDISI PERLU PERHATIAN':'SEMUA CND NORMAL')+'*\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n_'+tgl+' '+jam+' \u2014 TPM CND Casting 2_';
   sendWA(msg);
 }
@@ -1604,7 +1613,7 @@ function waPv(mc,reportDate){
   if(ngItems.length){msg+=`\n⚠ *Item NG:*\n`;ngItems.forEach(x=>{msg+=`  • ${x}\n`;});}
   const n=document.getElementById('p'+mc+'n')?.value.trim()||'';if(n)msg+=`\n📝 ${n}\n`;
   if(_waNote)msg+=`📝 *Tambahan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n${ng>0?'🔴':pend>0?'🟡':'🟢'} *KESIMPULAN: ${ng>0?`ADA ${ng} ITEM NG`:pend>0?'ADA BELUM DICEK':'SEMUA ITEM OK'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${ng>0?'🔴':pend>0?'🟡':'🟢'} *KESIMPULAN: ${ng>0?`ADA ${ng} ITEM NG`:pend>0?'ADA BELUM DICEK':'SEMUA ITEM OK'}*\n━━━━━━━━━━━━━━━━━━━\n${_dashLine()}\n_${tgl} ${jam} — TPM CND Casting 2_`;
   sendWA(msg);
 }
 function waSp(reportMc,reportDate){
@@ -1615,7 +1624,7 @@ function waSp(reportMc,reportDate){
   if(rows.length){rows.forEach(r=>{msg+=`• *${r.nm}*  Kg Pakai: ${(+r.kg/1000).toFixed(2)} Ton  Jenis: ${r.j==='assy'?'Assy':'Satuan'}  Op: ${r.op||'—'}\n`;});}else{msg+=`  _(Belum ada data)_\n`;}
   if(warns.length){msg+=`\n🔔 *Lifetime CND-${mc}:*\n${warns.join('\n')}\n`;}
   if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n${warns.some(w=>w.includes('HABIS'))?'🔴':warns.length?'🟡':'🟢'} *KESIMPULAN: ${warns.some(w=>w.includes('HABIS'))?'ADA LIFETIME HABIS':warns.length?'PERLU PERHATIAN':'SEMUA OK'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${warns.some(w=>w.includes('HABIS'))?'🔴':warns.length?'🟡':'🟢'} *KESIMPULAN: ${warns.some(w=>w.includes('HABIS'))?'ADA LIFETIME HABIS':warns.length?'PERLU PERHATIAN':'SEMUA OK'}*\n━━━━━━━━━━━━━━━━━━━\n${_dashLine()}\n_${tgl} ${jam} — TPM CND Casting 2_`;
   sendWA(msg);
 }
 function waAmp(mc,reportDate,reportShifts){
@@ -1625,7 +1634,7 @@ function waAmp(mc,reportDate,reportShifts){
   let msg=`⚡ *LAPORAN AMPERE IMPELLER*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}  |  Range: ${cfg.aLo}–${cfg.aHi} A\n━━━━━━━━━━━━━━━━━━━\n⚙ Status: ${s.on?'ON':'OFF'} | *${s.a!=null?s.a.toFixed(1):'—'} A* ${icon}\n${icon} *${aS==='ok'?'NORMAL':aS==='hi'?'OVER':'UNDER'}*\n`;
   if(rows.length){msg+=`\n📋 *Log ${sh} — ${tgl}:*\n`;rows.forEach(r=>{const ic=r.status==='ok'?'✅':r.status==='hi'?'🔴':'🟡';msg+=`  ${ic} ${fDT(r.dt).slice(0,14)} — *${r.v?.toFixed(1)}A* (${r.sh})${r.op?' · '+r.op:''}${r.n?' | '+r.n:''}\n`;});}
   if(_waNote)msg+=`\n📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n${aS==='hi'||aS==='lo'?'🔴':'🟢'} *KESIMPULAN: ${aS==='ok'?'AMPERE NORMAL':aS==='hi'?'OVER — SEGERA CEK':'UNDER — SEGERA CEK'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${aS==='hi'||aS==='lo'?'🔴':'🟢'} *KESIMPULAN: ${aS==='ok'?'AMPERE NORMAL':aS==='hi'?'OVER — SEGERA CEK':'UNDER — SEGERA CEK'}*\n━━━━━━━━━━━━━━━━━━━\n${_dashLine()}\n_${tgl} ${jam} — TPM CND Casting 2_`;
   sendWA(msg);
 }
 function waSS(mc,reportDate,reportShifts){
@@ -1637,7 +1646,7 @@ function waSS(mc,reportDate,reportShifts){
   const tgt=(+cfg.sHi||0)+(+cfg.wHi||0);const budgetLine=tgt>0?(totalInput<=tgt?`💰 Total: *${totalInput} Kg* ✅ EFISIEN (sisa ${tgt-totalInput} Kg)`:`💰 Total: *${totalInput} Kg* 🔴 MELEBIHI (+${totalInput-tgt} Kg)`):(`💰 Total: *${totalInput} Kg*`);
   let msg=`🔮 *LAPORAN STEELSHOT HARIAN*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}\n━━━━━━━━━━━━━━━━━━━\n*SS 550*: ${ss5} Kg | Std: ${cfg.sLo||0}–${cfg.sHi||0} | ${st5}\n*Wire Cut*: ${wc} Kg | Std: ${cfg.wLo||0}–${cfg.wHi||0} | ${stWC}\n*SS Bekas*: ${lb2} Kg | Std: ${cfg.lsLo||0}–${cfg.lsHi||0} | ${stLB}\n━━━━━━━━━━━━━━━━━━━\n${budgetLine}\n`;
   if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n━━━━━━━━━━━━━━━━━━━\n${_dashLine()}\n_${tgl} ${jam} — TPM CND Casting 2_`;
   sendWA(msg);
 }
 function waLB(mc,reportDate,reportShifts){
@@ -1647,7 +1656,7 @@ function waLB(mc,reportDate,reportShifts){
   const stP=lbChk(vp,cfg.pLo,cfg.pHi);const stD=lbChk(vd,cfg.dLo,cfg.dHi);const hasOut=[stP,stD].some(x=>x.includes('OUT'));const allOk=[stP,stD].every(x=>x.includes('Normal')||x.includes('input'));
   let msg=`🗑 *LAPORAN LIMBAH HARIAN*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}\n━━━━━━━━━━━━━━━━━━━\n*Pasir*: ${vp} Trolley | Std: ${cfg.pLo||0}–${cfg.pHi||0} | ${stP}\n*Debu*: ${vd} Trolley | Std: ${cfg.dLo||0}–${cfg.dHi||0} | ${stD}\n`;
   if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasOut?'🔴':allOk?'🟢':'🟡'} *KESIMPULAN: ${hasOut?'OUT STANDARD':allOk?'SEMUA NORMAL':'PERLU PERHATIAN'}*\n━━━━━━━━━━━━━━━━━━━\n${_dashLine()}\n_${tgl} ${jam} — TPM CND Casting 2_`;
   sendWA(msg);
 }
 function waDC(reportDate,reportShifts){
@@ -1657,7 +1666,7 @@ function waDC(reportDate,reportShifts){
   let msg=`🏭 *LAPORAN DUST COLLECTOR*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n⚙ 1 Unit Shared — CND-1 & CND-2\n━━━━━━━━━━━━━━━━━━━\n*Debu DC*: *${total} Karung* | Std: ${lo||'—'}–${hi||'—'} | ${stDC}\n`;
   if(rows.length){rows.forEach(r=>{msg+=`  • ${r.sh}: ${r.vdc} karung (${r.op||'—'})${r.n?' — '+r.n:''}\n`;});}
   if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n${stDC.includes('OUT')?'🔴':'🟢'} *KESIMPULAN: ${stDC.includes('OUT')?'OUT STANDARD':'DUST COLLECTOR NORMAL'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${stDC.includes('OUT')?'🔴':'🟢'} *KESIMPULAN: ${stDC.includes('OUT')?'OUT STANDARD':'DUST COLLECTOR NORMAL'}*\n━━━━━━━━━━━━━━━━━━━\n${_dashLine()}\n_${tgl} ${jam} — TPM CND Casting 2_`;
   sendWA(msg);
 }
 function waGT(mc,reportDate,reportShifts){
@@ -1669,7 +1678,7 @@ function waGT(mc,reportDate,reportShifts){
   const hasIssue=gStat(gt).includes('TINGGI')||gStat(gt).includes('RENDAH')||gStat(gtA).includes('TINGGI')||gStat(gtA).includes('RENDAH');
   let msg=`📊 *LAPORAN GENTANI STEELSHOT*\n📅 ${tgl}  🕐 Shift ${sh}  📤 ${jam}\n🏭 CND-${mc}  |  Formula: SS+WC Kg ÷ (Trolley × ${cfg.trCap} Kg ÷ 1000)\n━━━━━━━━━━━━━━━━━━━\n*GENTANI HARI INI*\n  Trolley: NSP ${tnTot} + NSM ${tmTot} = *${tot}* → *${(totKg/1000).toFixed(2)} Ton*\n  SS+WC  : *${ssH.toLocaleString('id-ID')} Kg*\n  Gentani: *${gt!=null?gt.toFixed(2)+' Kg/Ton':'—'}*  ${gStat(gt)}\n\n*AKUMULASI BULAN INI* (s/d ${tgl})\n  SS+WC  : *${accKg.toLocaleString('id-ID')} Kg*\n  Materi : *${accTon2.toFixed(2)} Ton*\n  Gentani: *${gtA!=null?gtA.toFixed(2)+' Kg/Ton':'—'}*  ${gStat(gtA)}\n━━━━━━━━━━━━━━━━━━━\n🎯 Target: ${lo||'—'}–${hi||'—'} Kg/Ton\n`;
   if(_waNote)msg+=`📝 *Catatan:* ${_waNote}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'PERLU PERHATIAN':'GENTANI NORMAL'}*\n━━━━━━━━━━━━━━━━━━━\n\n_${tgl} ${jam} — TPM CND Casting 2_`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n${hasIssue?'🔴':'🟢'} *KESIMPULAN: ${hasIssue?'PERLU PERHATIAN':'GENTANI NORMAL'}*\n━━━━━━━━━━━━━━━━━━━\n${_dashLine()}\n_${tgl} ${jam} — TPM CND Casting 2_`;
   sendWA(msg);
 }
 
