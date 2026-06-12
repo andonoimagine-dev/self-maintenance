@@ -1046,6 +1046,15 @@ tr:hover td{background:var(--accent-bg);}
     </div>
     <div style="font-size:.72rem;color:var(--muted);margin-top:6px;">Contoh: 6281234567890 (tanpa + atau spasi). Kosongkan = WhatsApp terbuka tanpa nomor tujuan.</div>
     <button class="btn btn-p btn-s" style="margin-top:8px;" onclick="saveWaNo()">💾 Simpan No. WA</button>
+    <div style="border-top:1px solid var(--border);margin:14px 0 10px;"></div>
+    <div style="font-size:.7rem;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">⚙ Opsi Isi Laporan</div>
+    <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;padding:6px 0;">
+      <div>
+        <div style="font-size:.82rem;font-weight:600;color:var(--text);">Sertakan Link Dashboard</div>
+        <div style="font-size:.68rem;color:var(--muted);">Tampilkan link "📊 Dashboard: ..." di akhir laporan WA</div>
+      </div>
+      <input type="checkbox" id="s-wa-dashlink" onchange="saveWaDashLink()" style="width:20px;height:20px;cursor:pointer;accent-color:var(--accent);flex-shrink:0;">
+    </label>
   </div>
   <div class="cd">
     <div class="st">🗃 Data Management</div>
@@ -1758,6 +1767,7 @@ async function loadFromSheets() {
       wLo: +c.wc_low||0,      wHi: +c.wc_high||1000,
       lsLo:+c.ls_low||0,      lsHi:+c.ls_high||500,
       gtLo:+c.gt_low||0,      gtHi:+c.gt_high||0,
+      waDashLink: c.wa_dashlink===undefined ? true : (c.wa_dashlink!=='0'&&c.wa_dashlink!==0&&c.wa_dashlink!==false),
     };
     if (c.imp_names) nms = c.imp_names.split(',').map(s=>s.trim()).filter(Boolean);
     // Load lifetime config from lt_ keys
@@ -1793,7 +1803,7 @@ const ld=k=>{try{return JSON.parse(localStorage.getItem(K+k))}catch{return null}
 const sv=(k,v)=>localStorage.setItem(K+k,JSON.stringify(v));
 
 // ============ STATE ============
-let cfg=ld('cfg')||{aLo:37.5,aHi:42.5,pLo:2,pHi:4,dLo:2,dHi:4,sLo:1000,sHi:1000,wLo:0,wHi:1000,lsLo:0,lsHi:500};
+let cfg=ld('cfg')||{aLo:37.5,aHi:42.5,pLo:2,pHi:4,dLo:2,dHi:4,sLo:1000,sHi:1000,wLo:0,wHi:1000,lsLo:0,lsHi:500,waDashLink:true};
 let nms=ld('nms')||Array.from({length:16},(_,i)=>`IMP-${String(i+1).padStart(2,'0')}`);
 let st=ld('st')||Array.from({length:16},()=>({on:true,a:null,dt:null,n:'',cf:false}));
 let ampLog=ld('ampLog')||[];
@@ -4511,6 +4521,7 @@ async function saveSs(ev){
 function rSet(){
   document.getElementById('s-alo').value=cfg.aLo;
   const waEl=document.getElementById('s-wa');if(waEl)waEl.value=getWaTarget();
+  const waDlEl=document.getElementById('s-wa-dashlink');if(waDlEl)waDlEl.checked=getWaDashLink();
   updateSyncLabel();
   const lst=document.getElementById('sync-last-time');
   if(lst)lst.textContent=lastSyncTime?lastSyncTime.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'-';document.getElementById('s-ahi').value=cfg.aHi;
@@ -4554,6 +4565,7 @@ async function saveSt(ev){
       wc_low:cfg.wLo, wc_high:cfg.wHi,
       ls_low:cfg.lsLo, ls_high:cfg.lsHi,
       gt_low:cfg.gtLo, gt_high:cfg.gtHi,
+      wa_dashlink:(cfg.waDashLink===false?'0':'1'),
       imp_names:nms.join(','),
     };
     // Merge lifetime config into same save
@@ -4784,6 +4796,30 @@ function waPickSend(){
 // Format: 628xxxxxxxxxx (tanpa + atau spasi)
 function getWaTarget(){return localStorage.getItem('hsb9_wa_no')||'';}
 
+// Apakah link dashboard disertakan di laporan WA? (default: YA)
+// Tersimpan di cfg.waDashLink dan tersinkron ke spreadsheet (config) → ikut ke semua perangkat.
+function getWaDashLink(){
+  // Prioritas cfg (dari server); fallback localStorage; default true
+  if(typeof cfg.waDashLink==='boolean')return cfg.waDashLink;
+  return localStorage.getItem('hsb9_wa_dashlink')!=='0';
+}
+async function saveWaDashLink(){
+  const on=!!document.getElementById('s-wa-dashlink')?.checked;
+  cfg.waDashLink=on;
+  sv('cfg',cfg);
+  localStorage.setItem('hsb9_wa_dashlink', on?'1':'0'); // cache lokal juga
+  // Sync ke spreadsheet (config) supaya member lihat setting yang sama
+  if(ONLINE){
+    setSyncStatus('syncing');
+    const r=await api('saveConfig',{data:JSON.stringify({wa_dashlink:on?'1':'0'})});
+    setSyncStatus(r.ok?'ok':'error');
+    if(r.ok)showToast(on?'✅ Link dashboard disertakan (tersinkron ke semua perangkat)':'✅ Link dashboard tidak disertakan (tersinkron ke semua perangkat)','ok',4000);
+    else showToast('⚠ Tersimpan lokal, gagal sync ke server','warn',5000);
+  } else {
+    showToast(on?'✅ Link dashboard akan disertakan (lokal)':'✅ Link dashboard tidak disertakan (lokal)','ok');
+  }
+}
+
 function sendWA(text){
   const no=getWaTarget();
   const encoded=encodeURIComponent(text);
@@ -4851,7 +4887,7 @@ function waAmpere(reportDate, reportShifts){
   msg+=`${hasOut?'🔴':nOf===16?'⭕':'🟢'} *KESIMPULAN: ${hasOut?'ADA AMPERE ABNORMAL':'SEMUA NORMAL'}*\n`;
   if(_waPickNote)msg+=`\n📝 *Catatan:* ${_waPickNote}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  if(getWaDashLink())msg+=`📊 Dashboard: ${dashUrl}\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
@@ -4916,7 +4952,7 @@ function waLimbah(reportDate, reportShifts){
   if(_waPickNote)msg+=`
 📝 *Catatan:* ${_waPickNote}
 `;
-  msg+=`📊 Dashboard: ${dashUrl}
+  if(getWaDashLink())msg+=`📊 Dashboard: ${dashUrl}
 `;
   msg+=`
 _${reportTglLb} ${jam} — TPM HSB Casting 2_`;
@@ -4996,7 +5032,7 @@ function waSteelshot(reportDate, reportShifts){
   msg+=`${overallEmoji} *KESIMPULAN: ${overallText}*\n`;
   if(_waPickNote)msg+=`\n\ud83d\udcdd *Catatan:* ${_waPickNote}\n`;
   msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
-  msg+=`\ud83d\udcca Dashboard: ${dashUrl}\n`;
+  if(getWaDashLink())msg+=`\ud83d\udcca Dashboard: ${dashUrl}\n`;
   msg+=`\n_${reportTgl} ${jam} \u2014 TPM HSB Casting 2_`;
   sendWA(msg);
 }
@@ -5028,7 +5064,7 @@ function waSparepart(reportDate){
   });
   if(warnings.length)msg+=`\n🔔 *Status Lifetime Saat Ini:*\n${warnings.join('\n')}\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  if(getWaDashLink())msg+=`📊 Dashboard: ${dashUrl}\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
@@ -5061,7 +5097,7 @@ function waPreventive(){
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
   msg+=`${ng>0?'🔴':pend>0?'🟡':'🟢'} *KESIMPULAN: ${ng>0?`ADA ${ng} ITEM NG`:pend>0?'ADA ITEM BELUM DICEK':'SEMUA OK'}*\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  if(getWaDashLink())msg+=`📊 Dashboard: ${dashUrl}\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
@@ -5148,7 +5184,7 @@ function waDashboard(reportDate, reportShifts){
   msg+=`${(hasIssue||gtIssue)?'🔴':'🟢'} *KESIMPULAN: ${(hasIssue||gtIssue)?'ADA KONDISI ABNORMAL':'SEMUA NORMAL'}*\n`;
   msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
   if(_waPickNote)msg+=`📝 *Catatan:* ${_waPickNote}\n`;
-  msg+=`📊 Dashboard: ${dashUrl}\n`;
+  if(getWaDashLink())msg+=`📊 Dashboard: ${dashUrl}\n`;
   msg+=`\n_${tgl} ${jam} — TPM HSB Casting 2_`;
   sendWA(msg);
 }
@@ -5274,7 +5310,7 @@ function waGentani(reportDate, reportShifts){
   msg+=`${overall} *KESIMPULAN: ${overall.includes('\ud83d\udfe2')?'NORMAL':'PERLU PERHATIAN'}*\n`;
   if(_waPickNote)msg+=`\n\ud83d\udcdd *Catatan:* ${_waPickNote}\n`;
   msg+=`\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n`;
-  msg+=`\ud83d\udcca Dashboard: https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html\n`;
+  if(getWaDashLink())msg+=`\ud83d\udcca Dashboard: https://andonoimagine-dev.github.io/self-maintenance/hsb-management-system.html\n`;
   msg+=`\n_${reportTgl} ${jam} \u2014 TPM HSB Casting 2_`;
   sendWA(msg);
 }
