@@ -898,7 +898,11 @@ tr:hover td{background:var(--accent-bg);}
 
   <!-- GRAFIK GENTANI -->
   <div class="cd" style="margin-bottom:12px;">
-    <div class="st">📈 Grafik Trend Gentani</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+      <div class="st" style="margin-bottom:0;">📈 Grafik Trend Gentani</div>
+      <div id="gt-resume" style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.74rem;line-height:1.6;min-width:200px;">
+      </div>
+    </div>
     <div class="fbar">
       <span class="fbar-lbl">Periode</span>
       <select class="fbar-sel" id="gt-pd-sel" onchange="gtPdSel(this.value)">
@@ -4057,6 +4061,27 @@ function drawFullGt(){
   const daily=buildGtRaw(cf,ct);
   const data=gtView==='week'?aggregateGtWeekly(daily):daily;
   drawGentaniChart('c-gt-full',data,{yLabel:'Kg/Ton',weekly:gtView==='week',lo:+cfg.gtLo||0,hi:+cfg.gtHi||0});
+  gtUpdateResume(daily);
+}
+
+// Hitung & tampilkan resume periode (total steelshot, ikomi, gentani)
+function gtUpdateResume(daily){
+  const box=document.getElementById('gt-resume');
+  if(!box)return;
+  if(!daily||!daily.length){box.innerHTML='<span style="color:var(--muted);">Tidak ada data</span>';return;}
+  // Akumulasi total seluruh periode
+  let totKg=0, totTon=0;
+  daily.forEach(d=>{ totKg+=(+d._kg||0); totTon+=(+d._ton||0); });
+  const gentani = totTon>0 ? totKg/totTon : null;
+  // Range tanggal periode (dari data pertama & terakhir yang punya nilai, atau seluruh rentang)
+  const firstDate=daily[0].date, lastDate=daily[daily.length-1].date;
+  const st=gtStatus(gentani);
+  box.innerHTML=
+    `<div style="font-weight:700;color:var(--accent);margin-bottom:3px;">📊 Resume Periode</div>`+
+    `<div><span style="color:var(--muted);">Periode:</span> <b>${fD(firstDate)} – ${fD(lastDate)}</b></div>`+
+    `<div><span style="color:var(--muted);">Total Steelshot (SS550+WC):</span> <b>${totKg.toLocaleString('id-ID')} Kg</b></div>`+
+    `<div><span style="color:var(--muted);">Total Ikomi:</span> <b>${totTon.toLocaleString('id-ID')} Ton</b></div>`+
+    `<div><span style="color:var(--muted);">Gentani:</span> <b>${gentani!=null?gentani.toFixed(2):'-'} Kg/Ton</b> <span class="bd ${st.cl}">${st.s}</span></div>`;
 }
 
 // Agregasi mingguan untuk gentani (rata-rata harian + akumulatif terakhir di minggu)
