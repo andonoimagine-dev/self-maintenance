@@ -74,7 +74,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 /* DASHBOARD PAIRED GRID — each row = CND-1 | CND-2 equal height */
 .dash-grid{display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch;}
 .dash-cd{display:flex;flex-direction:column;}
-.cd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.cd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.gt-sum{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:6px 10px;font-size:.7rem;min-width:148px;flex-shrink:0;}
+.gt-sum-row{display:flex;justify-content:space-between;gap:10px;padding:1px 0;white-space:nowrap;}
+.gt-sum-k{color:var(--muted);}
+.gt-sum-v{font-weight:700;font-family:'Courier New',monospace;}
 .lgr{margin-bottom:6px;}
 @media(min-width:860px){
   .dash-grid{grid-template-columns:1fr 1fr;}
@@ -794,7 +798,7 @@ tr:hover td{background:var(--accent-bg);}
       <button class="btn btn-wa" onclick="openWAPicker('gentani',1)" style="min-width:90px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Kirim WA</button>
     </div>
       </div>
-<div class="cd"><div class="st" style="color:var(--c1);">&#128200; Trend Gentani CND-1</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="gcp1" onchange="drawGC(1)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-gt-f1"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div></div>
+<div class="cd"><div class="cd-head"><div class="st" style="margin:0;color:var(--c1);">&#128200; Trend Gentani CND-1</div><div class="gt-sum" id="gt-sum1"></div></div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="gcp1" onchange="drawGC(1)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-gt-f1"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div></div>
 </div>
 <div class="mc-col">
 <div class="cd">
@@ -813,7 +817,7 @@ tr:hover td{background:var(--accent-bg);}
       <button class="btn btn-wa" onclick="openWAPicker('gentani',2)" style="min-width:90px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Kirim WA</button>
     </div>
       </div>
-<div class="cd"><div class="st" style="color:var(--c2);">&#128200; Trend Gentani CND-2</div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="gcp2" onchange="drawGC(2)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-gt-f2"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div></div>
+<div class="cd"><div class="cd-head"><div class="st" style="margin:0;color:var(--c2);">&#128200; Trend Gentani CND-2</div><div class="gt-sum" id="gt-sum2"></div></div><div class="fbar"><span class="fbl">Periode</span><select class="fbs" id="gcp2" onchange="drawGC(2)"><option value="cur">Bulan Ini</option><option value="prev">Bulan Lalu</option><option value="3m">3 Bulan</option></select></div><div class="mini-chart"><canvas id="c-gt-f2"></canvas></div><div class="lgr" style="margin-top:5px;"><div class="lgi"><div class="lgd" style="background:#0891b2;"></div>Harian</div><div class="lgi"><div class="lgd" style="background:#7c3aed;"></div>Akumulasi</div></div></div>
 </div>
 </div>
   <div class="cd" style="margin-top:12px;">
@@ -1460,9 +1464,35 @@ function drawDCdash(){
   const daily=buildD(f,t,function(d){return{dc:dcL.filter(function(r){return r.date===d;}).reduce(function(s,r){return s+(+r.vdc||0);},0)};});
   drawChart('c-dc-d',daily,[{k:'dc',c:'#7c3aed'}],{yLabel:'Karung',ranges:[{v:cfg.dcHi,c:'#dc2626'},{v:cfg.dcLo,c:'#d97706'}]});
 }
+// ── PERIOD SUMMARY: SS550, Ikomi (Ton), Gentani untuk periode terpilih ──────
+function gtPeriodLabel(f,t){
+  var fp=f.split('-'),tp=t.split('-');
+  if(fp[0]===tp[0]&&fp[1]===tp[1])return M_[+fp[1]-1]+' '+fp[0];
+  if(fp[0]===tp[0])return M_[+fp[1]-1]+'\u2013'+M_[+tp[1]-1]+' '+fp[0];
+  return M_[+fp[1]-1]+' '+fp[0]+'\u2013'+M_[+tp[1]-1]+' '+tp[0];
+}
+function gtSummary(mc,f,t){
+  var ss5=0,wc=0,ikomiTon=0;
+  allD(f,t).forEach(function(d){
+    var rows=ssL.filter(function(r){return r.mc==mc&&r.date===d;});
+    ss5+=rows.reduce(function(s,r){return s+(+r.s5||0);},0);
+    wc+=rows.reduce(function(s,r){return s+(+r.wc||0);},0);
+    ikomiTon+=trTot(mc,d)*cfg.trCap/1000;
+  });
+  return{label:gtPeriodLabel(f,t),ss5:ss5,wc:wc,ikomiTon:ikomiTon,gentani:ikomiTon>0?(ss5+wc)/ikomiTon:null};
+}
+function renderGtSummary(mc,sum){
+  var el=document.getElementById('gt-sum'+mc);if(!el)return;
+  el.innerHTML=
+    '<div class="gt-sum-row"><span class="gt-sum-k">Periode</span><span class="gt-sum-v">'+sum.label+'</span></div>'+
+    '<div class="gt-sum-row"><span class="gt-sum-k">Total SS 550</span><span class="gt-sum-v">'+sum.ss5.toLocaleString('id-ID')+' Kg</span></div>'+
+    '<div class="gt-sum-row"><span class="gt-sum-k">Total Ikomi</span><span class="gt-sum-v">'+sum.ikomiTon.toFixed(2)+' Ton</span></div>'+
+    '<div class="gt-sum-row"><span class="gt-sum-k">Gentani</span><span class="gt-sum-v" style="color:var(--accent);">'+(sum.gentani!=null?sum.gentani.toFixed(2)+' Kg/Ton':'\u2014')+'</span></div>';
+}
 function drawGC(mc){
   var r=dtR(document.getElementById('gcp'+mc).value),f=r.f,t=r.t;
   drawGentaniChart('c-gt-f'+mc,buildGtRaw(mc,f,t),{yLabel:'Kg/Ton',lo:+cfg.gtLo||0,hi:+cfg.gtHi||0});
+  renderGtSummary(mc,gtSummary(mc,f,t));
 }
 
 function rGTH(){const mcf=document.getElementById('gtfmc').value;let rows=[...trL].sort((a,b)=>b.date.localeCompare(a.date));if(mcf!=='all')rows=rows.filter(r=>r.mc==mcf);document.getElementById('gt-tb').innerHTML=rows.length?rows.map(r=>{const idx=trL.indexOf(r);const em=_editModes.gentani;const clk=em?`onclick="histOpenEdit('gentani',${idx})" style="cursor:pointer;"`:'';const tot=(+r.tn||0)+(+r.tm||0),tK=tot*cfg.trCap,ss=ssKg(r.mc,r.date),gt=tK>0&&ss>0?ss/(tK/1000):null;const lo=cfg.gtLo,hi=cfg.gtHi,gStat=gt==null?'—':hi>0&&gt>hi?'TINGGI':lo>0&&gt<lo?'RENDAH':'Normal';const gC=gt==null?'var(--muted)':hi>0&&gt>hi?'var(--danger)':lo>0&&gt<lo?'var(--warn)':'var(--ok)';return`<tr ${clk}><td>${fD(r.date)}</td><td><span class="mb${r.mc}">CND-${r.mc}</span></td><td>${r.sh}</td><td>${r.tn||0}</td><td>${r.tm||0}</td><td>${tK.toLocaleString('id-ID')}</td><td>${ss.toLocaleString('id-ID')}</td><td style="font-family:'Courier New',monospace;font-weight:700;color:${gC};">${gt!=null?gt.toFixed(2):'—'}</td><td style="color:${gC};font-weight:700;">${gStat}</td><td>${r.op||'—'}</td></tr>`;}).join(''):'<tr><td colspan="10" class="es">Belum ada data</td></tr>';}
