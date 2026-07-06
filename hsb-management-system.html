@@ -358,10 +358,13 @@ tr:hover td{background:var(--accent-bg);}
 
   <div class="db3">
     <!-- STEEL SHOT -->
-    <div class="db-card">
+    <div class="db-card" style="position:relative;">
       <div class="db-head">
         <div class="st" style="margin:0;flex:1;">🔮 Steel Shot — Trend</div>
         <button class="btn btn-g btn-s" onclick="goTab('ss')">Detail →</button>
+      </div>
+      <!-- Resume overlay (kanan atas, di bawah header) -->
+      <div id="db-ss-resume" style="position:absolute;top:46px;right:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:.6rem;line-height:1.3;max-width:165px;box-shadow:0 2px 8px rgba(0,0,0,.12);backdrop-filter:blur(2px);z-index:2;">
       </div>
       <div class="db-canvas"><canvas id="c-ss"></canvas></div>
       <div class="db-foot">
@@ -408,10 +411,13 @@ tr:hover td{background:var(--accent-bg);}
     </div>
 
     <!-- GENTANI STEELSHOT -->
-    <div class="db-card">
+    <div class="db-card" style="position:relative;">
       <div class="db-head">
         <div class="st" style="margin:0;flex:1;">📊 Gentani Steelshot</div>
         <button class="btn btn-g btn-s" onclick="goTab('gt')">Detail →</button>
+      </div>
+      <!-- Resume overlay (kanan atas, di bawah header) -->
+      <div id="db-gt-resume" style="position:absolute;top:46px;right:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:.6rem;line-height:1.3;max-width:165px;box-shadow:0 2px 8px rgba(0,0,0,.12);backdrop-filter:blur(2px);z-index:2;">
       </div>
       <div class="db-canvas"><canvas id="c-gt"></canvas></div>
       <div class="db-foot">
@@ -2358,6 +2364,7 @@ function renderSsDashChart(){
   if(dbSsShowWc)sr.push({k:'wc',c:'#059669'});
   if(dbSsShowLb)sr.push({k:'lb',c:'#b45309'});
   if(sr.length)drawChart('c-ss',sd,sr,{yLabel:'Kg',weekly:dbSsView==='week',ranges:[{v:cfg.sHi,c:'#7c3aed'},{v:cfg.wHi,c:'#059669'},{v:cfg.lsHi,c:'#b45309'}]});
+  ssUpdateResume(daily,'db-ss-resume');
 }
 function renderLbDashChart(){
   const daily=buildLbDashData();
@@ -4069,8 +4076,8 @@ function drawFullGt(){
 }
 
 // Hitung & tampilkan resume periode (total steelshot, ikomi, gentani)
-function gtUpdateResume(daily){
-  const box=document.getElementById('gt-resume');
+function gtUpdateResume(daily,boxId='gt-resume'){
+  const box=document.getElementById(boxId);
   if(!box)return;
   if(!daily||!daily.length){box.innerHTML='<span style="color:var(--muted);">Tidak ada data</span>';return;}
   // Akumulasi total seluruh periode
@@ -4123,10 +4130,11 @@ function drawDashGt(){
   const daily=days.map(date=>{
     const kg=ssKgFor(date,null);const ton=ikomiFor(date,null);
     accKg+=kg;accTon+=ton;
-    return {date, gt:ton>0?+(kg/ton).toFixed(2):0, gtAkum:accTon>0?+(accKg/accTon).toFixed(2):0};
+    return {date, gt:ton>0?+(kg/ton).toFixed(2):0, gtAkum:accTon>0?+(accKg/accTon).toFixed(2):0, _kg:kg, _ton:ton};
   });
   const data=dbGtView==='week'?aggregateGtWeekly(daily):daily;
   drawGentaniChart('c-gt',data,{yLabel:'Kg/Ton',weekly:dbGtView==='week',lo:+cfg.gtLo||0,hi:+cfg.gtHi||0});
+  gtUpdateResume(daily,'db-gt-resume');
 }
 function gtRenderTable(){
   const tb=document.getElementById('gt-tb');
@@ -4347,8 +4355,8 @@ function drawFullSs(){
 }
 
 // Hitung & tampilkan resume periode (total steelshot & target vs realisasi)
-function ssUpdateResume(daily){
-  const box=document.getElementById('ss-resume');
+function ssUpdateResume(daily,boxId='ss-resume'){
+  const box=document.getElementById(boxId);
   if(!box)return;
   if(!daily||!daily.length){box.innerHTML='<span style="color:var(--muted);">Tidak ada data</span>';return;}
   // Akumulasi total SS 550 seluruh periode (Wire Cut & SS Bekas tidak dihitung, sama seperti Gentani)
