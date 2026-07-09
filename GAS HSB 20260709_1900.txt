@@ -1,0 +1,619 @@
+// ============================================================
+// HSB Monitor — Google Apps Script Backend v2
+// CORS-safe: semua request via GET dengan URL params
+// ============================================================
+
+const SHEET_ID = '11H7c1QSGJQtvlgWFIrBoQJ3-S62fqtj8YdzwCaVvn40';
+const PASSWORD = 'hsb2026';
+
+const SHEETS = {
+  ampere:    'ampere_log',
+  sparepart: 'sparepart',
+  preventive:'preventive',
+  limbah:    'limbah',
+  steelshot: 'steelshot',
+  hanger:    'hanger_log',
+  ikomi:     'ikomi',
+  shootblast_ulang: 'shootblast_ulang',
+  impeller:  'impeller_state',
+  hanger_st: 'hanger_state',
+  config:    'config',
+};
+
+const HEADERS = {
+  ampere:    ['datetime','shift','impeller_idx','impeller_name','ampere','status','operator','catatan'],
+  sparepart: ['date','impeller_idx','impeller_name','nama_part','jam_pakai','qty','kondisi','jenis','operator','catatan'],
+  preventive:['date','minggu','bulan','impeller_idx','item','hasil','pic','catatan'],
+  limbah:    ['date','shift','jenis','volume_trolley','lokasi','operator','keterangan'],
+  steelshot: ['date','shift','ss550_karung','wirecut_karung','steelshot_bekas','total','operator','keterangan'], // Note: old sheets may have 'ss55_karung' (missing 0) — HTML handles both
+  hanger:    ['date','hanger_id','tipe','jam_pakai','kondisi','operator','catatan'],
+  ikomi:     ['date','shift','ikomi_ton','operator','keterangan'],
+  shootblast_ulang: ['date','shift','jenis','volume_trolley','operator','keterangan'],
+  impeller:  ['impeller_idx','impeller_name','status_on','last_ampere','last_datetime','confirmed','catatan'],
+  hanger_st: ['hanger_id','status','catatan','confirmed'],
+  config:    ['key','value'],
+};
+
+// ============================================================
+// CORS HEADERS — wajib ada di setiap response
+// ============================================================
+function corsResponse(data) {
+  const output = ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+  return output;
+}
+
+// ============================================================
+// ENTRY POINTS — doGet handles semua request
+// ============================================================
+function doGet(e) {
+  try {
+    const params = e.parameter || {};
+    
+    // Auth
+    if (params.pwd !== PASSWORD) {
+      return corsResponse({ ok: false, error: 'Password salah' });
+    }
+    
+    const action = params.action || '';
+    let result = {};
+    
+    switch(action) {
+      case 'ping':
+        result = { ok: true, msg: 'pong', time: new Date().toISOString() };
+        break;
+      case 'init':
+        initSheets();
+        result = { ok: true, msg: 'Sheets initialized' };
+        break;
+      case 'getAll':
+        result = getAllData();
+        break;
+      case 'getConfig':
+        result = { ok: true, config: getConfig() };
+        break;
+      case 'saveConfig':
+        result = saveConfig(params.data);
+        break;
+      case 'saveAmpere':
+        result = appendRows(SHEETS.ampere, HEADERS.ampere, params.rows);
+        break;
+      case 'saveSparepart':
+        result = appendRows(SHEETS.sparepart, HEADERS.sparepart, params.rows);
+        break;
+      case 'savePrev':
+        result = appendRows(SHEETS.preventive, HEADERS.preventive, params.rows);
+        break;
+      case 'saveLimbah':
+        result = appendRows(SHEETS.limbah, HEADERS.limbah, params.rows);
+        break;
+      case 'saveShootblastUlang':
+        result = appendRows(SHEETS.shootblast_ulang, HEADERS.shootblast_ulang, params.rows);
+        break;
+      case 'saveSteelshot':
+        result = appendRows(SHEETS.steelshot, HEADERS.steelshot, params.rows);
+        break;
+      case 'replaceSteelshot':
+        result = replaceRows(SHEETS.steelshot, HEADERS.steelshot, params.rows);
+        break;
+      case 'editSteelshotRow':
+        result = editSteelshotRow(params);
+        break;
+      case 'deleteSteelshotRow':
+        result = deleteSteelshotRow(params);
+        break;
+      case 'editHistRow':
+        result = editHistRow(params);
+        break;
+      case 'deleteHistRow':
+        result = deleteHistRow(params);
+        break;
+      case 'saveHanger':
+        result = appendRows(SHEETS.hanger, HEADERS.hanger, params.rows);
+        break;
+      case 'saveIkomi':
+        result = appendRows(SHEETS.ikomi, HEADERS.ikomi, params.rows);
+        break;
+      case 'updateImpState':
+        result = updateImpState(params.rows);
+        break;
+      case 'updateHangerState':
+        result = updateHangerState(params.rows);
+        break;
+      case 'getLatestAmpere':
+        result = getLatestAmpere();
+        break;
+      default:
+        result = { ok: false, error: 'Unknown action: ' + action };
+    }
+    
+    return corsResponse({ ok: true, ...result });
+    
+  } catch(err) {
+    return corsResponse({ ok: false, error: err.toString() });
+  }
+}
+
+// doPost juga support (fallback)
+function doPost(e) {
+  try {
+    let params = e.parameter || {};
+    if (e.postData && e.postData.contents) {
+      try { Object.assign(params, JSON.parse(e.postData.contents)); } catch(x) {}
+    }
+    e.parameter = params;
+    return doGet(e);
+  } catch(err) {
+    return corsResponse({ ok: false, error: err.toString() });
+  }
+}
+
+// ============================================================
+// INIT SHEETS
+// ============================================================
+function initSheets() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  
+  Object.entries(SHEETS).forEach(([key, name]) => {
+    let sh = ss.getSheetByName(name);
+    if (!sh) {
+      sh = ss.insertSheet(name);
+    }
+    // Ensure columns are correct and in order (fixes missing/extra columns)
+    if (HEADERS[key]) {
+      ensureColumns(sh, HEADERS[key]);
+    }
+  });
+  
+  // Seed config if empty
+  const cfgSh = ss.getSheetByName(SHEETS.config);
+  if (cfgSh.getLastRow() <= 1) {
+    const defaults = [
+      ['amp_low','37.5'],['amp_high','42.5'],
+      ['pasir_low','2'],['pasir_high','4'],
+      ['debu_low','2'],['debu_high','4'],
+      ['ss_low','1'],['ss_high','1'],
+      ['gt_low','0'],['gt_high','0'],
+      ['wa_dashlink','1'],
+      ['imp_names','IMP-01,IMP-02,IMP-03,IMP-04,IMP-05,IMP-06,IMP-07,IMP-08,IMP-09,IMP-10,IMP-11,IMP-12,IMP-13,IMP-14,IMP-15,IMP-16'],
+      ['lt_Impeller_Blade','480'],['lt_Control_Cage','480'],['lt_Distributor','480'],
+      ['lt_End_Liner_Atas','960'],['lt_End_Liner_Bawah','960'],['lt_Ceiling_Liner','960'],
+      ['lt_Front_Cover','720'],['lt_V_Belt','1440'],['lt_Motor','8760'],['lt_Hanger','960'],
+    ];
+    defaults.forEach(row => cfgSh.appendRow(row));
+  }
+  
+  // Seed impeller state if empty
+  const impSh = ss.getSheetByName(SHEETS.impeller);
+  if (impSh.getLastRow() <= 1) {
+    for (let i = 0; i < 16; i++) {
+      impSh.appendRow([i, `IMP-${String(i+1).padStart(2,'0')}`, 'true', '', '', 'false', '']);
+    }
+  }
+  
+  // Seed hanger state if empty
+  const hngSh = ss.getSheetByName(SHEETS.hanger_st);
+  if (hngSh.getLastRow() <= 1) {
+    for (let i = 1; i <= 60; i++) {
+      hngSh.appendRow([i, 'ok', '', 'false']);
+    }
+  }
+}
+
+// ============================================================
+// GET ALL DATA
+// ============================================================
+// Format any value — dates get YYYY-MM-DD, others get toString
+function fmtCell(val) {
+  if (val === null || val === undefined || val === '') return '';
+  if (val instanceof Date) {
+    // Always return YYYY-MM-DD for date fields
+    const y = val.getFullYear();
+    const m = String(val.getMonth()+1).padStart(2,'0');
+    const d = String(val.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+  return val.toString();
+}
+
+function getAllData() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const result = {};
+  
+  // Log sheets
+  ['ampere','sparepart','preventive','limbah','steelshot','hanger','ikomi','shootblast_ulang'].forEach(key => {
+    const sh = ss.getSheetByName(SHEETS[key]);
+    if (!sh || sh.getLastRow() <= 1) { result[key] = []; return; }
+    const hdrs = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+    const rows = sh.getRange(2,1,sh.getLastRow()-1,sh.getLastColumn()).getValues();
+    result[key] = rows
+      .map(row => {
+        const obj = {};
+        hdrs.forEach((h,i) => {
+          let fieldName = h;
+          // Normalize steelshot field name typos
+          if (fieldName === 'ss55_karung') fieldName = 'ss550_karung';
+          obj[fieldName] = fmtCell(row[i]);
+        });
+        return obj;
+      })
+      .filter(r => Object.values(r).some(v => v !== ''));
+  });
+  
+  // Impeller state
+  const impSh = ss.getSheetByName(SHEETS.impeller);
+  if (impSh && impSh.getLastRow() > 1) {
+    const rows = impSh.getRange(2,1,impSh.getLastRow()-1,7).getValues();
+    result.impeller_state = rows.map(r => ({
+      idx: +r[0], name: r[1],
+      on: r[2]==='true'||r[2]===true,
+      amp: r[3]===''?null:+r[3],
+      dt: r[4], confirmed: r[5]==='true'||r[5]===true, note: r[6]
+    }));
+  } else { result.impeller_state = []; }
+  
+  // Hanger state
+  const hngSh = ss.getSheetByName(SHEETS.hanger_st);
+  if (hngSh && hngSh.getLastRow() > 1) {
+    const rows = hngSh.getRange(2,1,hngSh.getLastRow()-1,4).getValues();
+    result.hanger_state = rows.map(r => ({
+      id: +r[0], s: r[1], n: r[2], cf: r[3]==='true'||r[3]===true
+    }));
+  } else { result.hanger_state = []; }
+  
+  result.config = getConfig();
+  return result;
+}
+
+// ============================================================
+// CONFIG
+// ============================================================
+function getConfig() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS.config);
+  if (!sh || sh.getLastRow() <= 1) return {};
+  const rows = sh.getRange(2,1,sh.getLastRow()-1,2).getValues();
+  const cfg = {};
+  rows.forEach(r => { if(r[0]) cfg[r[0]] = r[1].toString(); });
+  return cfg;
+}
+
+function saveConfig(data) {
+  if (!data) return { saved: 0 };
+  const d = typeof data === 'string' ? JSON.parse(data) : data;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS.config);
+  if (!sh) return { ok: false, error: 'Config sheet not found' };
+  if (sh.getLastRow() > 1) sh.getRange(2,1,sh.getLastRow()-1,2).clearContent();
+  Object.entries(d).forEach(([k,v]) => sh.appendRow([k, v]));
+  return { saved: Object.keys(d).length };
+}
+
+// ============================================================
+// APPEND ROWS
+// ============================================================
+function appendRows(sheetName, headers, rows) {
+  if (!rows) return { appended: 0 };
+  const rowArr = typeof rows === 'string' ? JSON.parse(rows) : rows;
+  if (!Array.isArray(rowArr) || rowArr.length === 0) return { appended: 0 };
+  
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sh = ss.getSheetByName(sheetName);
+  if (!sh) {
+    // Auto-create sheet kalau belum ada (mis. sheet baru seperti 'ikomi')
+    sh = ss.insertSheet(sheetName);
+  }
+
+  // Auto-fix missing columns — ensure sheet has all required headers
+  ensureColumns(sh, headers);
+  
+  // Read actual sheet headers (may differ from expected)
+  const sheetHeaders = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  
+  rowArr.forEach(row => {
+    // Map by column NAME not position — safe even if columns are in different order
+    const rowData = sheetHeaders.map(h => {
+      const key = h === 'ss55_karung' ? 'ss550_karung' : h; // normalize typo
+      return row[key] !== undefined ? row[key] : '';
+    });
+    sh.appendRow(rowData);
+  });
+  return { appended: rowArr.length };
+}
+
+// Normalize any cell date value to YYYY-MM-DD string (handles Date objects from Sheets)
+function normDateStr(v) {
+  if (v instanceof Date) {
+    const y = v.getFullYear();
+    const m = String(v.getMonth() + 1).padStart(2, '0');
+    const d = String(v.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return (v || '').toString().slice(0, 10);
+}
+
+// Edit ONE steelshot row, matched by original date+shift (small payload — fits GET URL)
+// params: oldDate, oldShift, oldIdx + new field values
+function editSteelshotRow(params) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS.steelshot);
+  if (!sh) return { ok: false, error: 'Sheet not found' };
+  ensureColumns(sh, HEADERS.steelshot);
+  const lastRow = sh.getLastRow();
+  if (lastRow < 2) return { ok: false, error: 'No data' };
+
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const data = sh.getRange(2, 1, lastRow - 1, headers.length).getValues();
+  const cDate = headers.indexOf('date');
+  const cShift = headers.indexOf('shift');
+
+  // Find row by matching old date + shift + nth occurrence
+  const targetN = parseInt(params.oldIdx || '0', 10); // which occurrence (0-based) among matches
+  let matchCount = 0, foundRow = -1;
+  for (let i = 0; i < data.length; i++) {
+    const rowDate = normDateStr(data[i][cDate]);
+    const rowShift = (data[i][cShift] || '').toString().trim();
+    if (rowDate === params.oldDate && rowShift === params.oldShift) {
+      if (matchCount === targetN) { foundRow = i + 2; break; }
+      matchCount++;
+    }
+  }
+  if (foundRow < 0) return { ok: false, error: 'Row not found: ' + params.oldDate + ' ' + params.oldShift };
+
+  // Build new row values mapped by column name
+  const newVals = {
+    date: params.date, shift: params.shift,
+    ss550_karung: +params.s5 || 0, wirecut_karung: +params.wc || 0,
+    steelshot_bekas: +params.lb || 0, total: (+params.s5 || 0) + (+params.wc || 0),
+    operator: params.op || '', keterangan: params.n || ''
+  };
+  const rowData = headers.map(h => {
+    const key = h === 'ss55_karung' ? 'ss550_karung' : h;
+    return newVals[key] !== undefined ? newVals[key] : '';
+  });
+  sh.getRange(foundRow, 1, 1, headers.length).setValues([rowData]);
+  return { ok: true, edited: 1, row: foundRow };
+}
+
+// Delete ONE steelshot row, matched by date+shift+nth occurrence
+function deleteSteelshotRow(params) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS.steelshot);
+  if (!sh) return { ok: false, error: 'Sheet not found' };
+  const lastRow = sh.getLastRow();
+  if (lastRow < 2) return { ok: false, error: 'No data' };
+
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const data = sh.getRange(2, 1, lastRow - 1, headers.length).getValues();
+  const cDate = headers.indexOf('date');
+  const cShift = headers.indexOf('shift');
+
+  const targetN = parseInt(params.oldIdx || '0', 10);
+  let matchCount = 0, foundRow = -1;
+  for (let i = 0; i < data.length; i++) {
+    const rowDate = normDateStr(data[i][cDate]);
+    const rowShift = (data[i][cShift] || '').toString().trim();
+    if (rowDate === params.oldDate && rowShift === params.oldShift) {
+      if (matchCount === targetN) { foundRow = i + 2; break; }
+      matchCount++;
+    }
+  }
+  if (foundRow < 0) return { ok: false, error: 'Row not found: ' + params.oldDate + ' ' + params.oldShift };
+  sh.deleteRow(foundRow);
+  return { ok: true, deleted: 1, row: foundRow };
+}
+
+// ============================================================
+// GENERIC ROW EDIT/DELETE for history tables
+// ============================================================
+// Match a row by a set of key columns (date/datetime + identifier) + nth occurrence,
+// then either update the matched columns or delete the row.
+//
+// params for edit: { table, matchKeys (JSON), occ, newVals (JSON) }
+// params for delete: { table, matchKeys (JSON), occ }
+//   matchKeys: { columnName: value, ... } — uses normalized date compare for date/datetime cols
+//   newVals:   { columnName: value, ... } — columns to overwrite
+
+function findHistRow(sh, matchKeys, occ) {
+  const lastRow = sh.getLastRow();
+  if (lastRow < 2) return -1;
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const data = sh.getRange(2, 1, lastRow - 1, headers.length).getValues();
+  const keyCols = Object.keys(matchKeys).map(k => ({ name: k, col: headers.indexOf(k), val: matchKeys[k] }));
+  const targetN = parseInt(occ || '0', 10);
+  let matchCount = 0;
+  for (let i = 0; i < data.length; i++) {
+    let allMatch = true;
+    for (const kc of keyCols) {
+      if (kc.col < 0) { allMatch = false; break; }
+      const cell = data[i][kc.col];
+      const isDateCol = (kc.name === 'date' || kc.name === 'datetime');
+      const cellVal = isDateCol ? normDateStr(cell) : (cell || '').toString().trim();
+      const wantVal = isDateCol ? normDateStr(kc.val) : (kc.val || '').toString().trim();
+      if (cellVal !== wantVal) { allMatch = false; break; }
+    }
+    if (allMatch) {
+      if (matchCount === targetN) return i + 2; // sheet row number
+      matchCount++;
+    }
+  }
+  return -1;
+}
+
+function editHistRow(params) {
+  const table = params.table;
+  if (!SHEETS[table]) return { ok: false, error: 'Unknown table: ' + table };
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS[table]);
+  if (!sh) return { ok: false, error: 'Sheet not found: ' + SHEETS[table] };
+  if (HEADERS[table]) ensureColumns(sh, HEADERS[table]);
+
+  const matchKeys = typeof params.matchKeys === 'string' ? JSON.parse(params.matchKeys) : params.matchKeys;
+  const newVals   = typeof params.newVals   === 'string' ? JSON.parse(params.newVals)   : params.newVals;
+
+  const foundRow = findHistRow(sh, matchKeys, params.occ);
+  if (foundRow < 0) return { ok: false, error: 'Row not found in ' + table };
+
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  // Overwrite only the columns present in newVals
+  Object.keys(newVals).forEach(col => {
+    const ci = headers.indexOf(col);
+    if (ci >= 0) sh.getRange(foundRow, ci + 1).setValue(newVals[col]);
+  });
+  return { ok: true, edited: 1, row: foundRow };
+}
+
+function deleteHistRow(params) {
+  const table = params.table;
+  if (!SHEETS[table]) return { ok: false, error: 'Unknown table: ' + table };
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS[table]);
+  if (!sh) return { ok: false, error: 'Sheet not found: ' + SHEETS[table] };
+
+  const matchKeys = typeof params.matchKeys === 'string' ? JSON.parse(params.matchKeys) : params.matchKeys;
+  const foundRow = findHistRow(sh, matchKeys, params.occ);
+  if (foundRow < 0) return { ok: false, error: 'Row not found in ' + table };
+  sh.deleteRow(foundRow);
+  return { ok: true, deleted: 1, row: foundRow };
+}
+
+// Replace ALL data rows in a sheet (clear then write) — for edit/delete operations
+function replaceRows(sheetName, headers, rows) {
+  const rowArr = typeof rows === 'string' ? JSON.parse(rows) : rows;
+  const arr = Array.isArray(rowArr) ? rowArr : [];
+
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(sheetName);
+  if (!sh) return { ok: false, error: `Sheet ${sheetName} not found` };
+
+  ensureColumns(sh, headers);
+
+  // Clear all data rows below header (keep row 1 = header)
+  const lastRow = sh.getLastRow();
+  if (lastRow > 1) {
+    sh.getRange(2, 1, lastRow - 1, sh.getLastColumn()).clearContent();
+  }
+
+  if (arr.length === 0) return { replaced: 0 };
+
+  const sheetHeaders = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const data = arr.map(row => sheetHeaders.map(h => {
+    const key = h === 'ss55_karung' ? 'ss550_karung' : h;
+    return row[key] !== undefined ? row[key] : '';
+  }));
+  // Write all at once (efficient)
+  sh.getRange(2, 1, data.length, sheetHeaders.length).setValues(data);
+  return { replaced: arr.length };
+}
+// If columns are missing or out of order, rebuild the sheet structure
+function ensureColumns(sh, requiredHeaders) {
+  const lastCol = sh.getLastColumn();
+  if (lastCol === 0) {
+    // Empty sheet — just write headers
+    sh.appendRow(requiredHeaders);
+    styleHeaderRow(sh, requiredHeaders.length);
+    return;
+  }
+  
+  const existing = sh.getRange(1, 1, 1, lastCol).getValues()[0].map(h => h.toString().trim());
+  
+  // Normalize old column names
+  const normalized = existing.map(h => h === 'ss55_karung' ? 'ss550_karung' : h);
+  
+  // Check if all required headers exist AND are in correct order
+  const allPresent = requiredHeaders.every(h => normalized.includes(h));
+  const inOrder = requiredHeaders.every((h, i) => normalized[i] === h);
+  
+  if (allPresent && inOrder) return; // Already perfect
+  
+  // Need to rebuild — read all data first
+  const lastRow = sh.getLastRow();
+  let allData = [];
+  if (lastRow > 1) {
+    allData = sh.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  }
+  
+  // Map old data to new structure by column name
+  const newData = allData.map(row => {
+    return requiredHeaders.map(h => {
+      const oldIdx = normalized.indexOf(h);
+      if (oldIdx >= 0) return row[oldIdx];
+      // Try alternate names
+      if (h === 'ss550_karung') {
+        const alt = normalized.indexOf('ss55_karung');
+        if (alt >= 0) return row[alt];
+      }
+      return '';
+    });
+  }).filter(row => row.some(v => v !== ''));
+  
+  // Clear and rewrite sheet
+  sh.clearContents();
+  sh.appendRow(requiredHeaders);
+  styleHeaderRow(sh, requiredHeaders.length);
+  if (newData.length > 0) {
+    sh.getRange(2, 1, newData.length, requiredHeaders.length).setValues(newData);
+  }
+}
+
+function styleHeaderRow(sh, colCount) {
+  const hr = sh.getRange(1, 1, 1, colCount);
+  hr.setBackground('#1a2332').setFontColor('#ffffff').setFontWeight('bold');
+  sh.setFrozenRows(1);
+}
+
+// ============================================================
+// UPDATE STATES
+// ============================================================
+// Get latest ampere reading per impeller from ampere_log
+function getLatestAmpere() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS.ampere);
+  if (!sh || sh.getLastRow() <= 1) return { latest: [] };
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const rows = sh.getRange(2,1,sh.getLastRow()-1,sh.getLastColumn()).getValues();
+  // Build map: impeller_idx -> latest row (by datetime)
+  const latest = {};
+  rows.forEach(row => {
+    const obj = {};
+    headers.forEach((h,i) => { obj[h] = fmtCell(row[i]); });
+    const idx = +obj.impeller_idx;
+    if (isNaN(idx)) return;
+    if (!latest[idx] || obj.datetime > latest[idx].datetime) {
+      latest[idx] = obj;
+    }
+  });
+  return { latest: Object.values(latest) };
+}
+
+function updateImpState(rows) {
+  if (!rows) return { updated: 0 };
+  const rowArr = typeof rows === 'string' ? JSON.parse(rows) : rows;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS.impeller);
+  if (!sh) return { ok: false, error: 'Sheet not found' };
+  // Clear existing data rows
+  const lastRow = Math.max(sh.getLastRow(), 17);
+  if (lastRow > 1) sh.getRange(2,1,lastRow-1,7).clearContent();
+  rowArr.forEach((r,i) => {
+    sh.getRange(i+2,1,1,7).setValues([[
+      r.idx, r.name, r.on, r.amp===null?'':r.amp, r.dt||'', r.confirmed||false, r.note||''
+    ]]);
+  });
+  return { updated: rowArr.length };
+}
+
+function updateHangerState(rows) {
+  if (!rows) return { updated: 0 };
+  const rowArr = typeof rows === 'string' ? JSON.parse(rows) : rows;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEETS.hanger_st);
+  if (!sh) return { ok: false, error: 'Sheet not found' };
+  const lastRow = Math.max(sh.getLastRow(), 61);
+  if (lastRow > 1) sh.getRange(2,1,lastRow-1,4).clearContent();
+  rowArr.forEach((r,i) => {
+    sh.getRange(i+2,1,1,4).setValues([[r.id, r.s, r.n||'', r.cf||false]]);
+  });
+  return { updated: rowArr.length };
+}

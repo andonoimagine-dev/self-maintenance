@@ -334,6 +334,7 @@ tr:hover td{background:var(--accent-bg);}
   <button class="tb" data-t="sp">🔩 Impeller &amp; Hanger</button>
   <button class="tb" data-t="amp">⚡ Ampere Log</button>
   <button class="tb" data-t="ss">🔮 Steel Shot</button>
+  <button class="tb" data-t="sbu">♻ Shootblast Ulang</button>
   <button class="tb" data-t="lb">🗑 Limbah</button>
   <button class="tb" data-t="gt">📊 Gentani</button>
   <button class="tb" data-t="set">⚙ Setting</button>
@@ -429,6 +430,32 @@ tr:hover td{background:var(--accent-bg);}
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
             <button class="chc-b on" id="db-gt-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbGtSetView('day',this)">Harian</button>
             <button class="chc-b" id="db-gt-v-week" style="font-size:.6rem;padding:2px 6px;" onclick="dbGtSetView('week',this)">Mingguan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOOTBLAST ULANG -->
+    <div class="db-card">
+      <div class="db-head">
+        <div class="st" style="margin:0;flex:1;">♻ Shootblast Ulang — Trend</div>
+        <button class="btn btn-g btn-s" onclick="goTab('sbu')">Detail →</button>
+      </div>
+      <div class="db-canvas"><canvas id="c-sbu"></canvas></div>
+      <div class="db-foot">
+        <div class="lg-r" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Masuk</div>
+            <div class="lg-i"><div class="lg-d" style="background:#16a34a;"></div>Selesai</div>
+            <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>Belum</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="chc-b on" id="db-sbu-v-day" style="font-size:.6rem;padding:2px 6px;" onclick="dbSbuSetView('day',this)">Harian</button>
+            <button class="chc-b" id="db-sbu-v-week" style="font-size:.6rem;padding:2px 6px;" onclick="dbSbuSetView('week',this)">Mingguan</button>
+            <span style="width:1px;height:16px;background:var(--border);margin:0 2px;"></span>
+            <button class="chc-b on" id="db-sbu-f-masuk" style="font-size:.6rem;padding:2px 6px;" onclick="dbSbuToggle('masuk',this)">Masuk</button>
+            <button class="chc-b on" id="db-sbu-f-selesai" style="font-size:.6rem;padding:2px 6px;" onclick="dbSbuToggle('selesai',this)">Selesai</button>
+            <button class="chc-b on" id="db-sbu-f-belum" style="font-size:.6rem;padding:2px 6px;" onclick="dbSbuToggle('belum',this)">Belum</button>
           </div>
         </div>
       </div>
@@ -880,6 +907,95 @@ tr:hover td{background:var(--accent-bg);}
     <div class="tw"><table>
       <thead><tr><th>Tgl</th><th>Shift</th><th>SS 550</th><th>Wire Cut</th><th>SS Bekas</th><th>Total</th><th>Op</th><th>Ket</th></tr></thead>
       <tbody id="ss-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== SHOOTBLAST ULANG ===== -->
+<div id="p-sbu" class="pg">
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">♻ Input Shootblast Ulang</div>
+    <div style="font-size:.75rem;color:var(--info);background:var(--info-bg);border:1px solid rgba(8,145,178,.25);border-radius:8px;padding:8px 12px;margin-bottom:10px;">
+      ℹ Catat pergerakan part shootblast ulang dalam satuan Trolley — masuk ke area HSB (menunggu diproses) atau selesai di-shootblast ulang di HSB.
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Tanggal</label><input type="date" id="sbu-d"></div>
+      <div class="fg"><label>Shift</label><select id="sbu-sh" onchange="this.dataset.manualSet='1'"><option>NSP</option><option>NSM</option></select></div>
+      <div class="fg"><label>Jenis</label><select id="sbu-j"><option value="Masuk">Masuk Area HSB (belum diproses)</option><option value="Selesai">Selesai Shootblast Ulang</option></select></div>
+      <div class="fg"><label>Jumlah (Trolley)</label><input type="number" id="sbu-v" step="0.5" min="0" placeholder="0"></div>
+      <div class="fg"><label>Op</label><input type="text" id="sbu-op"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Keterangan</label><textarea id="sbu-kt"></textarea></div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-p" onclick="saveSbu(event)" style="flex:1;min-width:140px;">💾 Simpan</button>
+    </div>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📦 Status Stock Shootblast Ulang</div>
+    <div class="bar" id="sbu-sum"></div>
+    <div style="font-size:.72rem;color:var(--muted);">Belum = akumulasi Masuk − Selesai (part masih menunggu di area HSB). Sudah = akumulasi Selesai (part yang telah di-shootblast ulang).</div>
+  </div>
+  <div class="cd" style="margin-bottom:12px;">
+    <div class="st">📈 Grafik Kontrol Shootblast Ulang</div>
+    <div class="fbar">
+      <span class="fbar-lbl">Periode</span>
+      <select class="fbar-sel" id="sbu-pd-sel" onchange="sbuPdSel(this.value)">
+        <option value="cur">Bulan Ini</option>
+        <option value="prev">Bulan Lalu</option>
+        <option value="3m">3 Bulan</option>
+        <option value="6m">6 Bulan</option>
+        <option value="1y">1 Tahun</option>
+        <option value="cust">Custom</option>
+      </select>
+      <span id="sbu-cust" style="display:none;align-items:center;gap:6px;">
+        <input type="date" id="sbu-cf" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
+        <span style="font-size:.72rem;color:var(--muted);">s/d</span>
+        <input type="date" id="sbu-ct" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:.82rem;">
+        <button class="btn btn-p btn-s" onclick="drawFullSbu()">Tampil</button>
+      </span>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Tampilan</span>
+      <select class="fbar-sel" id="sbu-view-sel" onchange="sbuViewSel(this.value)">
+        <option value="day">Harian</option>
+        <option value="week">Mingguan</option>
+      </select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Data</span>
+      <select class="fbar-sel" id="sbu-data-sel" onchange="sbuDataSel(this.value)">
+        <option value="all">Masuk + Selesai + Belum</option>
+        <option value="masuk">Masuk saja</option>
+        <option value="selesai">Selesai saja</option>
+        <option value="belum">Belum (Stock) saja</option>
+      </select>
+    </div>
+    <div style="height:260px;position:relative;"><canvas id="c-sbu-full" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas></div>
+    <div class="lg-r" style="margin-top:8px;">
+      <div class="lg-i"><div class="lg-d" style="background:#d97706;"></div>Masuk Area HSB (Trolley)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#16a34a;"></div>Selesai Shootblast Ulang (Trolley)</div>
+      <div class="lg-i"><div class="lg-d" style="background:#7c3aed;"></div>Belum di Area HSB — Stock (Trolley)</div>
+    </div>
+  </div>
+  <div class="cd">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="st" style="margin-bottom:0;">📋 History Shootblast Ulang</div>
+      <button id="sbu-edit-btn" onclick="histToggleEdit('sbu')" title="Edit data" style="background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);">✏️</button>
+    </div>
+    <div id="sbu-edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:var(--warn);font-weight:600;">
+      ✏️ Mode Edit aktif — klik baris untuk edit/hapus. <button onclick="histToggleEdit('sbu')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">Selesai</button>
+    </div>
+    <div class="fbar" style="margin-bottom:10px;">
+      <span class="fbar-lbl">Filter Tgl</span>
+      <select class="fbar-sel" id="sbu-fltr-period" onchange="histRerender('sbu')"><option value="all">Semua</option><option value="today">Hari Ini</option><option value="7d">7 Hari</option><option value="30d">30 Hari</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Shift</span>
+      <select class="fbar-sel" id="sbu-fltr-shift" onchange="histRerender('sbu')"><option value="all">Semua</option><option value="NSP">NSP</option><option value="NSM">NSM</option></select>
+      <div class="fbar-sep"></div>
+      <span class="fbar-lbl">Jenis</span>
+      <select class="fbar-sel" id="sbu-fltr-jenis" onchange="histRerender('sbu')"><option value="all">Semua</option><option value="Masuk">Masuk Area HSB</option><option value="Selesai">Selesai Shootblast Ulang</option></select>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>Tgl</th><th>Shift</th><th>Jenis</th><th>Trolley</th><th>Op</th><th>Ket</th></tr></thead>
+      <tbody id="sbu-tb"></tbody>
     </table></div>
   </div>
 </div>
@@ -1716,6 +1832,14 @@ async function loadFromSheets() {
   }) : lbLog;
   sv('lbLog',lbLog);
 
+  // shootblast ulang
+  sbuLog = Array.isArray(r.shootblast_ulang) ? r.shootblast_ulang.map(x=>{
+    const pd=parseDate(x.date);
+    const ds=pd?dStr(pd):(x.date||'').toString().slice(0,10);
+    return { date:ds, sh:x.shift, j:x.jenis, v:+x.volume_trolley, op:x.operator, k:x.keterangan };
+  }) : sbuLog;
+  sv('sbuLog',sbuLog);
+
   // steelshot
   ssLog = Array.isArray(r.steelshot) ? r.steelshot.map(x=>{
     const pd=parseDate(x.date);
@@ -1824,6 +1948,7 @@ let ampLog=ld('ampLog')||[];
 let spLog=ld('spLog')||[];
 let pvLog=ld('pvLog')||[];
 let lbLog=ld('lbLog')||[];
+let sbuLog=ld('sbuLog')||[];
 let ssLog=ld('ssLog')||[];
 let ikomiLog=ld('ikomiLog')||[];
 let ltCfg=ld('ltCfg')||{'Impeller Blade':480,'Control Cage':480,'Distributor':480,'End Liner Atas':960,'End Liner Bawah':960,'Ceiling Liner':960,'Front Cover':720,'V-Belt':1440,'Motor':8760,'Hanger':960};
@@ -2021,7 +2146,7 @@ function goTab(t){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
   document.getElementById('p-'+t).classList.add('on');
   document.querySelectorAll('.tb').forEach(b=>{if(b.dataset.t===t)b.classList.add('on');});
-  ({dash:rDash,prev:rPv,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,gt:rGt,set:rSet})[t]?.();
+  ({dash:rDash,prev:rPv,sp:rSp,amp:rAmp,lb:rLb,ss:rSs,sbu:rSbu,gt:rGt,set:rSet})[t]?.();
 }
 document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.t)));
 
@@ -2374,10 +2499,28 @@ function renderLbDashChart(){
   if(dbLbShowDebu) sr.push({k:'debu', c:'#0891b2'});
   if(sr.length)drawChart('c-lb',ld,sr,{yLabel:'Trolley',weekly:dbLbView==='week',ranges:[{v:cfg.pHi,c:'#d97706'},{v:cfg.dHi,c:'#0891b2'}]});
 }
+function buildSbuDashData(){
+  return allDays(...Object.values(dtRange('cur'))).map(date=>({
+    date,
+    masuk:sbuLog.filter(l=>l.date===date&&l.j==='Masuk').reduce((s,x)=>s+x.v,0),
+    selesai:sbuLog.filter(l=>l.date===date&&l.j==='Selesai').reduce((s,x)=>s+x.v,0),
+    belum:sbuStockAt(date),
+  }));
+}
+function renderSbuDashChart(){
+  const daily=buildSbuDashData();
+  const sd=dbSbuView==='week'?sbuWeeklyBelum(daily,aggregateWeekly(daily,['masuk','selesai'])):daily;
+  const sr=[];
+  if(dbSbuShowMasuk)  sr.push({k:'masuk',  c:'#d97706'});
+  if(dbSbuShowSelesai)sr.push({k:'selesai',c:'#16a34a'});
+  if(dbSbuShowBelum)  sr.push({k:'belum',  c:'#7c3aed'});
+  if(sr.length)drawChart('c-sbu',sd,sr,{yLabel:'Trolley',weekly:dbSbuView==='week'});
+}
 function drawDashCharts(){
   try{drawDashGt();}catch(e){}
   renderSsDashChart();
   renderLbDashChart();
+  renderSbuDashChart();
 }
 
 function rAlerts(){
@@ -3624,6 +3767,21 @@ const HIST_CFG = {
     matchKeys:(orig)=>({date:orig.date,shift:orig.sh,jenis:orig.j}),
     toSheet:(r)=>({date:r.date,shift:r.sh,volume_trolley:r.v,lokasi:r.l,operator:r.op}),
   },
+  sbu: {
+    title:'Edit Data Shootblast Ulang',
+    arr:()=>sbuLog,
+    fields:[
+      {k:'date',label:'Tanggal',type:'date'},
+      {k:'sh',label:'Shift',type:'select',opts:['NSP','NSM']},
+      {k:'j',label:'Jenis',type:'select',opts:['Masuk','Selesai']},
+      {k:'v',label:'Jumlah (Trolley)',type:'number'},
+      {k:'op',label:'Operator',type:'text'},
+    ],
+    delInfo:r=>`<b>${fD(r.date)}</b> · Shift ${r.sh} · ${r.j==='Masuk'?'Masuk Area HSB':'Selesai Shootblast Ulang'}<br>${r.v} Trolley · ${r.op||'-'}`,
+    table:'shootblast_ulang',
+    matchKeys:(orig)=>({date:orig.date,shift:orig.sh,jenis:orig.j}),
+    toSheet:(r)=>({date:r.date,shift:r.sh,jenis:r.j,volume_trolley:r.v,operator:r.op}),
+  },
   gentani: {
     title:'Edit Data Ikomi',
     arr:()=>ikomiLog,
@@ -3682,7 +3840,7 @@ function histUpdateBtn(type,active){
 
 // Panggil render ulang tabel sesuai type
 function histRerender(type){
-  ({preventive:rPv,sparepart:rSp,hanger:()=>{const e=document.getElementById('p-sp');if(e)rSp();},ampere:rAmp,limbah:rLb,gentani:gtRenderTable})[type]?.();
+  ({preventive:rPv,sparepart:rSp,hanger:()=>{const e=document.getElementById('p-sp');if(e)rSp();},ampere:rAmp,limbah:rLb,sbu:rSbu,gentani:gtRenderTable})[type]?.();
 }
 
 // Buka modal edit untuk baris ke-idx
@@ -3728,7 +3886,7 @@ async function histSaveEdit(){
     if(!el)return;
     r[f.k]=f.type==='number'?(+el.value||0):el.value;
   });
-  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog',gentani:'ikomiLog'}[histEditType];
+  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog',sbu:'sbuLog',gentani:'ikomiLog'}[histEditType];
   sv(lsKey,cfg.arr());
   cM('m-hist-edit');
   histRerender(histEditType);
@@ -3764,7 +3922,7 @@ async function histConfirmDelete(){
   const cfg=HIST_CFG[histEditType];
   const orig=histEditOrig;
   cfg.arr().splice(histEditIdx,1);
-  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog',gentani:'ikomiLog'}[histEditType];
+  const lsKey={preventive:'pvLog',sparepart:'spLog',hanger:'hLog',ampere:'ampLog',limbah:'lbLog',sbu:'sbuLog',gentani:'ikomiLog'}[histEditType];
   sv(lsKey,cfg.arr());
   cM('m-hist-edit');
   histRerender(histEditType);
@@ -4184,13 +4342,27 @@ function ssSetView(v){ssView=v;const s=document.getElementById('ss-view-sel');if
 // Dashboard mini chart toggles (share same state as detail charts)
 let dbLbShowPasir=true,dbLbShowDebu=true;
 let dbSsShowS5=true,dbSsShowWc=true,dbSsShowLb=true;
-let dbLbView='day',dbSsView='day';
+let dbSbuShowMasuk=true,dbSbuShowSelesai=true,dbSbuShowBelum=true;
+let dbLbView='day',dbSsView='day',dbSbuView='day';
 
 function dbLbSetView(v,btn){
   dbLbView=v;
   document.getElementById('db-lb-v-day').classList.toggle('on',v==='day');
   document.getElementById('db-lb-v-week').classList.toggle('on',v==='week');
   renderLbDashChart();
+}
+function dbSbuSetView(v,btn){
+  dbSbuView=v;
+  document.getElementById('db-sbu-v-day').classList.toggle('on',v==='day');
+  document.getElementById('db-sbu-v-week').classList.toggle('on',v==='week');
+  renderSbuDashChart();
+}
+function dbSbuToggle(key,btn){
+  if(key==='masuk')dbSbuShowMasuk=!dbSbuShowMasuk;
+  else if(key==='selesai')dbSbuShowSelesai=!dbSbuShowSelesai;
+  else dbSbuShowBelum=!dbSbuShowBelum;
+  btn.classList.toggle('on',key==='masuk'?dbSbuShowMasuk:key==='selesai'?dbSbuShowSelesai:dbSbuShowBelum);
+  renderSbuDashChart();
 }
 function dbSsSetView(v,btn){
   dbSsView=v;
@@ -4302,6 +4474,98 @@ async function saveLb(ev){
   document.getElementById('lb-vp').value='';
   document.getElementById('lb-vd').value='';
   hideSpinner();rLb();showToast(`✅ Limbah tersimpan! Pasir:${vp} Debu:${vd} Trolley`,'ok');
+}
+
+// ============ SHOOTBLAST ULANG ============
+let sbuPdV='cur', sbuView='day', sbuShowMasuk=true, sbuShowSelesai=true, sbuShowBelum=true;
+
+function sbuPdSel(v){
+  sbuPdV=v;
+  const cust=document.getElementById('sbu-cust');
+  if(cust)cust.style.display=v==='cust'?'flex':'none';
+  if(v!=='cust')drawFullSbu();
+}
+function sbuViewSel(v){ sbuView=v; drawFullSbu(); }
+function sbuDataSel(v){
+  sbuShowMasuk  =(v==='all'||v==='masuk');
+  sbuShowSelesai=(v==='all'||v==='selesai');
+  sbuShowBelum  =(v==='all'||v==='belum');
+  drawFullSbu();
+}
+// Stock (Belum) kumulatif s.d. tanggal tsb, dihitung dari SELURUH histori — bukan cuma periode tampil
+function sbuStockAt(date){
+  return Math.max(0,sbuLog.filter(l=>l.date<=date).reduce((s,x)=>s+(x.j==='Masuk'?x.v:-x.v),0));
+}
+function buildSbuRaw(cf,ct){
+  const{f,t}=dtRange(sbuPdV,cf,ct);
+  return allDays(f,t).map(date=>({
+    date,
+    masuk:sbuLog.filter(l=>l.date===date&&l.j==='Masuk').reduce((s,x)=>s+x.v,0),
+    selesai:sbuLog.filter(l=>l.date===date&&l.j==='Selesai').reduce((s,x)=>s+x.v,0),
+    belum:sbuStockAt(date),
+  }));
+}
+// Untuk tampilan mingguan, 'belum' adalah stock di akhir minggu (bukan dijumlah seperti masuk/selesai)
+function sbuWeeklyBelum(daily,weekly){
+  const byWeek={};
+  daily.forEach(d=>{ byWeek[getWeekLabel(d.date).label]=d.belum; });
+  weekly.forEach(w=>{ w.belum=byWeek[w.label]??0; });
+  return weekly;
+}
+function drawFullSbu(){
+  let cf,ct;
+  if(sbuPdV==='cust'){cf=document.getElementById('sbu-cf').value;ct=document.getElementById('sbu-ct').value;if(!cf||!ct)return;}
+  const daily=buildSbuRaw(cf,ct);
+  const data=sbuView==='week'?sbuWeeklyBelum(daily,aggregateWeekly(daily,['masuk','selesai'])):daily;
+  const sr=[];
+  if(sbuShowMasuk)  sr.push({k:'masuk',  c:'#d97706'});
+  if(sbuShowSelesai)sr.push({k:'selesai',c:'#16a34a'});
+  if(sbuShowBelum)  sr.push({k:'belum',  c:'#7c3aed'});
+  if(sr.length)drawChart('c-sbu-full',data,sr,{yLabel:'Trolley',weekly:sbuView==='week'});
+}
+function rSbu(){
+  const sd=document.getElementById('sbu-d');if(sd&&!sd.value)sd.value=today();
+  const shEl=document.getElementById('sbu-sh');
+  if(shEl&&!shEl.dataset.manualSet)shEl.value=getActiveShift();
+
+  const masuk=sbuLog.filter(r=>r.j==='Masuk').reduce((a,x)=>a+(+x.v||0),0);
+  const selesai=sbuLog.filter(r=>r.j==='Selesai').reduce((a,x)=>a+(+x.v||0),0);
+  const belum=Math.max(0,masuk-selesai);
+  document.getElementById('sbu-sum').innerHTML=
+    `<div class="cp wn"><span class="v">${belum}</span>Belum (di Area HSB)</div>`+
+    `<div class="cp ok"><span class="v">${selesai}</span>Sudah Shootblast Ulang</div>`+
+    `<div class="cp mu"><span class="v">${masuk}</span>Total Masuk Area HSB</div>`;
+
+  requestAnimationFrame(()=>drawFullSbu());
+
+  const tb=document.getElementById('sbu-tb');
+  const fPeriod=histFv('sbu-fltr-period'),fSh=histFv('sbu-fltr-shift'),fJn=histFv('sbu-fltr-jenis');
+  const em=histEditModes.sbu;
+  const rows=sbuLog.map((r,idx)=>({r,idx}))
+    .filter(({r})=>histDateOk(r.date,fPeriod)&&(fSh==='all'||r.sh===fSh)&&(fJn==='all'||r.j===fJn))
+    .sort((a,b)=>b.r.date.localeCompare(a.r.date));
+  tb.innerHTML=rows.slice(0,200).map(({r,idx})=>{
+    const jLabel=r.j==='Masuk'?'Masuk Area HSB':'Selesai Shootblast Ulang';
+    const cl=r.j==='Masuk'?'bd-wn':'bd-ok';
+    const click=em?`onclick="histOpenEdit('sbu',${idx})" style="cursor:pointer;"`:'';
+    return`<tr ${click}><td>${fD(r.date)}</td><td>${r.sh||'-'}</td><td><span class="bd ${cl}">${jLabel}</span></td><td class="mn">${r.v}</td><td>${r.op||'-'}</td><td>${r.k||'-'}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="es">Tidak ada data sesuai filter</td></tr>';
+}
+async function saveSbu(ev){
+  const date=document.getElementById('sbu-d').value;
+  const sh=document.getElementById('sbu-sh').value;
+  const j=document.getElementById('sbu-j').value;
+  const v=+document.getElementById('sbu-v').value||0;
+  const op=document.getElementById('sbu-op').value||'Op';
+  const k=document.getElementById('sbu-kt').value;
+  if(!date){showToast('Tanggal wajib diisi','warn');focusField('sbu-d');return;}
+  if(!v){showToast('Isi jumlah trolley','warn');focusField('sbu-v');return;}
+  showSpinner('Menyimpan data shootblast ulang...',ev?.currentTarget);
+  sbuLog.push({date,sh,j,v,op,k});
+  sv('sbuLog',sbuLog);
+  pushToSheets('saveShootblastUlang',[{date,shift:sh,jenis:j,volume_trolley:v,operator:op,keterangan:k}]);
+  document.getElementById('sbu-v').value='';
+  hideSpinner();rSbu();showToast(`✅ Shootblast ulang tersimpan! ${j==='Masuk'?'Masuk':'Selesai'}: ${v} Trolley`,'ok');
 }
 
 // ============ STEELSHOT ============
