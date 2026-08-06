@@ -1,0 +1,82 @@
+/**
+ * SKRIP PEMBERSIH DUPLIKAT — sheet "preventive" (TPM HSB)
+ * ============================================================
+ * MASALAH: sheet preventive punya 31.296 baris, padahal seharusnya
+ * hanya sekitar 3.000-an. Beberapa tanggal terduplikasi 100-200x lipat
+ * karena bug retry-sync (sudah diperbaiki di hsb-management-system.html).
+ * Baris-baris lama yang sudah terlanjur duplikat perlu dibersihkan manual.
+ *
+ * CARA PAKAI:
+ * 1. Buka spreadsheet HSB Monitor Anda (yang jadi sumber data GAS_URL).
+ * 2. Menu Extensions -> Apps Script (akan membuka project Apps Script
+ *    yang sama dengan yang dipakai backend hsb-management-system.html).
+ * 3. Buat file baru (mis. "Cleanup.gs"), copy-paste seluruh isi file ini.
+ * 4. Jalankan fungsi `dedupePreventiveDryRun` dulu (klik Run, pilih fungsi
+ *    ini di dropdown) — cek log (View > Logs / Ctrl+Enter) untuk lihat
+ *    berapa baris yang akan dihapus, TANPA mengubah apa pun.
+ * 5. Kalau hasilnya masuk akal, jalankan `dedupePreventiveApply` untuk
+ *    benar-benar menghapus baris duplikat (menyisakan 1 baris unik per
+ *    kombinasi date+minggu+bulan+impeller_idx+item+hasil+pic+catatan).
+ * 6. Refresh dashboard HSB — sync akan jauh lebih cepat & ringan.
+ *
+ * Sheet lain (ampere, sparepart, limbah, dst) tampak normal saat dicek,
+ * tapi kalau suatu saat mau dicek juga, cukup ganti SHEET_NAME di bawah.
+ */
+
+function dedupePreventiveDryRun() {
+  dedupeSheet_('preventive', false);
+}
+
+function dedupePreventiveApply() {
+  dedupeSheet_('preventive', true);
+}
+
+function dedupeSheet_(sheetName, apply) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(sheetName);
+  if (!sheet) { Logger.log('Sheet "%s" tidak ditemukan.', sheetName); return; }
+
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) { Logger.log('Sheet kosong / cuma header.'); return; }
+
+  const header = data[0];
+  const rows = data.slice(1);
+
+  const seen = new Set();
+  const rowsToDeleteIdx = []; // index di dalam `rows` (0-based), akan dipetakan ke nomor baris sheet nanti
+
+  rows.forEach((row, i) => {
+    // Kunci dedup = seluruh isi baris digabung jadi satu string.
+    // Kalau mau lebih longgar (misal abaikan kolom timestamp tertentu),
+    // sesuaikan kolom yang dipakai di sini.
+    const key = row.map(v => String(v)).join('|');
+    if (seen.has(key)) {
+      rowsToDeleteIdx.push(i);
+    } else {
+      seen.add(key);
+    }
+  });
+
+  Logger.log('Sheet: %s', sheetName);
+  Logger.log('Total baris data (tanpa header): %s', rows.length);
+  Logger.log('Baris unik: %s', rows.length - rowsToDeleteIdx.length);
+  Logger.log('Baris duplikat yang akan dihapus: %s', rowsToDeleteIdx.length);
+
+  if (!apply) {
+    Logger.log('--- DRY RUN saja, tidak ada yang dihapus. Jalankan dedupePreventiveApply() untuk eksekusi. ---');
+    return;
+  }
+
+  if (rowsToDeleteIdx.length === 0) {
+    Logger.log('Tidak ada duplikat untuk dihapus.');
+    return;
+  }
+
+  // Hapus dari bawah ke atas supaya nomor baris tidak bergeser saat proses hapus.
+  // +2 karena: +1 untuk header, +1 karena getRange 1-based.
+  rowsToDeleteIdx
+    .sort((a, b) => b - a)
+    .forEach(i => sheet.deleteRow(i + 2));
+
+  Logger.log('Selesai. %s baris duplikat sudah dihapus dari sheet "%s".', rowsToDeleteIdx.length, sheetName);
+}

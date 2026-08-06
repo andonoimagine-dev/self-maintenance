@@ -1652,9 +1652,11 @@ async function api(action, data={}) {
       Object.entries(data).forEach(([k,v]) => params.set(k, typeof v === 'object' ? JSON.stringify(v) : v));
     }
     const fullUrl = GAS_URL + '?' + params.toString();
-    // Timeout 15 detik agar tidak menggantung halaman selamanya
+    // Timeout 30 detik agar tidak menggantung halaman selamanya
+    // (dinaikkan dari 15 detik karena payload getAll bisa besar; lihat juga
+    // catatan idempotency di queueSync/flushQueue di bawah)
     const ctrl = new AbortController();
-    const tmo = setTimeout(() => ctrl.abort(), 15000);
+    const tmo = setTimeout(() => ctrl.abort(), 30000);
     const res = await fetch(fullUrl, {
       method: 'GET',
       redirect: 'follow',
@@ -1678,21 +1680,52 @@ async function api(action, data={}) {
 }
 
 // Sync queue — aksi yang gagal di-queue dan dicoba ulang
+//
+// PENTING — soal duplikasi data:
+// Kalau fetch() timeout/abort di sisi browser, permintaan itu BISA SAJA sudah
+// sampai & selesai ditulis oleh Apps Script di server — browser cuma berhenti
+// menunggu balasannya. Karena kita anggap itu "gagal", item masuk antrian dan
+// akan dicoba ulang oleh flushQueue(). Kalau kondisi lambatnya menetap (mis.
+// sheet sudah kebesaran), retry berikutnya bisa "gagal" dengan cara yang sama
+// padahal tetap berhasil menulis ke server — sehingga baris yang sama tertulis
+// berkali-kali tiap siklus auto-sync, tanpa batas, selamanya.
+//
+// Mitigasi di sini (client-only, tanpa ubah Apps Script):
+//  1. reqId unik per item — agar bisa dilacak di log/Apps Script kalau mau
+//     ditambahkan pengecekan idempoten di server suatu saat nanti.
+//  2. Batas jumlah percobaan (MAX_QUEUE_TRIES) — daripada retry tanpa henti
+//     dan menumpuk duplikat berbulan-bulan (seperti yang ditemukan di sheet
+//     preventive), item yang tetap gagal setelah beberapa kali dicoba akan
+//     dihentikan dan pengguna diberi tahu lewat toast, supaya bisa dicek manual
+//     alih-alih diam-diam menduplikasi data selamanya.
+const MAX_QUEUE_TRIES = 8; // ~40 menit dg interval sync default 5 menit
+function genReqId(){ return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 let syncQueue = JSON.parse(localStorage.getItem('hsb9_queue') || '[]');
 function queueSync(action, data) {
-  syncQueue.push({ action, data, ts: Date.now() });
+  if (!data.reqId) data.reqId = genReqId();
+  syncQueue.push({ action, data, ts: Date.now(), tries: 0 });
   localStorage.setItem('hsb9_queue', JSON.stringify(syncQueue));
 }
 async function flushQueue() {
   if (!ONLINE || syncQueue.length === 0) return;
   const failed = [];
+  let dropped = 0;
   for (const item of syncQueue) {
     const r = await api(item.action, item.data);
-    if (!r.ok) failed.push(item);
+    if (!r.ok) {
+      item.tries = (item.tries || 0) + 1;
+      if (item.tries >= MAX_QUEUE_TRIES) {
+        dropped++;
+        console.warn('Sync item dropped setelah', item.tries, 'percobaan (kemungkinan sudah tersimpan di server tapi tidak dapat balasan):', item.action, item.data.reqId);
+      } else {
+        failed.push(item);
+      }
+    }
   }
   syncQueue = failed;
   localStorage.setItem('hsb9_queue', JSON.stringify(syncQueue));
-  if (failed.length === 0 && syncQueue.length === 0) showToast('✅ Semua data berhasil disync', 'ok');
+  if (dropped > 0) showToast(`⚠ ${dropped} data gagal disync setelah ${MAX_QUEUE_TRIES}x percobaan — cek koneksi & Spreadsheet`, 'warn', 6000);
+  else if (failed.length === 0) showToast('✅ Semua data berhasil disync', 'ok');
 }
 
 // ============================================================
@@ -1929,9 +1962,10 @@ async function loadFromSheets() {
 async function pushToSheets(action, rows) {
   if (!ONLINE) return false;
   setSyncStatus('syncing');
-  const r = await api(action, { rows: JSON.stringify(rows) });
+  const reqId = genReqId();
+  const r = await api(action, { rows: JSON.stringify(rows), reqId });
   setSyncStatus(r.ok ? 'ok' : 'error');
-  if (!r.ok) queueSync(action, { rows: JSON.stringify(rows) });
+  if (!r.ok) queueSync(action, { rows: JSON.stringify(rows), reqId });
   return r.ok;
 }
 
