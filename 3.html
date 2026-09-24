@@ -933,7 +933,7 @@ tr:hover td{background:var(--accent-bg);}
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📦 Status Stock Shootblast Ulang</div>
     <div class="bar" id="sbu-sum"></div>
-    <div style="font-size:.72rem;color:var(--muted);">Belum = akumulasi Masuk − Selesai (part masih menunggu di area HSB). Sudah = akumulasi Selesai (part yang telah di-shootblast ulang). Baris ber-jenis “Shotblast Ulang” dicatat dan ditampilkan, tapi BELUM ikut hitungan Belum/Sudah — tentukan dulu apakah ia menambah, mengurangi, atau netral.</div>
+    <div style="font-size:.72rem;color:var(--muted);">Belum = akumulasi (Masuk + Shotblast Ulang) − Selesai — part yang masih menunggu di area HSB. “Shotblast Ulang” ikut menambah antrean karena part yang harus diproses kembali tetap menunggu di sana. Sudah = akumulasi Selesai. Batang harian Masuk dan Selesai tetap per-jenis, jadi Belum tidak selalu sama dengan selisih keduanya.</div>
   </div>
   <div class="cd" style="margin-bottom:12px;">
     <div class="st">📈 Grafik Kontrol Shootblast Ulang</div>
@@ -4532,8 +4532,13 @@ function sbuStockAt(date){
   // bukan 'Masuk'. Aman selama hanya ada dua nilai, tapi begitu ada nilai
   // ketiga ia ikut dikurangkan diam-diam dan "Belum" jadi salah tanpa gejala.
   // Sekarang tiap nilai disebut tegas; yang tidak dikenal tidak dihitung.
+  //
+  // "Shotblast Ulang" MENAMBAH antrean (keputusan user 2026-09-24): barang yang
+  // harus diproses kembali karena kurang bersih tetap menunggu di area HSB,
+  // sama seperti yang baru masuk. Jadi ia arus MASUK, bukan keluar.
+  const masuk = (j) => j==='Masuk' || j==='Shotblast Ulang';
   return Math.max(0,sbuLog.filter(l=>l.date<=date).reduce((s,x)=>
-    s + (x.j==='Masuk' ? +x.v||0 : x.j==='Selesai' ? -(+x.v||0) : 0),0));
+    s + (masuk(x.j) ? +x.v||0 : x.j==='Selesai' ? -(+x.v||0) : 0),0));
 }
 function buildSbuRaw(cf,ct){
   const{f,t}=dtRange(sbuPdV,cf,ct);
