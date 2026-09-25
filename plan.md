@@ -17,6 +17,72 @@ Jangan asumsikan perbaikan di satu file berlaku juga ke file lain — masing-mas
 
 ---
 
+## [3.html] 2026-09-24 — Jenis "Shotblast Ulang", dan perbaikan cacat rumus "Belum"
+
+**Latar:** portal TPM HSB perusahaan (`castingace/homepage.php?module=TPMHSB`)
+memakai TIGA jenis di shootblast ulang, aplikasi ini hanya dua. Akibatnya 21
+baris dari portal tidak punya tempat sama sekali di sini. Jenis ketiganya
+**"Shotblast Ulang"** — barang yang harus diproses kembali karena kurang
+bersih, padahal sudah lewat jalur shootblast.
+
+**CACAT LATEN yang ketemu saat menambahkannya, dan diperbaiki lebih dulu.**
+`sbuStockAt()` menghitung stok "Belum" begini:
+
+```js
+(x.j === 'Masuk' ? x.v : -x.v)
+```
+
+Cabang `else` **MENGURANGI apa pun yang bukan "Masuk"**. Aman selama hanya ada
+dua nilai — tapi begitu nilai ketiga masuk, ia ikut dikurangkan diam-diam dan
+angka "Belum" jadi salah **tanpa satu pun gejala**. Sekarang tiap nilai disebut
+tegas, dan yang tidak dikenal tidak dihitung.
+
+**Keputusan user:** "Shotblast Ulang" **MENAMBAH** antrean — barang yang harus
+diproses kembali tetap menunggu di area HSB, sama seperti yang baru masuk.
+Rumusnya jadi:
+
+```
+Belum = (Masuk + Shotblast Ulang) − Selesai
+```
+
+Keterangan rumus di halaman ikut menyebutkan bahwa batang harian Masuk dan
+Selesai tetap per-jenis, jadi "Belum" tidak selalu sama dengan selisih keduanya
+— kalau tidak disebut, angkanya terbaca seperti salah hitung.
+
+**Tujuh tempat diubah:** rumus stok, pilihan di form entri, pilihan di form
+edit, label tabel riwayat, konfirmasi hapus, toast, dan keterangan rumus.
+
+**Data dari portal ikut disalin masuk** lewat project `auto-task` (repo
+terpisah, privat) — satu arah portal → aplikasi, tidak ada yang ditulis ke
+portal. Yang masuk ke spreadsheet ini:
+
+| tabel | baris | hasil |
+|---|---|---|
+| sparepart | 32 | 147 → 179 |
+| ampere | 1.109 | 3.207 → 4.316 |
+| ikomi | 9 | 96 → 105 |
+| steelshot | 60 | 156 → 216 |
+| shootblast_ulang | 68 | 70 → 138 |
+| preventive | 28 | 464 → 492 |
+
+Semuanya diverifikasi dengan membaca ulang dan menghitung sesudah mengirim,
+bukan dengan percaya jawaban Apps Script — `saveX` MENAMBAH baris, dan sheet
+`preventive` pernah membengkak jadi 31.296 baris justru karena kiriman yang
+diulang (lihat entri 2026-08-06 di bawah).
+
+**Yang SENGAJA tidak disalin:**
+- `limbah` — portal mencatat tiap trolley satu baris, aplikasi satu baris per
+  shift. Beda tingkat rincian; keputusan user: ikuti aplikasi.
+- 67 baris `steelshot` yang angkanya berselisih dengan portal untuk hari dan
+  shift yang sama — keputusan user: aplikasi yang benar.
+- 284 item `preventive` bernilai `pending` — "belum diperiksa" bukan hasil
+  pemeriksaan, dan aplikasi ini memang tidak mengenal nilai itu.
+
+**File yang diubah:** `3.html`. **Tidak menyentuh** `4.html`, `1.html`,
+`2.html` — backend/spreadsheet-nya terpisah.
+
+---
+
 ## [hsb-management-system.html] 2026-08-06 — Fix bug retry-sync duplikat data
 
 **Masalah:** User melaporkan HSB Management System tidak bisa sync. Investigasi menemukan dua hal:
